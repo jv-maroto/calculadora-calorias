@@ -1,0 +1,27 @@
+# Archivos de configuración local
+connection.php
+
+# Logs y debugging
+debug_guardar.log
+*.log
+
+# Archivos temporales
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Archivos de test (opcional - puedes incluirlos si quieres)
+test_*.php
