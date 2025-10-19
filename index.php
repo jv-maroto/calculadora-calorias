@@ -200,11 +200,6 @@
                                     <input type="number" class="form-control" id="kg_perder" name="kg_perder" min="1" max="50" step="0.5" placeholder="Ej: 10">
                                 </div>
                                 <div class="mb-3">
-                                    <label for="perdida_semanal" class="form-label">Pérdida de peso esperada por semana (kg)</label>
-                                    <input type="number" class="form-control" id="perdida_semanal" name="perdida_semanal" min="0.2" max="1.5" step="0.1" placeholder="Ej: 0.5">
-                                    <small class="text-muted">Recomendado: 0.4-0.7 kg/semana para pérdida saludable</small>
-                                </div>
-                                <div class="mb-3">
                                     <label for="semanas_objetivo_deficit" class="form-label">¿En cuántas semanas? (opcional)</label>
                                     <input type="number" class="form-control" id="semanas_objetivo_deficit" min="1" max="100" placeholder="Deja vacío para cálculo automático">
                                     <small class="text-muted">Si tienes una fecha límite</small>

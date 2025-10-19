@@ -110,11 +110,9 @@ document.addEventListener('DOMContentLoaded', function() {
         let mesesObjetivo = null;
         let semanasObjetivo = null;
         let preferencia = null;
-        let perdidaSemanal = 0.5; // Por defecto 0.5 kg/semana
 
         if (objetivo === 'deficit') {
             kgObjetivo = parseFloat(document.getElementById('kg_perder').value) || 5;
-            perdidaSemanal = parseFloat(document.getElementById('perdida_semanal').value) || 0.5;
             semanasObjetivo = parseInt(document.getElementById('semanas_objetivo_deficit').value) || null;
             preferencia = document.getElementById('preferencia_deficit').value;
             velocidad = preferencia; // Compatibilidad
@@ -351,7 +349,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-            planData = calcularPlanDeficit(tdee, peso, kgObjetivo, perdidaSemanal, diasCardio, horasCardio, validacion);
+            planData = calcularPlanDeficit(tdee, peso, kgObjetivo, velocidad, diasCardio, horasCardio, validacion);
         }
 
         else {
@@ -380,11 +378,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 500);
     });
 
-    function calcularPlanDeficit(tdee, peso, kgPerder, perdidaSemanal, diasCardio, horasCardio, validacion) {
-        // Déficit calórico basado en pérdida semanal deseada
-        // 1 kg de grasa = ~7700 kcal, por lo que 0.5 kg/semana = 3850 kcal/semana = 550 kcal/día
-        const deficitDiario = Math.round(perdidaSemanal * 7700 / 7);
-        const kgPorSemana = perdidaSemanal;
+    function calcularPlanDeficit(tdee, peso, kgPerder, velocidad, diasCardio, horasCardio, validacion) {
+        // Déficit calórico según velocidad
+        let deficitDiario;
+        let kgPorSemana;
+
+        if (velocidad === 'saludable') {
+            deficitDiario = 500;
+            kgPorSemana = 0.5;
+        } else if (velocidad === 'rapido') {
+            deficitDiario = 700;
+            kgPorSemana = 0.7;
+        } else { // conservador
+            deficitDiario = 300;
+            kgPorSemana = 0.3;
+        }
 
         const caloriasBase = tdee - deficitDiario;
 
@@ -596,7 +604,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="alert alert-info">
                         <h5>🎯 Objetivo: Perder ${plan.kgObjetivo} kg</h5>
                         <h5>⏱️ Duración estimada: ${plan.duracion.semanas} semanas (${plan.duracion.meses} meses)</h5>
+                        <h5>📊 Pérdida esperada: ~${plan.kgPorSemana} kg/semana (aproximado)</h5>
                         <p class="mb-0">Déficit calórico: ${plan.deficitDiario} kcal/día</p>
+                        <small class="text-muted">⚠️ Nota: En déficit bajarás más al principio y menos al final. Todo es aproximado.</small>
                     </div>
 
                     <h5 class="mt-4">📅 Fases del Plan</h5>
@@ -646,6 +656,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="alert alert-warning">
                         <strong>${plan.refeedInfo}</strong>
                         <p class="mb-0 mt-2">En estos días come ${plan.tdee} kcal (mantenimiento) para recuperar energía</p>
+                        <small class="text-muted">📊 En refeeds: Mantienes peso (0 kg de cambio esperado)</small>
                     </div>
                     ${plan.refeeds.length > 0 ? `
                         <div class="table-responsive">
@@ -692,7 +703,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <h5>🎯 Objetivo: Ganar ${plan.kgObjetivo} kg de músculo</h5>
                         <h5>📊 Nivel: ${plan.nivelGym.charAt(0).toUpperCase() + plan.nivelGym.slice(1)}</h5>
                         <h5>⏱️ Duración estimada: ${plan.duracion.meses} meses (${plan.duracion.semanas} semanas)</h5>
+                        <h5>📈 Ganancia esperada: ~${plan.kgPorMes} kg/mes (aproximado)</h5>
                         <p class="mb-0">Superávit calórico: ${plan.superavitDiario} kcal/día</p>
+                        <small class="text-muted">⚠️ Nota: Todo es aproximado. Incluye mini-cuts y refeeds según el plan.</small>
                     </div>
 
                     <h5 class="mt-4">📅 Fases del Plan</h5>
@@ -743,6 +756,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="alert alert-warning">
                             <strong>Mini-cuts para controlar grasa acumulada</strong>
                             <p class="mb-0">Durante estas semanas, reduce a ${plan.miniCuts[0].calorias} kcal/día (déficit de 300 kcal)</p>
+                            <small class="text-muted">📊 En mini-cuts: Pérdida de ~0.3 kg/semana (aproximado)</small>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-sm">
