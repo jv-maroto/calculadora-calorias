@@ -139,6 +139,22 @@
                                 </div>
                             </div>
 
+                            <div class="mb-3" id="campo-tipo-cardio" style="display: none;">
+                                <label for="tipo_cardio" class="form-label">Tipo de cardio</label>
+                                <select class="form-select" id="tipo_cardio">
+                                    <option value="">Seleccionar tipo...</option>
+                                    <option value="caminar">🚶 Caminar (baja intensidad)</option>
+                                    <option value="caminar_rapido">🚶‍♂️ Caminar rápido (intensidad moderada)</option>
+                                    <option value="correr_ligero">🏃 Correr ligero (intensidad moderada-alta)</option>
+                                    <option value="correr_intenso">🏃‍♂️ Correr intenso (alta intensidad)</option>
+                                    <option value="bicicleta">🚴 Bicicleta (intensidad moderada)</option>
+                                    <option value="natacion">🏊 Natación (intensidad moderada-alta)</option>
+                                    <option value="eliptica">🏃‍♀️ Elíptica (intensidad moderada)</option>
+                                    <option value="otro">💪 Otro tipo de cardio</option>
+                                </select>
+                                <small class="text-muted">El tipo de cardio afecta el cálculo del factor de actividad</small>
+                            </div>
+
                             <!-- Estilo de Vida -->
                             <div class="section-title">
                                 <h5>🏢 Estilo de Vida</h5>
@@ -182,6 +198,11 @@
                                 <div class="mb-3">
                                     <label for="kg_perder" class="form-label">¿Cuántos kg quieres perder?</label>
                                     <input type="number" class="form-control" id="kg_perder" name="kg_perder" min="1" max="50" step="0.5" placeholder="Ej: 10">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="perdida_semanal" class="form-label">Pérdida de peso esperada por semana (kg)</label>
+                                    <input type="number" class="form-control" id="perdida_semanal" name="perdida_semanal" min="0.2" max="1.5" step="0.1" placeholder="Ej: 0.5">
+                                    <small class="text-muted">Recomendado: 0.4-0.7 kg/semana para pérdida saludable</small>
                                 </div>
                                 <div class="mb-3">
                                     <label for="semanas_objetivo_deficit" class="form-label">¿En cuántas semanas? (opcional)</label>

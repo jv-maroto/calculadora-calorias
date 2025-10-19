@@ -11,6 +11,20 @@ document.addEventListener('DOMContentLoaded', function() {
     // Cargar valores guardados
     cargarValoresGuardados();
 
+    // Verificar estado inicial del campo tipo de cardio
+    function verificarCampoCardio() {
+        const diasCardio = document.getElementById('dias_cardio').value;
+        const campoTipoCardio = document.getElementById('campo-tipo-cardio');
+        if (diasCardio > 0) {
+            campoTipoCardio.style.display = 'block';
+        } else {
+            campoTipoCardio.style.display = 'none';
+        }
+    }
+
+    // Verificar al cargar la página
+    verificarCampoCardio();
+
     // Mostrar/ocultar campos según objetivo
     objetivoSelect.addEventListener('change', function() {
         if (this.value === 'deficit') {
@@ -32,6 +46,19 @@ document.addEventListener('DOMContentLoaded', function() {
             campoCiclo.style.display = 'block';
         } else {
             campoCiclo.style.display = 'none';
+        }
+    });
+
+    // Mostrar campo tipo de cardio solo si hace cardio
+    document.getElementById('dias_cardio').addEventListener('input', function() {
+        const campoTipoCardio = document.getElementById('campo-tipo-cardio');
+        console.log('Días cardio cambiados a:', this.value);
+        if (this.value > 0) {
+            campoTipoCardio.style.display = 'block';
+            console.log('Mostrando campo tipo de cardio');
+        } else {
+            campoTipoCardio.style.display = 'none';
+            console.log('Ocultando campo tipo de cardio');
         }
     });
 
@@ -72,6 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const horasGym = parseFloat(document.getElementById('horas_gym').value) || 0;
         const diasCardio = parseInt(document.getElementById('dias_cardio').value) || 0;
         const horasCardio = parseFloat(document.getElementById('horas_cardio').value) || 0;
+        const tipoCardio = document.getElementById('tipo_cardio').value;
         const horasTrabajo = parseFloat(document.getElementById('horas_trabajo').value) || 0;
         const horasSueno = parseFloat(document.getElementById('horas_sueno').value) || 0;
 
@@ -82,9 +110,11 @@ document.addEventListener('DOMContentLoaded', function() {
         let mesesObjetivo = null;
         let semanasObjetivo = null;
         let preferencia = null;
+        let perdidaSemanal = 0.5; // Por defecto 0.5 kg/semana
 
         if (objetivo === 'deficit') {
             kgObjetivo = parseFloat(document.getElementById('kg_perder').value) || 5;
+            perdidaSemanal = parseFloat(document.getElementById('perdida_semanal').value) || 0.5;
             semanasObjetivo = parseInt(document.getElementById('semanas_objetivo_deficit').value) || null;
             preferencia = document.getElementById('preferencia_deficit').value;
             velocidad = preferencia; // Compatibilidad
@@ -105,13 +135,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const historialDietas = document.getElementById('historial_dietas').value;
         const cicloRegular = document.getElementById('ciclo_regular').value;
 
-        // CALCULAR TMB usando Mifflin-St Jeor
+        // CALCULAR TMB usando Mifflin-St Jeor (Fórmula más precisa)
         let tmb;
         if (sexo === 'hombre') {
             tmb = (10 * peso) + (6.25 * altura) - (5 * edad) + 5;
         } else {
             tmb = (10 * peso) + (6.25 * altura) - (5 * edad) - 161;
         }
+        
+        // Redondear TMB para evitar decimales excesivos
+        tmb = Math.round(tmb);
 
         // AJUSTES METABÓLICOS BASADOS EN DATOS AVANZADOS
         let ajusteMetabolico = 1.0;
@@ -133,39 +166,100 @@ document.addEventListener('DOMContentLoaded', function() {
         // Aplicar ajuste metabólico
         tmb = tmb * ajusteMetabolico;
 
-        // CALCULAR FACTOR DE ACTIVIDAD
-        let factorActividad = 1.2;
+        // CALCULAR FACTOR DE ACTIVIDAD (PAL - Physical Activity Level)
+        // Basado en estándares científicos de nutricionistas
+        let factorActividad = 1.2; // Base sedentario
 
-        if (diasEntreno > 0 && horasGym > 0) {
-            const horasGymSemanal = diasEntreno * horasGym;
-            if (horasGymSemanal <= 3) factorActividad += 0.1;
-            else if (horasGymSemanal <= 5) factorActividad += 0.2;
-            else if (horasGymSemanal <= 7) factorActividad += 0.3;
-            else factorActividad += 0.4;
+        // ACTIVIDAD FÍSICA ESTRUCTURADA (Gym + Cardio)
+        const horasGymSemanal = diasEntreno * horasGym;
+        const horasCardioSemanal = diasCardio * horasCardio;
+        const horasActividadTotal = horasGymSemanal + horasCardioSemanal;
+
+        // Calcular intensidad del cardio
+        let intensidadCardio = 0; // 0 = sin cardio, 1 = baja, 2 = moderada, 3 = alta
+        if (diasCardio > 0 && tipoCardio) {
+            switch(tipoCardio) {
+                case 'caminar':
+                    intensidadCardio = 1; // Baja intensidad
+                    break;
+                case 'caminar_rapido':
+                case 'bicicleta':
+                case 'eliptica':
+                    intensidadCardio = 2; // Intensidad moderada
+                    break;
+                case 'correr_ligero':
+                case 'natacion':
+                    intensidadCardio = 2.5; // Intensidad moderada-alta
+                    break;
+                case 'correr_intenso':
+                    intensidadCardio = 3; // Alta intensidad
+                    break;
+                default:
+                    intensidadCardio = 2; // Por defecto moderada
+            }
         }
 
-        if (diasCardio > 0 && horasCardio > 0) {
-            const horasCardioSemanal = diasCardio * horasCardio;
-            if (horasCardioSemanal <= 2) factorActividad += 0.05;
-            else if (horasCardioSemanal <= 4) factorActividad += 0.1;
-            else if (horasCardioSemanal <= 6) factorActividad += 0.15;
-            else factorActividad += 0.2;
-        }
-
-        if (tipoTrabajo === 'activo') {
-            if (horasTrabajo <= 4) factorActividad += 0.1;
-            else if (horasTrabajo <= 8) factorActividad += 0.15;
-            else factorActividad += 0.2;
+        // Factores PAL ajustados por intensidad del cardio
+        if (diasEntreno === 0 && diasCardio === 0) {
+            factorActividad = 1.2; // Sedentario
+        } else if (diasEntreno <= 2 && diasCardio <= 2) {
+            // Ajustar según intensidad del cardio
+            if (intensidadCardio <= 1) {
+                factorActividad = 1.375; // Ligero
+            } else if (intensidadCardio <= 2) {
+                factorActividad = 1.45; // Ligero-Moderado
+            } else {
+                factorActividad = 1.55; // Moderado
+            }
+        } else if (diasEntreno <= 4 && diasCardio <= 3) {
+            // Ajustar según intensidad del cardio
+            if (intensidadCardio <= 1) {
+                factorActividad = 1.45; // Ligero-Moderado
+            } else if (intensidadCardio <= 2) {
+                factorActividad = 1.55; // Moderado
+            } else {
+                factorActividad = 1.65; // Moderado-Alto
+            }
+        } else if (diasEntreno >= 5 || diasCardio >= 4) {
+            // Ajustar según intensidad del cardio
+            if (intensidadCardio <= 1) {
+                factorActividad = 1.6; // Moderado-Alto (tu caso: caminar 7 días)
+            } else if (intensidadCardio <= 2) {
+                factorActividad = 1.725; // Activo
+            } else {
+                factorActividad = 1.8; // Activo-Alto
+            }
         } else {
-            if (horasTrabajo > 10) factorActividad -= 0.05;
+            factorActividad = 1.55; // Por defecto moderado
         }
 
-        if (horasSueno < 6) factorActividad -= 0.05;
-        else if (horasSueno >= 8 && horasSueno <= 9) factorActividad += 0.02;
+        // AJUSTE POR INTENSIDAD Y DURACIÓN
+        if (horasActividadTotal > 10 && intensidadCardio >= 2.5) {
+            // Solo si hace mucho ejercicio de alta intensidad
+            if (factorActividad >= 1.725) {
+                factorActividad = 1.9; // Muy Activo
+            }
+        }
 
-        factorActividad = Math.max(1.2, Math.min(2.0, factorActividad));
+        // AJUSTE POR TIPO DE TRABAJO (mínimo impacto)
+        if (tipoTrabajo === 'activo') {
+            // Trabajo activo añade solo 0.05 al factor máximo
+            factorActividad = Math.min(1.9, factorActividad + 0.05);
+        }
 
-        // TDEE
+        // AJUSTE POR SUEÑO (mínimo impacto)
+        if (horasSueno < 6) {
+            factorActividad = Math.max(1.2, factorActividad - 0.05);
+        }
+
+        // Límites PAL estándar (1.2 a 1.9)
+        factorActividad = Math.max(1.2, Math.min(1.9, factorActividad));
+
+        // TDEE (Gasto Total Diario de Energía)
+        // NOTA: Factores PAL estándar basados en evidencia científica
+        // - Factores: 1.2 (Sedentario) a 1.9 (Muy Activo)
+        // - Basado en frecuencia de ejercicio, no horas acumuladas
+        // - Ajustes mínimos por trabajo y sueño
         const tdee = tmb * factorActividad;
 
         // CALCULAR SEGÚN OBJETIVO CON VALIDACIÓN
@@ -257,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-            planData = calcularPlanDeficit(tdee, peso, kgObjetivo, velocidad, diasCardio, horasCardio, validacion);
+            planData = calcularPlanDeficit(tdee, peso, kgObjetivo, perdidaSemanal, diasCardio, horasCardio, validacion);
         }
 
         else {
@@ -286,21 +380,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 500);
     });
 
-    function calcularPlanDeficit(tdee, peso, kgPerder, velocidad, diasCardio, horasCardio, validacion) {
-        // Déficit calórico según velocidad
-        let deficitDiario;
-        let kgPorSemana;
-
-        if (velocidad === 'lenta') {
-            deficitDiario = 300;
-            kgPorSemana = 0.4;
-        } else if (velocidad === 'agresiva') {
-            deficitDiario = 700;
-            kgPorSemana = 0.9;
-        } else { // moderada
-            deficitDiario = 500;
-            kgPorSemana = 0.6;
-        }
+    function calcularPlanDeficit(tdee, peso, kgPerder, perdidaSemanal, diasCardio, horasCardio, validacion) {
+        // Déficit calórico basado en pérdida semanal deseada
+        // 1 kg de grasa = ~7700 kcal, por lo que 0.5 kg/semana = 3850 kcal/semana = 550 kcal/día
+        const deficitDiario = Math.round(perdidaSemanal * 7700 / 7);
+        const kgPorSemana = perdidaSemanal;
 
         const caloriasBase = tdee - deficitDiario;
 

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Cálculos TDEE - Más Realistas</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-case { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .resultado { background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 3px; }
+        .comparacion { display: flex; gap: 20px; }
+        .antes { background: #fff3cd; }
+        .despues { background: #d1edff; }
+        .mejora { color: green; font-weight: bold; }
+        .tu-caso { border: 3px solid #007bff; background: #e3f2fd; }
+        .tu-caso h3 { color: #007bff; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test de Cálculos TDEE - Factores PAL Estándar</h1>
+    <p>Comparación entre el cálculo anterior (inflado) y el nuevo con factores PAL científicos</p>
+
+    <div style="background: #f8f9fa; padding: 15px; margin: 20px 0; border-radius: 5px;">
+        <h3>📊 Factores PAL (Physical Activity Level) Estándar</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr style="background: #e9ecef;">
+                <th style="padding: 8px; border: 1px solid #ddd;">Nivel de Actividad</th>
+                <th style="padding: 8px; border: 1px solid #ddd;">Factor PAL</th>
+                <th style="padding: 8px; border: 1px solid #ddd;">Descripción</th>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Sedentario</td>
+                <td style="padding: 8px; border: 1px solid #ddd;"><strong>1.2</strong></td>
+                <td style="padding: 8px; border: 1px solid #ddd;">Poco o nada de ejercicio</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Ligero</td>
+                <td style="padding: 8px; border: 1px solid #ddd;"><strong>1.375</strong></td>
+                <td style="padding: 8px; border: 1px solid #ddd;">Ejercicio ligero 1-3 días/semana</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Moderado</td>
+                <td style="padding: 8px; border: 1px solid #ddd;"><strong>1.55</strong></td>
+                <td style="padding: 8px; border: 1px solid #ddd;">Ejercicio moderado 3-5 días/semana</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Activo</td>
+                <td style="padding: 8px; border: 1px solid #ddd;"><strong>1.725</strong></td>
+                <td style="padding: 8px; border: 1px solid #ddd;">Ejercicio intenso 6-7 días/semana</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Muy Activo</td>
+                <td style="padding: 8px; border: 1px solid #ddd;"><strong>1.9</strong></td>
+                <td style="padding: 8px; border: 1px solid #ddd;">Ejercicio muy intenso 2 veces/día</td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="resultados"></div>
+
+    <script>
+        // Función de cálculo ANTIGUA (inflada)
+        function calcularTDEEAntiguo(edad, sexo, peso, altura, diasEntreno, horasGym, diasCardio, horasCardio, tipoTrabajo, horasTrabajo, horasSueno, tipoCardio = '') {
+            // TMB
+            let tmb;
+            if (sexo === 'hombre') {
+                tmb = (10 * peso) + (6.25 * altura) - (5 * edad) + 5;
+            } else {
+                tmb = (10 * peso) + (6.25 * altura) - (5 * edad) - 161;
+            }
+
+            // Factor de actividad ANTIGUO (inflado)
+            let factorActividad = 1.2;
+
+            if (diasEntreno > 0 && horasGym > 0) {
+                const horasGymSemanal = diasEntreno * horasGym;
+                if (horasGymSemanal <= 3) factorActividad += 0.1;
+                else if (horasGymSemanal <= 5) factorActividad += 0.2;
+                else if (horasGymSemanal <= 7) factorActividad += 0.3;
+                else factorActividad += 0.4;
+            }
+
+            if (diasCardio > 0 && horasCardio > 0) {
+                const horasCardioSemanal = diasCardio * horasCardio;
+                if (horasCardioSemanal <= 2) factorActividad += 0.05;
+                else if (horasCardioSemanal <= 4) factorActividad += 0.1;
+                else if (horasCardioSemanal <= 6) factorActividad += 0.15;
+                else factorActividad += 0.2;
+            }
+
+            if (tipoTrabajo === 'activo') {
+                if (horasTrabajo <= 4) factorActividad += 0.1;
+                else if (horasTrabajo <= 8) factorActividad += 0.15;
+                else factorActividad += 0.2;
+            } else {
+                if (horasTrabajo > 10) factorActividad -= 0.05;
+            }
+
+            if (horasSueno < 6) factorActividad -= 0.05;
+            else if (horasSueno >= 8 && horasSueno <= 9) factorActividad += 0.02;
+
+            factorActividad = Math.max(1.2, Math.min(2.0, factorActividad));
+
+            return {
+                tmb: Math.round(tmb),
+                factorActividad: factorActividad,
+                tdee: Math.round(tmb * factorActividad)
+            };
+        }
+
+        // Función de cálculo NUEVA (realista)
+        function calcularTDEENuevo(edad, sexo, peso, altura, diasEntreno, horasGym, diasCardio, horasCardio, tipoTrabajo, horasTrabajo, horasSueno, tipoCardio = '') {
+            // TMB
+            let tmb;
+            if (sexo === 'hombre') {
+                tmb = (10 * peso) + (6.25 * altura) - (5 * edad) + 5;
+            } else {
+                tmb = (10 * peso) + (6.25 * altura) - (5 * edad) - 161;
+            }
+            tmb = Math.round(tmb);
+
+            // Factor de actividad NUEVO (PAL estándar)
+            let factorActividad = 1.2;
+
+            const horasGymSemanal = diasEntreno * horasGym;
+            const horasCardioSemanal = diasCardio * horasCardio;
+            const horasActividadTotal = horasGymSemanal + horasCardioSemanal;
+
+            // Calcular intensidad del cardio
+            let intensidadCardio = 0;
+            if (diasCardio > 0 && tipoCardio) {
+                switch(tipoCardio) {
+                    case 'caminar':
+                        intensidadCardio = 1; // Baja intensidad
+                        break;
+                    case 'caminar_rapido':
+                    case 'bicicleta':
+                    case 'eliptica':
+                        intensidadCardio = 2; // Intensidad moderada
+                        break;
+                    case 'correr_ligero':
+                    case 'natacion':
+                        intensidadCardio = 2.5; // Intensidad moderada-alta
+                        break;
+                    case 'correr_intenso':
+                        intensidadCardio = 3; // Alta intensidad
+                        break;
+                    default:
+                        intensidadCardio = 2; // Por defecto moderada
+                }
+            }
+
+            // Factores PAL ajustados por intensidad del cardio
+            if (diasEntreno === 0 && diasCardio === 0) {
+                factorActividad = 1.2; // Sedentario
+            } else if (diasEntreno <= 2 && diasCardio <= 2) {
+                if (intensidadCardio <= 1) {
+                    factorActividad = 1.375; // Ligero
+                } else if (intensidadCardio <= 2) {
+                    factorActividad = 1.45; // Ligero-Moderado
+                } else {
+                    factorActividad = 1.55; // Moderado
+                }
+            } else if (diasEntreno <= 4 && diasCardio <= 3) {
+                if (intensidadCardio <= 1) {
+                    factorActividad = 1.45; // Ligero-Moderado
+                } else if (intensidadCardio <= 2) {
+                    factorActividad = 1.55; // Moderado
+                } else {
+                    factorActividad = 1.65; // Moderado-Alto
+                }
+            } else if (diasEntreno >= 5 || diasCardio >= 4) {
+                if (intensidadCardio <= 1) {
+                    factorActividad = 1.6; // Moderado-Alto (caminar 7 días)
+                } else if (intensidadCardio <= 2) {
+                    factorActividad = 1.725; // Activo
+                } else {
+                    factorActividad = 1.8; // Activo-Alto
+                }
+            } else {
+                factorActividad = 1.55; // Por defecto moderado
+            }
+
+            // Ajuste por intensidad y duración
+            if (horasActividadTotal > 10 && intensidadCardio >= 2.5) {
+                if (factorActividad >= 1.725) {
+                    factorActividad = 1.9; // Muy Activo
+                }
+            }
+
+            if (tipoTrabajo === 'activo') {
+                factorActividad = Math.min(1.9, factorActividad + 0.05);
+            }
+
+            if (horasSueno < 6) {
+                factorActividad = Math.max(1.2, factorActividad - 0.05);
+            }
+
+            factorActividad = Math.max(1.2, Math.min(1.9, factorActividad));
+
+            return {
+                tmb: tmb,
+                factorActividad: factorActividad,
+                tdee: Math.round(tmb * factorActividad)
+            };
+        }
+
+        // Casos de prueba
+        const casosPrueba = [
+            {
+                nombre: "👨 Hombre Sedentario",
+                datos: { edad: 30, sexo: 'hombre', peso: 75, altura: 175, diasEntreno: 0, horasGym: 0, diasCardio: 0, horasCardio: 0, tipoTrabajo: 'sedentario', horasTrabajo: 8, horasSueno: 8 }
+            },
+            {
+                nombre: "👨 Hombre Moderadamente Activo",
+                datos: { edad: 25, sexo: 'hombre', peso: 70, altura: 175, diasEntreno: 3, horasGym: 1.5, diasCardio: 2, horasCardio: 0.5, tipoTrabajo: 'sedentario', horasTrabajo: 8, horasSueno: 7 }
+            },
+            {
+                nombre: "👨 Hombre Muy Activo",
+                datos: { edad: 28, sexo: 'hombre', peso: 80, altura: 180, diasEntreno: 5, horasGym: 2, diasCardio: 3, horasCardio: 1, tipoTrabajo: 'activo', horasTrabajo: 8, horasSueno: 8 }
+            },
+            {
+                nombre: "👩 Mujer Sedentaria",
+                datos: { edad: 35, sexo: 'mujer', peso: 60, altura: 165, diasEntreno: 0, horasGym: 0, diasCardio: 0, horasCardio: 0, tipoTrabajo: 'sedentario', horasTrabajo: 8, horasSueno: 8 }
+            },
+            {
+                nombre: "👩 Mujer Activa",
+                datos: { edad: 27, sexo: 'mujer', peso: 65, altura: 170, diasEntreno: 4, horasGym: 1.5, diasCardio: 2, horasCardio: 0.5, tipoTrabajo: 'sedentario', horasTrabajo: 8, horasSueno: 7 }
+            },
+            {
+                nombre: "💪 TU CASO - Hombre Moderado-Alto (Caminar)",
+                datos: { edad: 24, sexo: 'hombre', peso: 83, altura: 186, diasEntreno: 5, horasGym: 1.5, diasCardio: 7, horasCardio: 0.5, tipoTrabajo: 'sedentario', horasTrabajo: 8, horasSueno: 8, tipoCardio: 'caminar' }
+            },
+            {
+                nombre: "🏃 Hombre Muy Activo (Correr)",
+                datos: { edad: 24, sexo: 'hombre', peso: 83, altura: 186, diasEntreno: 5, horasGym: 1.5, diasCardio: 7, horasCardio: 0.5, tipoTrabajo: 'sedentario', horasTrabajo: 8, horasSueno: 8, tipoCardio: 'correr_intenso' }
+            }
+        ];
+
+        // Generar resultados
+        let html = '';
+        casosPrueba.forEach(caso => {
+            const antiguo = calcularTDEEAntiguo(...Object.values(caso.datos));
+            const nuevo = calcularTDEENuevo(...Object.values(caso.datos));
+            const diferencia = antiguo.tdee - nuevo.tdee;
+            const porcentajeReduccion = Math.round((diferencia / antiguo.tdee) * 100);
+
+            const esTuCaso = caso.nombre.includes('TU CASO');
+            html += `
+                <div class="test-case ${esTuCaso ? 'tu-caso' : ''}">
+                    <h3>${caso.nombre}</h3>
+                    <p><strong>Datos:</strong> ${caso.datos.edad} años, ${caso.datos.peso}kg, ${caso.datos.altura}cm, ${caso.datos.diasEntreno} días gym, ${caso.datos.diasCardio} días cardio${caso.datos.tipoCardio ? ` (${caso.datos.tipoCardio})` : ''}, trabajo ${caso.datos.tipoTrabajo}</p>
+                    
+                    <div class="comparacion">
+                        <div class="resultado antes">
+                            <h4>❌ Cálculo Anterior (Inflado)</h4>
+                            <p><strong>TMB:</strong> ${antiguo.tmb} kcal</p>
+                            <p><strong>Factor Actividad:</strong> ${antiguo.factorActividad.toFixed(2)}</p>
+                            <p><strong>TDEE:</strong> ${antiguo.tdee} kcal/día</p>
+                        </div>
+                        
+                        <div class="resultado despues">
+                            <h4>✅ Cálculo Nuevo (Realista)</h4>
+                            <p><strong>TMB:</strong> ${nuevo.tmb} kcal</p>
+                            <p><strong>Factor Actividad:</strong> ${nuevo.factorActividad.toFixed(2)}</p>
+                            <p><strong>TDEE:</strong> ${nuevo.tdee} kcal/día</p>
+                        </div>
+                    </div>
+                    
+                    <div class="resultado">
+                        <h4 class="mejora">📊 Mejora: -${diferencia} kcal/día (${porcentajeReduccion}% más realista)</h4>
+                        <p>El nuevo cálculo es más conservador y realista, evitando sobreestimar las necesidades calóricas.</p>
+                        ${esTuCaso ? `
+                        <div style="background: #fff3cd; padding: 10px; margin: 10px 0; border-radius: 5px;">
+                            <h5>🎯 Análisis de tu caso específico:</h5>
+                            <p><strong>Horas totales de actividad:</strong> ${caso.datos.diasEntreno * caso.datos.horasGym + caso.datos.diasCardio * caso.datos.horasCardio} horas/semana</p>
+                            <p><strong>Factor de actividad:</strong> ${nuevo.factorActividad.toFixed(2)} (${nuevo.factorActividad >= 1.65 ? 'Muy Activo' : nuevo.factorActividad >= 1.55 ? 'Activo' : 'Moderado'})</p>
+                            <p><strong>Recomendación:</strong> Con ${nuevo.tdee} kcal/día tendrás un buen punto de partida para tus objetivos.</p>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        });
+
+        document.getElementById('resultados').innerHTML = html;
+    </script>
+</body>
+</html>
