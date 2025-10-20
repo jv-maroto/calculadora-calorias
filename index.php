@@ -139,6 +139,22 @@
                                 </div>
                             </div>
 
+                            <div class="mb-3" id="campo-tipo-cardio" style="display: none;">
+                                <label for="tipo_cardio" class="form-label">Tipo de cardio</label>
+                                <select class="form-select" id="tipo_cardio">
+                                    <option value="">Seleccionar tipo...</option>
+                                    <option value="caminar">🚶 Caminar (baja intensidad)</option>
+                                    <option value="caminar_rapido">🚶‍♂️ Caminar rápido (intensidad moderada)</option>
+                                    <option value="correr_ligero">🏃 Correr ligero (intensidad moderada-alta)</option>
+                                    <option value="correr_intenso">🏃‍♂️ Correr intenso (alta intensidad)</option>
+                                    <option value="bicicleta">🚴 Bicicleta (intensidad moderada)</option>
+                                    <option value="natacion">🏊 Natación (intensidad moderada-alta)</option>
+                                    <option value="eliptica">🏃‍♀️ Elíptica (intensidad moderada)</option>
+                                    <option value="otro">💪 Otro tipo de cardio</option>
+                                </select>
+                                <small class="text-muted">El tipo de cardio afecta el cálculo del factor de actividad</small>
+                            </div>
+
                             <!-- Estilo de Vida -->
                             <div class="section-title">
                                 <h5>🏢 Estilo de Vida</h5>
