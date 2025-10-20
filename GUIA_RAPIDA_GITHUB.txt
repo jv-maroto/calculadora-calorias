@@ -1,0 +1,130 @@
+═══════════════════════════════════════════════════════════════
+  GUÍA RÁPIDA: SUBIR A GITHUB EN 3 PASOS
+═══════════════════════════════════════════════════════════════
+
+📋 REQUISITOS:
+   ✓ Git instalado (git --version)
+   ✓ Cuenta de GitHub
+
+═══════════════════════════════════════════════════════════════
+  OPCIÓN 1: MÉTODO AUTOMÁTICO (RECOMENDADO)
+═══════════════════════════════════════════════════════════════
+
+1️⃣ Crear repositorio en GitHub:
+   - Ve a: https://github.com/new
+   - Nombre: calculadora-calorias (o el que quieras)
+   - Descripción: Sistema avanzado de cálculo de calorías
+   - Public
+   - NO marcar "Add a README"
+   - Click "Create repository"
+
+2️⃣ Ejecutar script automático:
+   - Haz doble clic en: subir_github.bat
+   - Introduce tu usuario de GitHub
+   - Introduce el nombre del repo
+   - ¡Listo!
+
+═══════════════════════════════════════════════════════════════
+  OPCIÓN 2: MÉTODO MANUAL (Línea de comandos)
+═══════════════════════════════════════════════════════════════
+
+1️⃣ Abrir CMD en esta carpeta:
+   C:\xampp\htdocs\Calculator
+
+2️⃣ Ejecutar comandos:
+
+   git remote add origin https://github.com/TU_USUARIO/TU_REPO.git
+   git push -u origin master
+
+   (Reemplaza TU_USUARIO y TU_REPO con los tuyos)
+
+3️⃣ Si te pide contraseña:
+   - Usuario: tu usuario de GitHub
+   - Password: Personal Access Token (NO tu contraseña)
+
+   Crear token en: https://github.com/settings/tokens
+   - Generate new token (classic)
+   - Marca solo "repo"
+   - Copia el token y úsalo como contraseña
+
+═══════════════════════════════════════════════════════════════
+  ¿QUÉ ARCHIVOS SE VAN A SUBIR?
+═══════════════════════════════════════════════════════════════
+
+✅ INCLUIDOS (se suben):
+   - index.php (calculadora principal)
+   - seguimiento.php (ajuste de calorías)
+   - script.js (lógica principal)
+   - seguimiento.js (lógica de ajuste)
+   - limites_reales.js (validación científica)
+   - database.sql (estructura de base de datos)
+   - guardar.php (API para guardar)
+   - generar_pdf.php (generador PDF)
+   - connection.example.php (ejemplo de conexión)
+   - styles.css (estilos)
+   - README.md (documentación)
+   - .gitignore (configuración git)
+
+❌ EXCLUIDOS (NO se suben por seguridad):
+   - connection.php (tu configuración local)
+   - debug_guardar.log (logs temporales)
+   - test_guardar.php (archivos de prueba)
+
+═══════════════════════════════════════════════════════════════
+  VERIFICAR QUE SE SUBIÓ CORRECTAMENTE
+═══════════════════════════════════════════════════════════════
+
+1. Ve a: https://github.com/TU_USUARIO/TU_REPO
+2. Deberías ver:
+   ✓ Todos los archivos PHP y JS
+   ✓ El README.md mostrándose automáticamente
+   ✓ 15 archivos aproximadamente
+
+═══════════════════════════════════════════════════════════════
+  COMANDOS PARA FUTURAS ACTUALIZACIONES
+═══════════════════════════════════════════════════════════════
+
+Cuando hagas cambios:
+
+   git add .
+   git commit -m "Descripción de los cambios"
+   git push
+
+═══════════════════════════════════════════════════════════════
+  PROBLEMAS COMUNES
+═══════════════════════════════════════════════════════════════
+
+❌ "Permission denied (publickey)"
+   → Usa HTTPS, no SSH
+   → URL correcta: https://github.com/usuario/repo.git
+
+❌ "Authentication failed"
+   → Usa Personal Access Token, no contraseña
+   → Crear en: https://github.com/settings/tokens
+
+❌ "Repository not found"
+   → Verifica que creaste el repositorio en GitHub primero
+   → Verifica el nombre del usuario y repo
+
+═══════════════════════════════════════════════════════════════
+  ¿NECESITAS AYUDA?
+═══════════════════════════════════════════════════════════════
+
+📖 Lee: INSTRUCCIONES_GITHUB.md (guía completa paso a paso)
+🌐 Documentación: https://docs.github.com/es
+💬 GitHub Support: https://support.github.com/
+
+═══════════════════════════════════════════════════════════════
+  ESTADO ACTUAL
+═══════════════════════════════════════════════════════════════
+
+✅ Repositorio Git inicializado
+✅ Primer commit creado
+✅ Listo para subir a GitHub
+
+Solo falta:
+⏳ Crear repositorio en GitHub
+⏳ Ejecutar: git remote add origin ...
+⏳ Ejecutar: git push -u origin master
+
+═══════════════════════════════════════════════════════════════

@@ -1,0 +1,89 @@
+═══════════════════════════════════════════════════════════════
+  EJECUTA ESTOS COMANDOS AHORA (COPIAR Y PEGAR)
+═══════════════════════════════════════════════════════════════
+
+PASO 1: Crear repositorio en GitHub
+────────────────────────────────────────────────────────────────
+1. Abre este enlace en tu navegador:
+   https://github.com/new
+
+2. Rellena:
+   Repository name: calculadora-calorias
+   Description: Sistema avanzado de cálculo de calorías con validación científica
+   Public (marcado)
+   ❌ NO marcar "Add a README file"
+   ❌ NO marcar ".gitignore"
+   ❌ NO marcar "license"
+
+3. Click en "Create repository"
+
+
+PASO 2: Copiar tu nombre de usuario
+────────────────────────────────────────────────────────────────
+Después de crear el repo, verás una URL como:
+https://github.com/TU_USUARIO/calculadora-calorias
+
+Copia TU_USUARIO (tu nombre de usuario de GitHub)
+
+
+PASO 3: Ejecutar comandos en CMD
+────────────────────────────────────────────────────────────────
+Abre CMD en esta carpeta (C:\xampp\htdocs\Calculator) y ejecuta:
+
+Reemplaza TU_USUARIO con tu usuario de GitHub real:
+
+git remote add origin https://github.com/TU_USUARIO/calculadora-calorias.git
+git branch -M master
+git push -u origin master
+
+
+EJEMPLO (si tu usuario es "juanperez"):
+────────────────────────────────────────────────────────────────
+git remote add origin https://github.com/juanperez/calculadora-calorias.git
+git branch -M master
+git push -u origin master
+
+
+SI TE PIDE AUTENTICACIÓN:
+────────────────────────────────────────────────────────────────
+Username: tu_usuario_github
+Password: [Personal Access Token - NO tu contraseña]
+
+Para crear el token:
+1. Ve a: https://github.com/settings/tokens
+2. "Generate new token (classic)"
+3. Expiration: 90 days
+4. Marca solo: repo (todas las opciones de repo)
+5. Click "Generate token"
+6. COPIA EL TOKEN (ghp_xxxxxxxxxxxx)
+7. Pégalo como contraseña en CMD
+
+
+ALTERNATIVA: Usar GitHub Desktop
+────────────────────────────────────────────────────────────────
+Si no quieres usar CMD:
+
+1. Descarga GitHub Desktop: https://desktop.github.com/
+2. Instala e inicia sesión
+3. File → Add Local Repository
+4. Selecciona: C:\xampp\htdocs\Calculator
+5. Click "Publish repository"
+6. ¡Listo!
+
+
+═══════════════════════════════════════════════════════════════
+  DESPUÉS DE SUBIR
+═══════════════════════════════════════════════════════════════
+
+✅ Verifica que se subió:
+   https://github.com/TU_USUARIO/calculadora-calorias
+
+✅ Deberías ver:
+   - README.md mostrándose automáticamente
+   - 15 archivos aproximadamente
+   - Toda la documentación
+
+✅ Comparte el enlace:
+   https://github.com/TU_USUARIO/calculadora-calorias
+
+═══════════════════════════════════════════════════════════════
