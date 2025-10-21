@@ -1,3 +1,15 @@
+<?php
+session_start();
+
+// Verificar si está logueado
+if (!isset($_SESSION['usuario_nombre']) || !isset($_SESSION['usuario_apellidos'])) {
+    header('Location: login.php');
+    exit;
+}
+
+$nombre = $_SESSION['usuario_nombre'];
+$apellidos = $_SESSION['usuario_apellidos'];
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -8,14 +20,22 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">💪 Calculadora de Calorías</a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="seguimiento.php">📊 Ajuste de Calorías (Progreso Real)</a>
+            <a class="navbar-brand" href="index.php">💪 Calculadora de Calorías</a>
+            <span class="navbar-text text-white me-3">
+                👤 <?php echo htmlspecialchars($nombre . ' ' . $apellidos); ?>
+            </span>
+            <div class="navbar-nav ms-auto flex-row gap-3">
+                <a class="nav-link" href="grafica.php" title="Ver Gráfica">📈</a>
+                <a class="nav-link" href="introducir_peso.php" title="Introducir Peso">⚖️</a>
+                <a class="nav-link" href="seguimiento.php" title="Ajuste de Calorías">📊</a>
+                <a class="nav-link" href="logout.php" title="Cerrar Sesión">🚪</a>
             </div>
         </div>
     </nav>
+    <input type="hidden" id="usuario_nombre" value="<?php echo htmlspecialchars($nombre); ?>">
+    <input type="hidden" id="usuario_apellidos" value="<?php echo htmlspecialchars($apellidos); ?>">
 
     <div class="container-fluid py-4">
         <div class="row">
@@ -78,14 +98,21 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="somatotipo" class="form-label">Tipo corporal</label>
-                                <select class="form-select" id="somatotipo">
-                                    <option value="">No especificar</option>
-                                    <option value="ectomorfo">Ectomorfo (Delgado, cuesta ganar peso)</option>
-                                    <option value="mesomorfo">Mesomorfo (Atlético, gana músculo fácil)</option>
-                                    <option value="endomorfo">Endomorfo (Robusto, gana peso fácil)</option>
-                                </select>
-                                <small class="text-muted">Tu tendencia natural de complexión</small>
+                                <label for="circunferencia_cintura" class="form-label">Circunferencia de cintura (cm) - Opcional</label>
+                                <input type="number" class="form-control" id="circunferencia_cintura" min="50" max="200" step="0.1" placeholder="A nivel del ombligo">
+                                <small class="text-muted">Para estimación de grasa corporal (Método Navy)</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="circunferencia_cuello" class="form-label">Circunferencia de cuello (cm) - Opcional</label>
+                                <input type="number" class="form-control" id="circunferencia_cuello" min="20" max="60" step="0.1" placeholder="Debajo de la nuez">
+                                <small class="text-muted">Para estimación de grasa corporal (Método Navy)</small>
+                            </div>
+
+                            <div class="mb-3" id="campo-circunferencia-cadera" style="display: none;">
+                                <label for="circunferencia_cadera" class="form-label">Circunferencia de cadera (cm) - Opcional</label>
+                                <input type="number" class="form-control" id="circunferencia_cadera" min="60" max="200" step="0.1" placeholder="En la parte más ancha">
+                                <small class="text-muted">Solo para mujeres - estimación de grasa corporal</small>
                             </div>
 
                             <div class="mb-3">
@@ -196,6 +223,21 @@
 
                             <div id="campos-deficit" style="display: none;">
                                 <div class="mb-3">
+                                    <label for="vengo_de_volumen" class="form-label">¿Vienes de una etapa de volumen?</label>
+                                    <select class="form-select" id="vengo_de_volumen">
+                                        <option value="no" selected>No, vengo de mantenimiento o déficit</option>
+                                        <option value="si">Sí, vengo de volumen (metabolismo acelerado)</option>
+                                    </select>
+                                    <small class="text-muted">Esto afecta tu TDEE y límites de déficit</small>
+                                </div>
+
+                                <div class="mb-3" id="campo-calorias-volumen" style="display: none;">
+                                    <label for="calorias_volumen" class="form-label">¿De cuántas calorías vienes?</label>
+                                    <input type="number" class="form-control" id="calorias_volumen" min="1500" max="6000" step="50" placeholder="Ej: 3500">
+                                    <small class="text-muted">Las calorías que consumías en volumen</small>
+                                </div>
+
+                                <div class="mb-3">
                                     <label for="kg_perder" class="form-label">¿Cuántos kg quieres perder?</label>
                                     <input type="number" class="form-control" id="kg_perder" name="kg_perder" min="1" max="50" step="0.5" placeholder="Ej: 10">
                                 </div>
@@ -207,10 +249,12 @@
                                 <div class="mb-3">
                                     <label for="preferencia_deficit" class="form-label">Preferencia</label>
                                     <select class="form-select" id="preferencia_deficit">
-                                        <option value="saludable" selected>Saludable y sostenible</option>
-                                        <option value="rapido">Lo más rápido posible</option>
                                         <option value="conservador">Muy conservador (preservar músculo al máximo)</option>
+                                        <option value="saludable" selected>Saludable y sostenible</option>
+                                        <option value="rapido">Rápido (requiere disciplina)</option>
+                                        <option value="agresivo">⚠️ Agresivo (bajo mi responsabilidad)</option>
                                     </select>
+                                    <small class="text-muted">La opción agresiva puede afectar músculo y salud</small>
                                 </div>
                             </div>
 
@@ -224,27 +268,32 @@
                                     </select>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="kg_ganar" class="form-label">¿Cuántos kg de MÚSCULO quieres ganar?</label>
-                                    <input type="number" class="form-control" id="kg_ganar" name="kg_ganar" min="1" max="30" step="0.5" placeholder="Ej: 10">
-                                    <small class="text-muted">⚠️ Solo músculo, no peso total (ganarás más por la grasa inevitable)</small>
+                                    <label for="meses_volumen" class="form-label">¿Cuántos meses de volumen?</label>
+                                    <input type="number" class="form-control" id="meses_volumen" name="meses_volumen" min="1" max="24" value="6" placeholder="Ej: 6">
+                                    <small class="text-muted">💡 Los profesionales planifican por tiempo, no por kg exactos de músculo</small>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="meses_objetivo_volumen" class="form-label">¿En cuántos meses? (opcional)</label>
-                                    <input type="number" class="form-control" id="meses_objetivo_volumen" min="1" max="60" placeholder="Deja vacío para cálculo automático">
-                                    <small class="text-muted">Si tienes una fecha límite (ej: para verano)</small>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="preferencia_volumen" class="form-label">Preferencia</label>
+                                    <label for="preferencia_volumen" class="form-label">Tipo de volumen</label>
                                     <select class="form-select" id="preferencia_volumen">
-                                        <option value="optimo" selected>Lo más realista y saludable</option>
-                                        <option value="rapido">Lo más rápido posible</option>
-                                        <option value="limpio">Lo más limpio posible (menos grasa)</option>
+                                        <option value="limpio" selected>Lean Bulk - Limpio (menos grasa, ~75% músculo / 25% grasa)</option>
+                                        <option value="optimo">Bulk Óptimo - Balanceado (~70% músculo / 30% grasa)</option>
+                                        <option value="rapido">Bulk Agresivo - Rápido (~65% músculo / 35% grasa)</option>
                                     </select>
+                                    <small class="text-muted">El ratio músculo/grasa depende del superávit calórico</small>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="incluir_minicuts" class="form-label">¿Incluir mini-cuts?</label>
+                                    <select class="form-select" id="incluir_minicuts">
+                                        <option value="si" selected>Sí, incluir mini-cuts (controlar grasa acumulada)</option>
+                                        <option value="no">No, solo volumen continuo</option>
+                                    </select>
+                                    <small class="text-muted">Mini-cuts = 2-3 semanas de déficit para perder grasa acumulada sin perder músculo</small>
                                 </div>
                             </div>
 
                             <div class="d-grid gap-2">
                                 <button type="submit" class="btn btn-primary btn-lg">Calcular Plan Personalizado</button>
+                                <button type="button" class="btn btn-info" id="btn-cargar" onclick="mostrarPlanesGuardados()">📂 Cargar Plan Anterior</button>
                                 <button type="button" class="btn btn-success" id="btn-guardar" style="display: none;">💾 Guardar Plan</button>
                                 <button type="button" class="btn btn-danger" id="btn-pdf" style="display: none;" disabled>📄 Descargar PDF</button>
                             </div>

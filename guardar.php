@@ -21,13 +21,34 @@ try {
     $res = $data['resultados'] ?? [];
     $plan = $res['plan'] ?? [];
 
+    // Identificación del usuario (obligatorios)
+    $nombre = trim($form['nombre'] ?? '');
+    $apellidos = trim($form['apellidos'] ?? '');
+
+    if (empty($nombre) || empty($apellidos)) {
+        throw new Exception('Debes proporcionar nombre y apellidos');
+    }
+
     // Datos básicos (obligatorios)
     $edad = intval($form['edad'] ?? 0);
     $sexo = $form['sexo'] ?? 'hombre';
     $peso = floatval($form['peso'] ?? 0);
     $altura = intval($form['altura'] ?? 0);
+    $anos_entrenando = !empty($form['anos_entrenando']) ? $form['anos_entrenando'] : null;
+    $historial_dietas = !empty($form['historial_dietas']) ? $form['historial_dietas'] : null;
     $tipo_trabajo = $form['tipo_trabajo'] ?? 'sedentario';
-    $objetivo = $form['objetivo'] ?? 'mantenimiento';
+
+    // Obtener objetivo del formulario o de los resultados
+    $objetivo = $form['objetivo'] ?? null;
+    if (!$objetivo && isset($res['objetivo'])) {
+        $objetivo = $res['objetivo'];
+    }
+    if (!$objetivo && isset($res['plan']['tipo'])) {
+        $objetivo = $res['plan']['tipo'];
+    }
+    if (!$objetivo) {
+        $objetivo = 'mantenimiento';
+    }
 
     if ($edad == 0 || $peso == 0 || $altura == 0) {
         throw new Exception('Faltan datos básicos obligatorios');
@@ -70,11 +91,12 @@ try {
 
     // INSERT con manejo de NULL
     $sql = "INSERT INTO planes_nutricionales
-        (edad, sexo, peso, altura, dias_entreno, horas_gym, dias_cardio, horas_cardio,
+        (nombre, apellidos, edad, sexo, peso, altura, anos_entrenando, historial_dietas,
+         dias_entreno, horas_gym, dias_cardio, horas_cardio,
          tipo_trabajo, horas_trabajo, horas_sueno, objetivo, kg_objetivo, velocidad, nivel_gym,
          tmb, tdee, calorias_plan, duracion_semanas, duracion_meses,
          proteina_gramos, grasa_gramos, carbohidratos_gramos, plan_json)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmt = $conn->prepare($sql);
 
@@ -82,33 +104,46 @@ try {
         throw new Exception("Error preparando query: " . $conn->error);
     }
 
-    // Bind con tipos correctos
+    // Convertir NULL a valores por defecto para bind_param
+    $anos_entrenando = $anos_entrenando ?? '';
+    $historial_dietas = $historial_dietas ?? '';
+    $velocidad = $velocidad ?? '';
+    $nivel_gym = $nivel_gym ?? '';
+    $duracion_semanas = $duracion_semanas ?? 0;
+    $duracion_meses = $duracion_meses ?? 0;
+
+    // Bind con tipos correctos (28 parámetros)
+    // Cadena: s s i s d i s s i d i d s d d s d s s d d d i i i i i s
     $stmt->bind_param(
-        "isdiididsddsdssdddiiiis",
-        $edad,              // i
-        $sexo,              // s
-        $peso,              // d
-        $altura,            // i
-        $dias_entreno,      // i
-        $horas_gym,         // d
-        $dias_cardio,       // i
-        $horas_cardio,      // d
-        $tipo_trabajo,      // s
-        $horas_trabajo,     // d
-        $horas_sueno,       // d
-        $objetivo,          // s
-        $kg_objetivo,       // d
-        $velocidad,         // s (puede ser NULL)
-        $nivel_gym,         // s (puede ser NULL)
-        $tmb,               // d
-        $tdee,              // d
-        $calorias_plan,     // d
-        $duracion_semanas,  // i (puede ser NULL)
-        $duracion_meses,    // i (puede ser NULL)
-        $proteina,          // i
-        $grasa,             // i
-        $carbohidratos,     // i
-        $plan_json          // s
+        "ssisdissididsddsdssdddiiiiis",
+        $nombre,            // 1  - s
+        $apellidos,         // 2  - s
+        $edad,              // 3  - i
+        $sexo,              // 4  - s
+        $peso,              // 5  - d
+        $altura,            // 6  - i
+        $anos_entrenando,   // 7  - s
+        $historial_dietas,  // 8  - s
+        $dias_entreno,      // 9  - i
+        $horas_gym,         // 10 - d
+        $dias_cardio,       // 11 - i
+        $horas_cardio,      // 12 - d
+        $tipo_trabajo,      // 13 - s
+        $horas_trabajo,     // 14 - d
+        $horas_sueno,       // 15 - d
+        $objetivo,          // 16 - s
+        $kg_objetivo,       // 17 - d
+        $velocidad,         // 18 - s
+        $nivel_gym,         // 19 - s
+        $tmb,               // 20 - d
+        $tdee,              // 21 - d
+        $calorias_plan,     // 22 - d
+        $duracion_semanas,  // 23 - i
+        $duracion_meses,    // 24 - i
+        $proteina,          // 25 - i
+        $grasa,             // 26 - i
+        $carbohidratos,     // 27 - i
+        $plan_json          // 28 - s
     );
 
     if (!$stmt->execute()) {

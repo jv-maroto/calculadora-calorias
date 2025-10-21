@@ -159,13 +159,333 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-    .card-body {
-        padding: 1.5rem;
+@media (max-width: 992px) {
+    /* Desactivar sticky en tablets y móviles */
+    .sticky-top {
+        position: relative !important;
+        top: auto !important;
     }
 
-    .section-title h4 {
+    .sticky-top .card-body {
+        max-height: none;
+        overflow-y: visible;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+
+    .container-fluid {
+        padding-left: 8px;
+        padding-right: 8px;
+        padding-top: 0.5rem !important;
+    }
+
+    .card-body {
+        padding: 0.75rem;
+    }
+
+    .card-header {
+        padding: 0.75rem;
+    }
+
+    .card-header h3 {
         font-size: 1.1rem;
+        margin-bottom: 0.25rem !important;
+    }
+
+    .card-header h4 {
+        font-size: 1rem;
+        margin-bottom: 0 !important;
+    }
+
+    .card-header p,
+    .card-header .small {
+        font-size: 0.75rem;
+    }
+
+    .section-title {
+        margin-top: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .section-title h5 {
+        font-size: 0.95rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .section-title small {
+        font-size: 0.75rem;
+    }
+
+    /* Navbar más compacto y responsive */
+    .navbar {
+        padding: 0.5rem 0.75rem;
+    }
+
+    .navbar-brand {
+        font-size: 0.9rem;
+        padding: 0;
+    }
+
+    .navbar-nav {
+        gap: 0.75rem;
+    }
+
+    .nav-link {
+        font-size: 1.8rem;
+        padding: 0.25rem !important;
+        line-height: 1;
+    }
+
+    /* Botones más pequeños en móvil */
+    .btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    .btn-lg {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    /* Formularios más compactos */
+    .form-control,
+    .form-select {
+        padding: 0.45rem 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .form-label {
+        font-size: 0.85rem;
+        margin-bottom: 0.25rem;
+        font-weight: 600;
+    }
+
+    .form-text,
+    small {
+        font-size: 0.75rem;
+        line-height: 1.3;
+    }
+
+    /* Tarjetas de resultados */
+    .card-title {
+        font-size: 1.1rem;
+    }
+
+    .card.text-white .card-header {
+        font-size: 0.8rem;
+        padding: 0.5rem;
+    }
+
+    .card.text-white .card-body {
+        padding: 0.6rem;
+    }
+
+    .card.text-white .card-title {
+        font-size: 1rem;
+    }
+
+    .card.text-white .card-text {
+        font-size: 0.75rem;
+    }
+
+    /* Tablas responsive */
+    .table {
+        font-size: 0.8rem;
+    }
+
+    .table td,
+    .table th {
+        padding: 0.4rem;
+    }
+
+    .table-responsive {
+        border: none;
+    }
+
+    /* Gráficas */
+    canvas {
+        max-height: 200px !important;
+    }
+
+    /* Botones de grupo */
+    .btn-group .btn {
+        font-size: 0.7rem;
+        padding: 0.35rem 0.5rem;
+    }
+
+    /* Alertas más compactas */
+    .alert {
+        padding: 0.6rem;
+        font-size: 0.8rem;
+    }
+
+    .alert h3,
+    .alert h4,
+    .alert h5 {
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .alert strong {
+        font-size: 0.8rem;
+    }
+
+    /* Espaciado entre filas */
+    .row {
+        margin-left: -4px;
+        margin-right: -4px;
+    }
+
+    .row > * {
+        padding-left: 4px;
+        padding-right: 4px;
+    }
+
+    /* Márgenes más pequeños */
+    .mb-3 {
+        margin-bottom: 0.6rem !important;
+    }
+
+    .mb-4 {
+        margin-bottom: 0.75rem !important;
+    }
+
+    .mt-3,
+    .my-3 {
+        margin-top: 0.6rem !important;
+    }
+
+    .mt-4 {
+        margin-top: 0.75rem !important;
+    }
+
+    .py-4 {
+        padding-top: 0.75rem !important;
+        padding-bottom: 0.75rem !important;
+    }
+
+    .py-5 {
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
+
+    /* Mensaje inicial más compacto */
+    #mensaje-inicial .card-body {
+        padding: 2rem 1rem !important;
+    }
+
+    #mensaje-inicial h2 {
+        font-size: 1.3rem;
+    }
+
+    #mensaje-inicial p {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 576px) {
+    /* Extra small devices */
+    .navbar {
+        padding: 0.4rem 0.6rem;
+    }
+
+    .navbar-brand {
+        font-size: 0.8rem;
+    }
+
+    .navbar-nav {
+        gap: 0.5rem;
+    }
+
+    .nav-link {
+        padding: 0.2rem !important;
+        font-size: 1.5rem;
+    }
+
+    /* Tarjetas de estadísticas en columna */
+    .col-md-3,
+    .col-md-4,
+    .col-md-6 {
+        margin-bottom: 0.5rem;
+    }
+
+    /* Inputs de dos columnas a una columna en formularios */
+    .row .col-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Texto más pequeño en cards pequeños */
+    .card.text-white .card-header {
+        font-size: 0.75rem;
+        padding: 0.4rem;
+    }
+
+    .card.text-white .card-body {
+        padding: 0.5rem;
+    }
+
+    .card.text-white .card-title {
+        font-size: 0.95rem;
+    }
+
+    .card.text-white .card-text {
+        font-size: 0.7rem;
+    }
+
+    /* Botones de acción en columna */
+    .d-grid {
+        gap: 0.4rem !important;
+    }
+
+    /* Headers de cards más pequeños */
+    .card-header h3 {
+        font-size: 1rem !important;
+    }
+
+    .card-header h4 {
+        font-size: 0.9rem !important;
+    }
+
+    /* Tablas más pequeñas */
+    .table {
+        font-size: 0.75rem;
+    }
+
+    .table td,
+    .table th {
+        padding: 0.3rem;
+    }
+
+    /* Alertas */
+    .alert {
+        padding: 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    /* Section titles */
+    .section-title h5 {
+        font-size: 0.85rem;
+    }
+
+    /* Container */
+    .container-fluid {
+        padding-left: 6px;
+        padding-right: 6px;
+    }
+
+    /* Espaciado general */
+    .mb-3 {
+        margin-bottom: 0.5rem !important;
+    }
+
+    .mb-4 {
+        margin-bottom: 0.6rem !important;
     }
 }
 

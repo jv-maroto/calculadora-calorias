@@ -9,16 +9,20 @@
 </head>
 <body>
     <nav class="navbar navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="index.php">← Volver a Calculadora</a>
-            <span class="navbar-text text-white">📊 Seguimiento de Progreso</span>
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.php">💪 Calculadora de Calorías</a>
+            <div class="navbar-nav ms-auto flex-row gap-3">
+                <a class="nav-link" href="grafica.php" title="Ver Gráfica">📈</a>
+                <a class="nav-link" href="introducir_peso.php" title="Introducir Peso">⚖️</a>
+                <a class="nav-link active" href="seguimiento.php" title="Ajuste de Calorías">📊</a>
+            </div>
         </div>
     </nav>
 
-    <div class="container mt-4">
+    <div class="container mt-3 mt-md-4">
         <div class="row">
             <!-- Formulario de entrada de datos -->
-            <div class="col-lg-5">
+            <div class="col-12 col-lg-5">
                 <div class="card shadow-lg sticky-top">
                     <div class="card-header bg-primary text-white">
                         <h4 class="mb-0">📝 Registra tu Progreso</h4>
@@ -90,7 +94,7 @@
             </div>
 
             <!-- Resultados y recomendaciones -->
-            <div class="col-lg-7">
+            <div class="col-12 col-lg-7 mt-3 mt-lg-0">
                 <div id="mensaje-inicial" class="card shadow-lg">
                     <div class="card-body text-center py-5">
                         <h3 class="text-muted">📊 Sistema Inteligente de Ajuste</h3>
