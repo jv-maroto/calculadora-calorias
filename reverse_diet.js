@@ -442,32 +442,49 @@ function obtenerDescripcionSemana(numSemana, duracionTotal) {
 }
 
 // ==================== PROYECCIÓN DE PESO ====================
-function calcularProyeccionPeso(pesoInicial, planReverse, tdeeAjustado, datos) {
+function calcularProyeccionPeso(pesoInicial, planReverse, tdeePostReverse, datos) {
+    // NOTA: tdeePostReverse es el TDEE final después del reverse
     const semanas = [];
     let pesoActual = pesoInicial;
     let aguaGlucogenoAcumulado = 0;
     let grasaNetaAcumulada = 0;
 
+    // Calcular el TDEE de partida (antes del reverse)
+    // El TDEE va aumentando progresivamente durante el reverse
+    const caloriasInicio = planReverse.caloriasInicio;
+    const caloriasFinal = planReverse.caloriasFinal; // = tdeePostReverse
+    const incrementoTotalCalorias = caloriasFinal - caloriasInicio;
+
     planReverse.semanas.forEach((semana, index) => {
-        // Ganancia de agua/glucógeno (disminuye con el tiempo)
+        // Ganancia de agua/glucógeno (más realista)
         let aguaSemana = 0;
         if (semana.numero === 1) {
-            aguaSemana = 0.7; // 0.5-1 kg (usamos promedio 0.7)
+            // Primera semana: recarga inicial de glucógeno + agua
+            aguaSemana = 0.9; // 0.7-1.1 kg (usamos 0.9)
         } else if (semana.numero === 2) {
-            aguaSemana = 0.4; // 0.3-0.5 kg
+            // Segunda semana: continúa la recarga
+            aguaSemana = 0.6; // 0.5-0.7 kg
         } else if (semana.numero === 3) {
-            aguaSemana = 0.3; // 0.2-0.4 kg
+            // Tercera semana: se completa la recarga
+            aguaSemana = 0.4; // 0.3-0.5 kg
         } else if (!semana.esEstabilizacion) {
-            aguaSemana = 0.15; // 0.1-0.2 kg
+            // Semanas adicionales: recarga final
+            aguaSemana = 0.2; // 0.15-0.25 kg
         } else {
-            aguaSemana = 0; // Ya estabilizado
+            // Estabilización: ya no gana más agua
+            aguaSemana = 0;
         }
 
         aguaGlucogenoAcumulado += aguaSemana;
 
-        // Calcular déficit/superávit real de la semana
+        // Calcular el TDEE de esta semana específica
+        // El TDEE aumenta proporcionalmente con las calorías
+        const progresoReverse = (semana.caloriasFin - caloriasInicio) / incrementoTotalCalorias;
+        const tdeeEstaSemana = caloriasInicio + (incrementoTotalCalorias * progresoReverse);
+
+        // Balance calórico de la semana
         const caloriasPromedio = (semana.caloriasInicio + semana.caloriasFin) / 2;
-        const balanceCaloricoSemanal = (caloriasPromedio - tdeeAjustado) * 7;
+        const balanceCaloricoSemanal = (caloriasPromedio - tdeeEstaSemana) * 7;
 
         // Grasa ganada o perdida (7700 kcal = 1 kg grasa)
         const grasaSemana = balanceCaloricoSemanal / 7700;
