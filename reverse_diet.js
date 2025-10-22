@@ -209,43 +209,70 @@ function calcularTMB(datos) {
 
 // ==================== CÁLCULO TDEE ====================
 function calcularTDEE(tmb, datos) {
-    // Factor base según tipo de trabajo
-    let factorBase;
-    if (datos.tipoTrabajo === 'sedentario') {
-        factorBase = 1.2;
-    } else if (datos.tipoTrabajo === 'activo') {
-        factorBase = 1.4;
-    } else { // muy_activo
-        factorBase = 1.6;
+    // Calcular horas totales de ejercicio por semana
+    const horasGymSemanal = datos.diasGym * datos.horasGym;
+    const horasCardioSemanal = datos.diasCardio * datos.horasCardio;
+    const horasTotalesEjercicio = horasGymSemanal + horasCardioSemanal;
+
+    // Factor PAL (Physical Activity Level) basado en el ejercicio total
+    // Método mejorado que considera el volumen total de entrenamiento
+    let factorPAL;
+
+    if (horasTotalesEjercicio < 1) {
+        // Sedentario: Poco o nada de ejercicio
+        factorPAL = 1.2;
+    } else if (horasTotalesEjercicio < 3) {
+        // Ligeramente activo: Ejercicio ligero 1-3 horas/semana
+        factorPAL = 1.375;
+    } else if (horasTotalesEjercicio < 6) {
+        // Moderadamente activo: 3-6 horas/semana
+        factorPAL = 1.465;
+    } else if (horasTotalesEjercicio < 10) {
+        // Activo: 6-10 horas/semana
+        factorPAL = 1.55;
+    } else if (horasTotalesEjercicio < 15) {
+        // Muy activo: 10-15 horas/semana
+        factorPAL = 1.6;
+    } else if (horasTotalesEjercicio < 20) {
+        // Extremadamente activo: 15-20 horas/semana
+        factorPAL = 1.725;
+    } else {
+        // Atleta profesional: >20 horas/semana
+        factorPAL = 1.9;
     }
 
-    // Calcular calorías quemadas por entrenamiento de pesas
-    const caloriasGymSemanal = datos.diasGym * datos.horasGym * 350; // ~350 kcal/hora pesas
-    const caloriasGymDiarias = caloriasGymSemanal / 7;
+    // Ajuste por tipo de trabajo (solo si es sedentario en trabajo)
+    // Si ya entrena 8+ horas, el trabajo no suma mucho más
+    let ajusteTrabajo = 0;
+    if (horasTotalesEjercicio < 8) {
+        if (datos.tipoTrabajo === 'activo') {
+            ajusteTrabajo = 0.05; // +5%
+        } else if (datos.tipoTrabajo === 'muy_activo') {
+            ajusteTrabajo = 0.1; // +10%
+        }
+    }
 
-    // Calcular calorías quemadas por cardio (varía según tipo)
-    let intensidadCardio = 400; // kcal/hora base
+    // Ajuste por intensidad de cardio (si hace mucho cardio INTENSO)
+    // Solo para cardio de alta intensidad que realmente quema muchas calorías extra
+    let ajusteCardio = 0;
+    if (horasCardioSemanal > 3) { // Solo si hace >3h cardio/semana
+        const intensidadesCardio = {
+            'correr_intenso': 0.03,
+            'hiit': 0.03,
+            'otro': 0
+        };
 
-    const intensidadesCardio = {
-        'ninguno': 0,
-        'caminar_ligero': 250,
-        'caminar_rapido': 350,
-        'correr_moderado': 550,
-        'correr_intenso': 750,
-        'bicicleta': 450,
-        'natacion': 500,
-        'eliptica': 400,
-        'hiit': 700,
-        'otro': 400
-    };
+        const factorIntensidad = intensidadesCardio[datos.tipoCardio] || 0;
+        if (factorIntensidad > 0) {
+            ajusteCardio = factorIntensidad;
+        }
+    }
 
-    intensidadCardio = intensidadesCardio[datos.tipoCardio] || 400;
+    // Factor PAL final (ajustes ahora son más conservadores)
+    const factorPALFinal = factorPAL + ajusteTrabajo + ajusteCardio;
 
-    const caloriasCardioSemanal = datos.diasCardio * datos.horasCardio * intensidadCardio;
-    const caloriasCardioDiarias = caloriasCardioSemanal / 7;
-
-    // TDEE = TMB × factor base + calorías entrenamiento
-    const tdee = (tmb * factorBase) + caloriasGymDiarias + caloriasCardioDiarias;
+    // TDEE = TMB × Factor PAL
+    const tdee = tmb * factorPALFinal;
 
     return Math.round(tdee);
 }
