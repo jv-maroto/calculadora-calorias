@@ -94,23 +94,23 @@ function calcularReverseDiet() {
     // PASO 2: Calcular TDEE teórico
     const tdeeTeorico = calcularTDEE(tmb, datos);
 
-    // PASO 3: Ajustar TDEE por adaptación metabólica
-    const { tdeeAjustado, ajustes } = ajustarTDEEPorAdaptacion(tdeeTeorico, datos);
+    // PASO 3: Ajustar TDEE por adaptación metabólica y calcular TDEE post-reverse
+    const { tdeeAjustado, tdeePostReverse, caloriasRecuperadas, reduccionTotal, ajustes } = ajustarTDEEPorAdaptacion(tdeeTeorico, datos);
 
     // PASO 4: Calcular déficit actual real
     const deficitActual = tdeeAjustado - datos.caloriasActuales;
 
-    // PASO 5: Diseñar plan de reverse diet
-    const planReverse = calcularPlanReverse(datos.caloriasActuales, tdeeAjustado, deficitActual, datos);
+    // PASO 5: Diseñar plan de reverse diet (llegar a TDEE post-reverse, no al ajustado)
+    const planReverse = calcularPlanReverse(datos.caloriasActuales, tdeePostReverse, deficitActual, datos);
 
-    // PASO 6: Calcular peso esperado durante reverse
-    const proyeccionPeso = calcularProyeccionPeso(datos.pesoActual, planReverse, tdeeAjustado, datos);
+    // PASO 6: Calcular peso esperado durante reverse (usar TDEE post-reverse)
+    const proyeccionPeso = calcularProyeccionPeso(datos.pesoActual, planReverse, tdeePostReverse, datos);
 
-    // PASO 7: Calcular calorías para el bulk
-    const caloriasBulk = calcularCaloriasBulk(tdeeAjustado, datos);
+    // PASO 7: Calcular calorías para el bulk (USAR TDEE POST-REVERSE, no el ajustado)
+    const caloriasBulk = calcularCaloriasBulk(tdeePostReverse, datos);
 
-    // PASO 8: Proyectar resultados del bulk
-    const proyeccionBulk = proyectarBulk(proyeccionPeso.pesoBase, caloriasBulk, tdeeAjustado, datos);
+    // PASO 8: Proyectar resultados del bulk (usar TDEE post-reverse)
+    const proyeccionBulk = proyectarBulk(proyeccionPeso.pesoBase, caloriasBulk, tdeePostReverse, datos);
 
     // PASO 9: Calcular % grasa corporal si es posible
     const grasaCorporal = calcularGrasaCorporal(datos);
@@ -120,6 +120,9 @@ function calcularReverseDiet() {
         tmb,
         tdeeTeorico,
         tdeeAjustado,
+        tdeePostReverse,
+        caloriasRecuperadas,
+        reduccionTotal,
         ajustes,
         deficitActual,
         planReverse,
@@ -252,54 +255,60 @@ function ajustarTDEEPorAdaptacion(tdeeTeorico, datos) {
     let reduccionTotal = 0;
     const ajustes = [];
 
-    // 1. Ajuste por tiempo en déficit
+    // 1. Ajuste por tiempo en déficit (AJUSTADO: menos agresivo)
     let reduccionTiempo = 0;
     if (datos.tiempoDeficit === '1-2') {
-        reduccionTiempo = 0.05; // -5%
-        ajustes.push({ tipo: 'Tiempo en déficit (1-2 meses)', valor: '-5%' });
+        reduccionTiempo = 0.03; // -3%
+        ajustes.push({ tipo: 'Tiempo en déficit (1-2 meses)', valor: '-3%' });
     } else if (datos.tiempoDeficit === '2-3') {
-        reduccionTiempo = 0.08; // -8%
-        ajustes.push({ tipo: 'Tiempo en déficit (2-3 meses)', valor: '-8%' });
+        reduccionTiempo = 0.05; // -5%
+        ajustes.push({ tipo: 'Tiempo en déficit (2-3 meses)', valor: '-5%' });
     } else if (datos.tiempoDeficit === '3-6') {
-        reduccionTiempo = 0.10; // -10%
-        ajustes.push({ tipo: 'Tiempo en déficit (3-6 meses)', valor: '-10%' });
+        reduccionTiempo = 0.07; // -7%
+        ajustes.push({ tipo: 'Tiempo en déficit (3-6 meses)', valor: '-7%' });
     } else if (datos.tiempoDeficit === '6+') {
-        reduccionTiempo = 0.12; // -12%
-        ajustes.push({ tipo: 'Tiempo en déficit (>6 meses)', valor: '-12%' });
+        reduccionTiempo = 0.08; // -8% (antes -12%)
+        ajustes.push({ tipo: 'Tiempo en déficit (>6 meses)', valor: '-8%' });
     }
     reduccionTotal += reduccionTiempo;
 
-    // 2. Ajuste por magnitud del déficit actual
+    // 2. Ajuste por magnitud del déficit actual (AJUSTADO: menos agresivo)
     const ratioDeficit = datos.caloriasActuales / tdeeTeorico;
     let reduccionMagnitud = 0;
 
     if (ratioDeficit < 0.65) {
-        reduccionMagnitud = 0.05; // Déficit muy agresivo
-        ajustes.push({ tipo: 'Déficit muy agresivo (<65% TDEE)', valor: '-5%' });
+        reduccionMagnitud = 0.03; // -3% (antes -5%)
+        ajustes.push({ tipo: 'Déficit muy agresivo (<65% TDEE)', valor: '-3%' });
     } else if (ratioDeficit < 0.75) {
-        reduccionMagnitud = 0.03; // Déficit agresivo
-        ajustes.push({ tipo: 'Déficit agresivo (<75% TDEE)', valor: '-3%' });
+        reduccionMagnitud = 0.02; // -2% (antes -3%)
+        ajustes.push({ tipo: 'Déficit agresivo (<75% TDEE)', valor: '-2%' });
     }
     reduccionTotal += reduccionMagnitud;
 
-    // 3. Ajuste por pérdida de peso total
+    // 3. Ajuste por pérdida de peso total (AJUSTADO: menos agresivo)
     let reduccionPerdida = 0;
     if (datos.pesoPerdido > 30) {
-        reduccionPerdida = 0.05;
-        ajustes.push({ tipo: 'Pérdida de peso masiva (>30 kg)', valor: '-5%' });
+        reduccionPerdida = 0.03; // -3% (antes -5%)
+        ajustes.push({ tipo: 'Pérdida de peso masiva (>30 kg)', valor: '-3%' });
     } else if (datos.pesoPerdido > 20) {
-        reduccionPerdida = 0.03;
-        ajustes.push({ tipo: 'Pérdida de peso significativa (>20 kg)', valor: '-3%' });
+        reduccionPerdida = 0.02; // -2% (antes -3%)
+        ajustes.push({ tipo: 'Pérdida de peso significativa (>20 kg)', valor: '-2%' });
     } else if (datos.pesoPerdido > 10) {
-        reduccionPerdida = 0.02;
-        ajustes.push({ tipo: 'Pérdida de peso moderada (>10 kg)', valor: '-2%' });
+        reduccionPerdida = 0.01; // -1% (antes -2%)
+        ajustes.push({ tipo: 'Pérdida de peso moderada (>10 kg)', valor: '-1%' });
     }
     reduccionTotal += reduccionPerdida;
 
-    // Aplicar reducción total (máximo 20%)
-    reduccionTotal = Math.min(reduccionTotal, 0.20);
+    // Aplicar reducción total (máximo 15%)
+    reduccionTotal = Math.min(reduccionTotal, 0.15);
 
     const tdeeAjustado = Math.round(tdeeTeorico * (1 - reduccionTotal));
+
+    // CALCULAR TDEE POST-REVERSE (después de que el metabolismo se recupere)
+    // El reverse diet restaura aproximadamente el 70% del metabolismo suprimido
+    const recuperacionMetabolica = 0.70; // 70% de recuperación
+    const caloriasRecuperadas = Math.round((tdeeTeorico - tdeeAjustado) * recuperacionMetabolica);
+    const tdeePostReverse = Math.round(tdeeAjustado + caloriasRecuperadas);
 
     ajustes.push({
         tipo: 'REDUCCIÓN TOTAL',
@@ -307,41 +316,51 @@ function ajustarTDEEPorAdaptacion(tdeeTeorico, datos) {
         destacado: true
     });
 
-    return { tdeeAjustado, ajustes };
+    ajustes.push({
+        tipo: 'RECUPERACIÓN POST-REVERSE',
+        valor: `+${caloriasRecuperadas} kcal (~70% restaurado)`,
+        destacado: true,
+        positivo: true
+    });
+
+    return {
+        tdeeAjustado,
+        tdeePostReverse,
+        caloriasRecuperadas,
+        reduccionTotal,
+        ajustes
+    };
 }
 
 // ==================== PLAN DE REVERSE DIET ====================
-function calcularPlanReverse(caloriasActuales, tdeeAjustado, deficitActual, datos) {
+function calcularPlanReverse(caloriasActuales, tdeeObjetivo, deficitActual, datos) {
+    // NOTA: tdeeObjetivo ahora es el TDEE POST-REVERSE (metabolismo recuperado)
     const semanas = [];
     let caloriasSemanales = caloriasActuales;
 
-    // Determinar duración del reverse según déficit
+    // Calcular el incremento total necesario
+    const incrementoTotalNecesario = tdeeObjetivo - caloriasActuales;
+
+    // Determinar duración del reverse según el incremento necesario
     let duracionSemanas;
-    if (deficitActual > 800) {
+    if (incrementoTotalNecesario > 800) {
         duracionSemanas = 4;
-    } else if (deficitActual > 500) {
+    } else if (incrementoTotalNecesario > 500) {
         duracionSemanas = 3;
-    } else if (deficitActual > 300) {
+    } else if (incrementoTotalNecesario > 300) {
         duracionSemanas = 2;
     } else {
         duracionSemanas = 1;
     }
 
-    // Calcular incremento semanal
-    let incrementoSemanal;
-    if (deficitActual > 1000) {
-        incrementoSemanal = 350; // Más conservador si déficit es extremo
-    } else {
-        incrementoSemanal = 400; // Estándar
-    }
+    // Calcular incremento semanal para llegar al objetivo
+    let incrementoSemanal = Math.round(incrementoTotalNecesario / duracionSemanas);
 
-    // Ajustar última semana para llegar exacto al TDEE
-    const caloriasRestantes = tdeeAjustado - caloriasActuales;
-    const incrementoTotal = (duracionSemanas - 1) * incrementoSemanal;
-
-    if (incrementoTotal > caloriasRestantes) {
-        // Recalcular incremento para que sea uniforme
-        incrementoSemanal = Math.round(caloriasRestantes / duracionSemanas);
+    // Ajustar si el incremento es demasiado grande (máximo 450 kcal/semana)
+    if (incrementoSemanal > 450) {
+        incrementoSemanal = 400;
+        // Recalcular duración necesaria
+        duracionSemanas = Math.ceil(incrementoTotalNecesario / incrementoSemanal);
     }
 
     // Generar plan semana por semana
@@ -349,10 +368,10 @@ function calcularPlanReverse(caloriasActuales, tdeeAjustado, deficitActual, dato
         const caloriasInicio = caloriasSemanales;
 
         if (i < duracionSemanas) {
-            caloriasSemanales = Math.min(caloriasSemanales + incrementoSemanal, tdeeAjustado);
+            caloriasSemanales = Math.min(caloriasSemanales + incrementoSemanal, tdeeObjetivo);
         } else {
-            // Última semana: ajustar para llegar exacto al TDEE
-            caloriasSemanales = tdeeAjustado;
+            // Última semana: ajustar para llegar exacto al TDEE post-reverse
+            caloriasSemanales = tdeeObjetivo;
         }
 
         const incremento = caloriasSemanales - caloriasInicio;
@@ -366,13 +385,13 @@ function calcularPlanReverse(caloriasActuales, tdeeAjustado, deficitActual, dato
         });
     }
 
-    // Semana de estabilización en mantenimiento
+    // Semana de estabilización en mantenimiento (TDEE post-reverse)
     semanas.push({
         numero: duracionSemanas + 1,
-        caloriasInicio: tdeeAjustado,
-        caloriasFin: tdeeAjustado,
+        caloriasInicio: tdeeObjetivo,
+        caloriasFin: tdeeObjetivo,
         incremento: 0,
-        descripcion: 'Semana de estabilización - Mantén estas calorías',
+        descripcion: 'Semana de estabilización - Mantén estas calorías antes de iniciar bulk',
         esEstabilizacion: true
     });
 
@@ -380,8 +399,8 @@ function calcularPlanReverse(caloriasActuales, tdeeAjustado, deficitActual, dato
         semanas,
         duracionTotal: duracionSemanas + 1,
         caloriasInicio: caloriasActuales,
-        caloriasFinal: tdeeAjustado,
-        incrementoTotal: tdeeAjustado - caloriasActuales
+        caloriasFinal: tdeeObjetivo, // TDEE post-reverse
+        incrementoTotal: tdeeObjetivo - caloriasActuales
     };
 }
 
@@ -615,26 +634,36 @@ function mostrarResultados(resultados) {
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-3 mb-3">
+                    <div class="col-md-4 mb-3">
                         <div class="alert alert-info mb-0">
                             <h6>TMB (Basal)</h6>
                             <h4 class="mb-0">${resultados.tmb} kcal</h4>
                         </div>
                     </div>
-                    <div class="col-md-3 mb-3">
+                    <div class="col-md-4 mb-3">
                         <div class="alert alert-warning mb-0">
                             <h6>TDEE Teórico</h6>
                             <h4 class="mb-0">${resultados.tdeeTeorico} kcal</h4>
+                            <small>Sin adaptación metabólica</small>
                         </div>
                     </div>
-                    <div class="col-md-3 mb-3">
+                    <div class="col-md-4 mb-3">
                         <div class="alert alert-danger mb-0">
-                            <h6>TDEE Ajustado Real</h6>
+                            <h6>TDEE Actual (Suprimido)</h6>
                             <h4 class="mb-0">${resultados.tdeeAjustado} kcal</h4>
-                            <small>Adaptación metabólica incluida</small>
+                            <small>-${Math.round(resultados.reduccionTotal * 100)}% por adaptación</small>
                         </div>
                     </div>
-                    <div class="col-md-3 mb-3">
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="alert alert-success mb-0">
+                            <h6>🎯 TDEE Post-Reverse (Objetivo)</h6>
+                            <h3 class="mb-0">${resultados.tdeePostReverse} kcal</h3>
+                            <small>+${resultados.caloriasRecuperadas} kcal recuperados (~70%)</small>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
                         <div class="alert alert-dark mb-0">
                             <h6>Déficit Actual</h6>
                             <h4 class="mb-0">${resultados.deficitActual} kcal</h4>
@@ -683,12 +712,13 @@ function mostrarResultados(resultados) {
 function generarHTMLAdaptacion(ajustes, tdeeTeorico, tdeeAjustado) {
     let ajustesHTML = '';
     ajustes.forEach(ajuste => {
-        const clase = ajuste.destacado ? 'alert-danger' : 'alert-warning';
+        let clase = ajuste.destacado ? (ajuste.positivo ? 'table-success' : 'table-danger') : 'table-warning';
         const peso = ajuste.destacado ? 'fw-bold' : '';
+        const colorTexto = ajuste.positivo ? 'text-success' : '';
         ajustesHTML += `
-            <tr class="${ajuste.destacado ? 'table-danger' : ''}">
+            <tr class="${clase}">
                 <td class="${peso}">${ajuste.tipo}</td>
-                <td class="text-end ${peso}">${ajuste.valor}</td>
+                <td class="text-end ${peso} ${colorTexto}">${ajuste.valor}</td>
             </tr>
         `;
     });
@@ -698,10 +728,10 @@ function generarHTMLAdaptacion(ajustes, tdeeTeorico, tdeeAjustado) {
     return `
         <div class="card shadow-lg mb-4">
             <div class="card-header bg-warning text-dark">
-                <h4 class="mb-0">⚠️ Adaptación Metabólica Detectada</h4>
+                <h4 class="mb-0">⚠️ Adaptación Metabólica y Recuperación</h4>
             </div>
             <div class="card-body">
-                <p><strong>Tu metabolismo se ha adaptado al déficit prolongado.</strong> Tu TDEE real es menor que el teórico.</p>
+                <p><strong>Tu metabolismo se ha adaptado al déficit prolongado.</strong> El reverse diet lo restaurará gradualmente.</p>
 
                 <div class="table-responsive">
                     <table class="table table-hover">
