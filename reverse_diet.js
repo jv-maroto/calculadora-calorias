@@ -92,7 +92,7 @@ function calcularReverseDiet() {
     const tmb = calcularTMB(datos);
 
     // PASO 2: Calcular TDEE teórico
-    const tdeeT eorico = calcularTDEE(tmb, datos);
+    const tdeeTeorico = calcularTDEE(tmb, datos);
 
     // PASO 3: Ajustar TDEE por adaptación metabólica
     const { tdeeAjustado, ajustes } = ajustarTDEEPorAdaptacion(tdeeTeorico, datos);
@@ -526,7 +526,7 @@ function proyectarBulk(pesoBase, caloriasBulk, tdeeAjustado, datos) {
 
     // Cálculos totales
     const musculoTotal = kgMusculoPorMes * datos.duracionBulk;
-    const pesoTotalGanado = musculo Total / ratioMusculoGrasa;
+    const pesoTotalGanado = musculoTotal / ratioMusculoGrasa;
     const grasaTotal = pesoTotalGanado - musculoTotal;
     const pesoFinal = pesoBase + pesoTotalGanado;
 
