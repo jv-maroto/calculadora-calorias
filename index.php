@@ -273,13 +273,14 @@ $apellidos = $_SESSION['usuario_apellidos'];
                                     <small class="text-muted">💡 Los profesionales planifican por tiempo, no por kg exactos de músculo</small>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="preferencia_volumen" class="form-label">Tipo de volumen</label>
+                                    <label for="preferencia_volumen" class="form-label">Tipo de volumen (% de superávit sobre TDEE)</label>
                                     <select class="form-select" id="preferencia_volumen">
-                                        <option value="limpio" selected>Lean Bulk - Limpio (menos grasa, ~75% músculo / 25% grasa)</option>
-                                        <option value="optimo">Bulk Óptimo - Balanceado (~70% músculo / 30% grasa)</option>
-                                        <option value="rapido">Bulk Agresivo - Rápido (~65% músculo / 35% grasa)</option>
+                                        <option value="ultra_limpio">Ultra Limpio - 8-10% superávit (200-250 kcal)</option>
+                                        <option value="limpio" selected>Lean Bulk Óptimo ⭐ - 10-12% superávit (300-350 kcal)</option>
+                                        <option value="balanceado">Balanceado - 13-17% superávit (400-500 kcal)</option>
+                                        <option value="agresivo">Agresivo - 20%+ superávit (600+ kcal)</option>
                                     </select>
-                                    <small class="text-muted">El ratio músculo/grasa depende del superávit calórico</small>
+                                    <small class="text-muted">El superávit determina la velocidad de ganancia y ratio músculo/grasa</small>
                                 </div>
                                 <div class="mb-3">
                                     <label for="incluir_minicuts" class="form-label">¿Incluir mini-cuts?</label>

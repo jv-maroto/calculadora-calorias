@@ -669,30 +669,36 @@ document.addEventListener('DOMContentLoaded', function() {
         // Más calorías = más potencial muscular (dentro de límites genéticos)
         let multiplicadorMusculo = 1.0;
         let ratioMusculoGrasa;
+        let porcentajeSuperavit;
 
-        if (velocidad === 'limpio') {
-            multiplicadorMusculo = 0.85; // Lean bulk: -15% músculo pero mucha menos grasa
+        if (velocidad === 'ultra_limpio') {
+            multiplicadorMusculo = 0.75; // Ultra limpio: -25% músculo pero grasa mínima
+            ratioMusculoGrasa = 0.80; // 80% músculo, 20% grasa
+            porcentajeSuperavit = 0.09; // 9% (promedio de 8-10%)
+        } else if (velocidad === 'limpio') {
+            multiplicadorMusculo = 0.90; // Lean bulk óptimo: -10% músculo, grasa baja
             ratioMusculoGrasa = 0.75; // 75% músculo, 25% grasa
-        } else if (velocidad === 'rapido') {
-            multiplicadorMusculo = 1.15; // Aggressive bulk: +15% músculo pero mucha más grasa
-            ratioMusculoGrasa = 0.65; // 65% músculo, 35% grasa
-        } else { // optimo
-            multiplicadorMusculo = 1.0; // Optimal bulk: ganancia base
+            porcentajeSuperavit = 0.11; // 11% (promedio de 10-12%)
+        } else if (velocidad === 'balanceado') {
+            multiplicadorMusculo = 1.0; // Balanceado: ganancia base
             ratioMusculoGrasa = 0.70; // 70% músculo, 30% grasa
+            porcentajeSuperavit = 0.15; // 15% (promedio de 13-17%)
+        } else if (velocidad === 'agresivo') {
+            multiplicadorMusculo = 1.15; // Agresivo: +15% músculo pero grasa alta
+            ratioMusculoGrasa = 0.60; // 60% músculo, 40% grasa
+            porcentajeSuperavit = 0.20; // 20%+
+        } else {
+            // Fallback para valores antiguos
+            multiplicadorMusculo = 0.90;
+            ratioMusculoGrasa = 0.75;
+            porcentajeSuperavit = 0.11;
         }
 
         // Aplicar multiplicador
         const kgMusculoPorMes = kgMusculoPorMesBase * multiplicadorMusculo;
 
-        // SUPERÁVIT CALÓRICO según tipo de bulk
-        let superavitDiario;
-        if (velocidad === 'limpio') {
-            superavitDiario = 250; // Lean bulk: +250 kcal
-        } else if (velocidad === 'rapido') {
-            superavitDiario = 500; // Aggressive: +500 kcal
-        } else { // optimo
-            superavitDiario = 350; // Optimal: +350 kcal
-        }
+        // SUPERÁVIT CALÓRICO basado en % del TDEE
+        const superavitDiario = Math.round(tdee * porcentajeSuperavit);
 
         const caloriasBase = tdee + superavitDiario;
 
@@ -755,8 +761,25 @@ document.addEventListener('DOMContentLoaded', function() {
             ? `Cardio actual integrado en el plan: ${horasCardioSemanal.toFixed(1)}h/semana`
             : 'Sin cardio actualmente. El cardio es opcional en volumen, puedes añadir 1-2 sesiones de 15-20min para salud cardiovascular';
 
+        // Nombre descriptivo del tipo de volumen
+        let nombreTipoVolumen;
+        if (velocidad === 'ultra_limpio') {
+            nombreTipoVolumen = 'Ultra Limpio (8-10% superávit)';
+        } else if (velocidad === 'limpio') {
+            nombreTipoVolumen = 'Lean Bulk Óptimo ⭐ (10-12% superávit)';
+        } else if (velocidad === 'balanceado') {
+            nombreTipoVolumen = 'Balanceado (13-17% superávit)';
+        } else if (velocidad === 'agresivo') {
+            nombreTipoVolumen = 'Agresivo (20%+ superávit)';
+        } else {
+            nombreTipoVolumen = 'Personalizado';
+        }
+
         return {
             tipo: 'volumen',
+            tipoVolumen: nombreTipoVolumen,
+            velocidad: velocidad,
+            porcentajeSuperavit: (porcentajeSuperavit * 100).toFixed(0) + '%',
             duracion: { meses: mesesEstimados, semanas: semanasEstimadas },
             kgObjetivo: kgMusculoEsperado, // kg de músculo esperado
             kgMusculoEsperado: kgMusculoEsperado,
@@ -979,15 +1002,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="card-body">
                     <div class="alert alert-info">
+                        <h5>🎯 Tipo: ${plan.tipoVolumen || 'Personalizado'}</h5>
                         <h5>📅 Duración: ${plan.duracion.meses} meses de volumen</h5>
                         <h5>📊 Nivel: ${plan.nivelGym.charAt(0).toUpperCase() + plan.nivelGym.slice(1)}</h5>
-                        <h5>🎯 Ganancia esperada total:</h5>
+                        <h5>💪 Ganancia esperada total:</h5>
                         <ul class="mb-2">
                             <li><strong class="text-primary">${plan.kgMusculoEsperado.toFixed(1)} kg de músculo</strong> (${kgMusculoPorMes.toFixed(2)} kg/mes)</li>
                             <li><strong class="text-warning">${plan.kgGrasaEsperada.toFixed(1)} kg de grasa</strong> (${kgGrasaPorMes.toFixed(2)} kg/mes)</li>
                             <li><strong>${plan.kgTotalesEsperados.toFixed(1)} kg totales</strong> (${(ratioMusculoGrasa * 100).toFixed(0)}% músculo / ${((1 - ratioMusculoGrasa) * 100).toFixed(0)}% grasa)</li>
                         </ul>
-                        <p class="mb-0">Superávit calórico: ${plan.superavitDiario} kcal/día</p>
+                        <p class="mb-2"><strong>Superávit calórico:</strong> ${plan.superavitDiario} kcal/día (${plan.porcentajeSuperavit || 'N/A'} del TDEE)</p>
                         <small class="text-muted">⚠️ Basado en tasas científicas 2024 para entrenamientos naturales. Los resultados individuales varían según genética, adherencia y calidad del entrenamiento.</small>
                     </div>
 
