@@ -27,6 +27,7 @@ $apellidos = $_SESSION['usuario_apellidos'];
                 👤 <?php echo htmlspecialchars($nombre . ' ' . $apellidos); ?>
             </span>
             <div class="navbar-nav ms-auto flex-row gap-3">
+                <a class="nav-link" href="reverse_diet.php" title="Reverse Diet">🔄</a>
                 <a class="nav-link" href="grafica.php" title="Ver Gráfica">📈</a>
                 <a class="nav-link" href="introducir_peso.php" title="Introducir Peso">⚖️</a>
                 <a class="nav-link" href="seguimiento.php" title="Ajuste de Calorías">📊</a>

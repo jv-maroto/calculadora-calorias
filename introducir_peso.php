@@ -12,9 +12,12 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="index.php">💪 Calculadora de Calorías</a>
             <div class="navbar-nav ms-auto flex-row gap-3">
+                <a class="nav-link" href="index.php" title="Calculadora Principal">🏠</a>
+                <a class="nav-link" href="reverse_diet.php" title="Reverse Diet">🔄</a>
                 <a class="nav-link" href="grafica.php" title="Ver Gráfica">📈</a>
                 <a class="nav-link active" href="introducir_peso.php" title="Introducir Peso">⚖️</a>
                 <a class="nav-link" href="seguimiento.php" title="Ajuste de Calorías">📊</a>
+                <a class="nav-link" href="logout.php" title="Cerrar Sesión">🚪</a>
             </div>
         </div>
     </nav>
