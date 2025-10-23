@@ -749,6 +749,9 @@ function mostrarResultados(resultados) {
     resultadosDiv.innerHTML = html;
     resultadosDiv.style.display = 'block';
 
+    // Configurar eventos de edición de calorías
+    setTimeout(() => configurarEdicionCalorias(), 100);
+
     // Scroll a resultados
     resultadosDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
@@ -803,7 +806,7 @@ function generarHTMLAdaptacion(ajustes, tdeeTeorico, tdeeAjustado) {
 
 function generarHTMLPlanReverse(planReverse) {
     let semanasHTML = '';
-    planReverse.semanas.forEach(semana => {
+    planReverse.semanas.forEach((semana, index) => {
         const rowClass = semana.esEstabilizacion ? 'table-success' : '';
         const badge = semana.esEstabilizacion ? '<span class="badge bg-success">Estabilización</span>' : '';
 
@@ -811,26 +814,42 @@ function generarHTMLPlanReverse(planReverse) {
             <tr class="week-row ${rowClass}">
                 <td><strong>Semana ${semana.numero}</strong> ${badge}</td>
                 <td>${semana.caloriasInicio} kcal</td>
-                <td class="text-success"><strong>${semana.caloriasFin} kcal</strong></td>
-                <td class="text-primary">${semana.incremento > 0 ? '+' + semana.incremento : semana.incremento} kcal</td>
+                <td>
+                    <input type="number"
+                           class="form-control form-control-sm calorias-editable"
+                           data-semana="${index}"
+                           value="${semana.caloriasFin}"
+                           min="1000"
+                           max="5000"
+                           step="50"
+                           style="width: 130px; display: inline-block;">
+                </td>
+                <td class="text-primary incremento-semana-${index}">+${semana.incremento} kcal</td>
                 <td><small class="text-muted">${semana.descripcion}</small></td>
             </tr>
         `;
     });
 
     return `
-        <div class="card shadow-lg mb-4">
-            <div class="card-header bg-success text-white">
-                <h4 class="mb-0">🔄 Tu Plan de Reverse Diet (Semana a Semana)</h4>
+        <div class="card shadow-lg mb-4" id="card-plan-reverse">
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">🔄 Tu Plan de Reverse Diet (Editable)</h4>
+                <button class="btn btn-light btn-sm" onclick="restaurarPlanRecomendado()">
+                    ↺ Restaurar Recomendado
+                </button>
             </div>
             <div class="card-body">
-                <div class="alert alert-info">
-                    <h5>📅 Duración Total: ${planReverse.duracionTotal} semanas</h5>
-                    <p><strong>Calorías iniciales:</strong> ${planReverse.caloriasInicio} kcal → <strong>Calorías finales:</strong> ${planReverse.caloriasFinal} kcal</p>
-                    <p class="mb-0"><strong>Incremento total:</strong> +${planReverse.incrementoTotal} kcal</p>
+                <div class="alert alert-warning">
+                    <strong>💡 Modo Interactivo:</strong> Puedes modificar las calorías de cada semana para ver cómo afecta a tu proyección de peso, agua/glucógeno y grasa.
                 </div>
 
-                <div class="table-responsive mt-3">
+                <div class="alert alert-info" id="resumen-plan">
+                    <h5>📅 Duración Total: ${planReverse.duracionTotal} semanas</h5>
+                    <p><strong>Calorías iniciales:</strong> ${planReverse.caloriasInicio} kcal → <strong>Calorías finales:</strong> <span id="calorias-finales-display">${planReverse.caloriasFinal}</span> kcal</p>
+                    <p class="mb-0"><strong>Incremento total:</strong> +<span id="incremento-total-display">${planReverse.incrementoTotal}</span> kcal</p>
+                </div>
+
+                <div class="table-responsive mt-3" id="tabla-plan-reverse">
                     <table class="table table-hover table-bordered">
                         <thead class="table-light">
                             <tr>
@@ -884,7 +903,7 @@ function generarHTMLProyeccionPeso(proyeccion) {
     return `
         <div class="card shadow-lg mb-4">
             <div class="card-header bg-info text-white">
-                <h4 class="mb-0">⚖️ Proyección de Peso Durante el Reverse</h4>
+                <h4 class="mb-0">⚖️ Proyección de Peso Durante el Reverse (Actualiza en Tiempo Real)</h4>
             </div>
             <div class="card-body">
                 <div class="alert alert-primary">
@@ -896,23 +915,34 @@ function generarHTMLProyeccionPeso(proyeccion) {
                         </div>
                         <div class="col-md-3">
                             <strong>Peso Final:</strong><br>
-                            <h4 class="mb-0">${proyeccion.pesoFinal} kg</h4>
+                            <h4 class="mb-0" id="peso-final-display">${proyeccion.pesoFinal}</h4>
+                            <small class="text-muted">kg</small>
                         </div>
                         <div class="col-md-3">
                             <strong>Agua/Glucógeno:</strong><br>
-                            <h4 class="mb-0 text-info">+${proyeccion.aguaGlucogenoTotal} kg</h4>
+                            <h4 class="mb-0 text-info">+<span id="agua-glucogeno-display">${proyeccion.aguaGlucogenoTotal}</span></h4>
+                            <small class="text-muted">kg</small>
                         </div>
                         <div class="col-md-3">
                             <strong>Grasa Neta:</strong><br>
-                            <h4 class="mb-0 ${proyeccion.grasaNetaTotal >= 0 ? 'text-success' : 'text-danger'}">
-                                ${proyeccion.grasaNetaTotal >= 0 ? '+' : ''}${proyeccion.grasaNetaTotal} kg
+                            <h4 class="mb-0 ${proyeccion.grasaNetaTotal >= 0 ? 'text-danger' : 'text-success'}">
+                                <span id="grasa-neta-display">${proyeccion.grasaNetaTotal >= 0 ? '+' : ''}${proyeccion.grasaNetaTotal}</span>
+                            </h4>
+                            <small class="text-muted">kg</small>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <strong>Cambio Total:</strong>
+                            <h4 class="mb-0 ${proyeccion.cambioTotal >= 0 ? 'text-success' : 'text-danger'}">
+                                <span id="cambio-total-display">${proyeccion.cambioTotal >= 0 ? '+' : ''}${proyeccion.cambioTotal}</span> kg
                             </h4>
                         </div>
                     </div>
                 </div>
 
                 <div class="table-responsive mt-3">
-                    <table class="table table-sm table-hover table-bordered">
+                    <table class="table table-sm table-hover table-bordered" id="tabla-proyeccion-peso">
                         <thead class="table-light">
                             <tr>
                                 <th>Semana</th>
@@ -932,7 +962,7 @@ function generarHTMLProyeccionPeso(proyeccion) {
 
                 <div class="alert alert-success mt-3">
                     <h6>✅ Peso Base para Iniciar Bulk:</h6>
-                    <h3 class="mb-0">${proyeccion.pesoBase} kg</h3>
+                    <h3 class="mb-0"><span id="peso-final-display">${proyeccion.pesoBase}</span> kg</h3>
                     <small class="text-muted">Este será tu peso estabilizado para comenzar el volumen</small>
                 </div>
             </div>
@@ -1161,4 +1191,117 @@ function guardarPlan() {
     //     method: 'POST',
     //     body: resultados
     // })
+}
+
+// ==================== FUNCIONES INTERACTIVAS ====================
+
+// Configurar eventos después de mostrar resultados
+function configurarEdicionCalorias() {
+    const inputs = document.querySelectorAll('.calorias-editable');
+    inputs.forEach(input => {
+        input.addEventListener('change', function() {
+            recalcularProyeccion();
+        });
+    });
+}
+
+// Restaurar plan recomendado
+function restaurarPlanRecomendado() {
+    const resultadosOriginales = JSON.parse(sessionStorage.getItem('reverseDietResults'));
+    if (resultadosOriginales) {
+        mostrarResultados(resultadosOriginales);
+        setTimeout(() => configurarEdicionCalorias(), 100);
+    }
+}
+
+// Recalcular proyección con calorías personalizadas
+function recalcularProyeccion() {
+    const resultados = JSON.parse(sessionStorage.getItem('reverseDietResults'));
+    if (!resultados) return;
+
+    // Leer las calorías editadas
+    const inputs = document.querySelectorAll('.calorias-editable');
+    const caloriasPersonalizadas = [];
+    inputs.forEach(input => {
+        caloriasPersonalizadas.push(parseFloat(input.value));
+    });
+
+    // Actualizar el plan reverse con las nuevas calorías
+    const planReverse = resultados.planReverse;
+    planReverse.semanas.forEach((semana, index) => {
+        if (caloriasPersonalizadas[index]) {
+            const caloriasAnterior = semana.caloriasFin;
+            semana.caloriasFin = caloriasPersonalizadas[index];
+            semana.incremento = semana.caloriasFin - semana.caloriasInicio;
+
+            // Actualizar siguiente semana si existe
+            if (index < planReverse.semanas.length - 1) {
+                planReverse.semanas[index + 1].caloriasInicio = semana.caloriasFin;
+            }
+        }
+    });
+
+    // Actualizar totales
+    const ultimaSemana = planReverse.semanas[planReverse.semanas.length - 1];
+    planReverse.caloriasFinal = ultimaSemana.caloriasFin;
+    planReverse.incrementoTotal = planReverse.caloriasFinal - planReverse.caloriasInicio;
+
+    // Recalcular proyección de peso con nuevas calorías
+    const proyeccionPeso = calcularProyeccionPeso(
+        resultados.datos.pesoActual,
+        planReverse,
+        resultados.tdeePostReverse,
+        resultados.datos
+    );
+
+    // Actualizar resultados
+    resultados.planReverse = planReverse;
+    resultados.proyeccionPeso = proyeccionPeso;
+
+    // Actualizar visualización
+    actualizarVisualizacionProyeccion(proyeccionPeso, planReverse);
+}
+
+// Actualizar solo la visualización de la proyección
+function actualizarVisualizacionProyeccion(proyeccion, planReverse) {
+    // Actualizar resumen
+    document.getElementById('calorias-finales-display').textContent = planReverse.caloriasFinal;
+    document.getElementById('incremento-total-display').textContent = planReverse.incrementoTotal;
+
+    // Actualizar incrementos en la tabla
+    planReverse.semanas.forEach((semana, index) => {
+        const incrementoCell = document.querySelector(`.incremento-semana-${index}`);
+        if (incrementoCell) {
+            incrementoCell.textContent = `+${semana.incremento} kcal`;
+        }
+    });
+
+    // Actualizar tabla de proyección de peso
+    const tbody = document.querySelector('#tabla-proyeccion-peso tbody');
+    if (tbody) {
+        tbody.innerHTML = '';
+        proyeccion.semanas.forEach(semana => {
+            const colorCambio = semana.cambioTotal >= 0 ? 'text-success' : 'text-danger';
+            const rowClass = semana.esEstabilizacion ? 'table-success' : '';
+
+            const row = document.createElement('tr');
+            row.className = rowClass;
+            row.innerHTML = `
+                <td><strong>Semana ${semana.numero}</strong></td>
+                <td>${semana.pesoInicio} kg</td>
+                <td><strong>${semana.pesoFin} kg</strong></td>
+                <td class="${colorCambio}"><strong>${semana.cambioTotal >= 0 ? '+' : ''}${semana.cambioTotal} kg</strong></td>
+                <td class="text-info">+${semana.aguaGlucogeno} kg</td>
+                <td class="${semana.grasaNeta >= 0 ? 'text-danger' : 'text-success'}">${semana.grasaNeta >= 0 ? '+' : ''}${semana.grasaNeta} kg</td>
+                <td>${semana.calorias} kcal</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    // Actualizar resumen de cambios de peso
+    document.getElementById('peso-final-display').textContent = proyeccion.pesoFinal;
+    document.getElementById('agua-glucogeno-display').textContent = proyeccion.aguaGlucogenoTotal;
+    document.getElementById('grasa-neta-display').textContent = proyeccion.grasaNetaTotal;
+    document.getElementById('cambio-total-display').textContent = proyeccion.cambioTotal;
 }
