@@ -1,0 +1,39 @@
+# Archivos de configuración sensibles
+config.php
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+error_log
+
+# Cache
+cache/
+temp/
+tmp/
+
+# Uploads
+uploads/
+*.pdf
+*.zip
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Node modules (si se añaden en el futuro)
+node_modules/
+package-lock.json
+
+# Composer (si se añade en el futuro)
+vendor/
+composer.lock
