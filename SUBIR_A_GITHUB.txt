@@ -1,0 +1,155 @@
+═══════════════════════════════════════════════════════════════
+  🚀 SUBIR V2-FRONTEND A GITHUB - COMANDOS RÁPIDOS
+═══════════════════════════════════════════════════════════════
+
+📍 UBICACIÓN LOCAL: c:\xampp\htdocs\calculadora\v2
+📦 ESTADO: Listo para push (3 commits realizados)
+🌿 RAMA: main
+
+═══════════════════════════════════════════════════════════════
+  PASO 1: CREAR REPOSITORIO EN GITHUB
+═══════════════════════════════════════════════════════════════
+
+1. Ve a: https://github.com/new
+
+2. Completa:
+   - Repository name: v2-frontend
+   - Description: Calculadora de Calorías V2 con diseño moderno v0.dev style
+   - Public o Private (tu elección)
+
+3. ⚠️ NO MARQUES NADA (deja todo sin tildar):
+   [ ] Add a README file
+   [ ] Add .gitignore
+   [ ] Choose a license
+
+4. Click en "Create repository"
+
+═══════════════════════════════════════════════════════════════
+  PASO 2: CONECTAR Y SUBIR (Copia estos comandos)
+═══════════════════════════════════════════════════════════════
+
+cd c:/xampp/htdocs/calculadora/v2
+
+git remote add origin https://github.com/TU_USUARIO/v2-frontend.git
+
+git push -u origin main
+
+
+⚠️ IMPORTANTE: Reemplaza TU_USUARIO con tu nombre de usuario de GitHub
+
+═══════════════════════════════════════════════════════════════
+  EJEMPLO CON USUARIO REAL
+═══════════════════════════════════════════════════════════════
+
+Si tu usuario es "javierlopez":
+
+git remote add origin https://github.com/javierlopez/v2-frontend.git
+git push -u origin main
+
+═══════════════════════════════════════════════════════════════
+  SI TE PIDE AUTENTICACIÓN
+═══════════════════════════════════════════════════════════════
+
+🔐 MÉTODO 1: Personal Access Token (Recomendado)
+
+1. Ve a: https://github.com/settings/tokens
+2. "Generate new token (classic)"
+3. Nombre: v2-frontend
+4. Marca: [x] repo (todos los checks de repo)
+5. "Generate token"
+6. COPIA EL TOKEN (no lo verás después)
+7. Cuando git pida password, PEGA EL TOKEN
+
+🔐 MÉTODO 2: GitHub Desktop
+
+1. Instala GitHub Desktop
+2. File > Add Local Repository
+3. Selecciona: c:\xampp\htdocs\calculadora\v2
+4. Publish repository
+
+═══════════════════════════════════════════════════════════════
+  VERIFICAR QUE FUNCIONÓ
+═══════════════════════════════════════════════════════════════
+
+Después del push, deberías ver:
+
+✅ Enumerating objects: 26, done.
+✅ Writing objects: 100%
+✅ To https://github.com/TU_USUARIO/v2-frontend.git
+✅ * [new branch]      main -> main
+
+Luego ve a: https://github.com/TU_USUARIO/v2-frontend
+
+Deberías ver:
+✅ README.md renderizado en la página
+✅ 23 archivos
+✅ 3 commits
+✅ Carpeta assets/css/
+
+═══════════════════════════════════════════════════════════════
+  COMANDOS ÚTILES DESPUÉS
+═══════════════════════════════════════════════════════════════
+
+# Ver estado del repositorio
+git status
+
+# Ver el remote configurado
+git remote -v
+
+# Ver commits
+git log --oneline
+
+# Hacer cambios futuros
+git add .
+git commit -m "Descripción del cambio"
+git push
+
+═══════════════════════════════════════════════════════════════
+  SOLUCIÓN DE PROBLEMAS
+═══════════════════════════════════════════════════════════════
+
+❌ Error: "remote origin already exists"
+Solución:
+   git remote remove origin
+   git remote add origin https://github.com/TU_USUARIO/v2-frontend.git
+
+❌ Error: "Authentication failed"
+Solución:
+   - Usa Personal Access Token (no tu password de GitHub)
+   - O usa GitHub Desktop
+
+❌ Error: "Updates were rejected"
+Solución:
+   git pull origin main --rebase
+   git push origin main
+
+═══════════════════════════════════════════════════════════════
+  INFORMACIÓN DEL PROYECTO
+═══════════════════════════════════════════════════════════════
+
+📊 Archivos: 23
+💻 Páginas PHP: 10
+📜 JavaScript: 5
+🎨 CSS: 1 (v0-theme.css)
+📝 Documentación: 4
+⚙️ Config: 3
+
+🎯 Commits realizados: 3
+   1. Initial commit: V2 Frontend with modern design
+   2. Add GitHub upload instructions
+   3. Add complete project summary documentation
+
+═══════════════════════════════════════════════════════════════
+  📚 DOCUMENTACIÓN DISPONIBLE
+═══════════════════════════════════════════════════════════════
+
+README.md                - Documentación completa del proyecto
+INSTRUCCIONES_GITHUB.md  - Guía detallada de GitHub
+RESUMEN_COMPLETO.md      - Resumen de todo lo realizado
+SUBIR_A_GITHUB.txt       - Este archivo (guía rápida)
+
+═══════════════════════════════════════════════════════════════
+
+¡Listo! Solo sigue los pasos y tu proyecto estará en GitHub 🚀
+
+═══════════════════════════════════════════════════════════════
