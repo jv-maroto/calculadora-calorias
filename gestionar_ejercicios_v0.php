@@ -11,7 +11,7 @@ $nombre = $_SESSION['usuario_nombre'];
 $apellidos = $_SESSION['usuario_apellidos'];
 
 // Conexión a base de datos
-require_once 'config.php';
+require_once 'connection.php';
 
 // Obtener rutina activa
 $sql_rutina = "SELECT * FROM rutinas WHERE activa = TRUE LIMIT 1";

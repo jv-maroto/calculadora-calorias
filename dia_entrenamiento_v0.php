@@ -11,7 +11,7 @@ $nombre = $_SESSION['usuario_nombre'];
 $apellidos = $_SESSION['usuario_apellidos'];
 
 // Conexión a base de datos
-require_once 'config.php';
+require_once 'connection.php';
 
 // Obtener ID del día
 $dia_id = isset($_GET['dia_id']) ? intval($_GET['dia_id']) : 0;

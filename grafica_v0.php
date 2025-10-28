@@ -18,14 +18,36 @@
     <link rel="stylesheet" href="assets/css/v0-theme.css">
 
     <style>
+        body {
+            background: #fafafa;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding-bottom: 80px;
+        }
+
+        @media (max-width: 768px) {
+            body { padding-bottom: 80px !important; }
+            nav:first-of-type { display: none !important; }
+            nav:nth-of-type(2) { display: flex !important; }
+        }
+        @media (min-width: 768px) {
+            body { padding-bottom: 2rem !important; }
+            nav:first-of-type { display: flex !important; }
+            nav:nth-of-type(2) { display: none !important; }
+        }
+
         .stat-card {
             text-align: center;
             padding: 1.5rem;
         }
 
+        .stat-card {
+            border: 1px solid #e5e5e5;
+            padding: 1.5rem;
+        }
+
         .stat-label {
             font-size: 0.875rem;
-            color: #64748b;
+            color: #666;
             font-weight: 600;
             margin-bottom: 0.5rem;
             text-transform: uppercase;
@@ -35,7 +57,7 @@
         .stat-value {
             font-size: 2rem;
             font-weight: 700;
-            color: #1e293b;
+            color: #1a1a1a;
         }
 
         .stat-value.positive {
@@ -48,43 +70,58 @@
 
         .period-btn {
             padding: 0.5rem 1rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
+            border: 1px solid #e5e5e5;
             background: white;
-            color: #64748b;
+            color: #666;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s;
         }
 
         .period-btn:hover {
-            border-color: #6366f1;
-            color: #6366f1;
+            border-color: #1a1a1a;
+            color: #1a1a1a;
         }
 
         .period-btn.active {
-            background: #6366f1;
+            background: #1a1a1a;
             color: white;
-            border-color: #6366f1;
+            border-color: #1a1a1a;
         }
     </style>
 </head>
 <body>
-    <!-- Navbar moderna -->
-    <div class="navbar-modern">
-        <a href="index_v0_design.php" class="navbar-brand-modern">💪 Calculadora de Calorías</a>
-        <div class="navbar-links">
-            <a href="index_v0_design.php" title="Calculadora">🧮</a>
-            <a href="reverse_diet_v0.php" title="Reverse Diet">🔄</a>
-            <a href="rutinas_v0.php" title="Rutinas">🏋️</a>
-            <a href="introducir_peso_v0.php" title="Registrar Peso">⚖️</a>
-            <a href="grafica_v0.php" title="Progreso" style="color: #6366f1;">📊</a>
-            <a href="logout.php" title="Cerrar Sesión">🚪</a>
+    <!-- Top Nav - Desktop -->
+    <nav style="display: none; background: white; border-bottom: 1px solid #e5e5e5; padding: 0 2rem; height: 60px; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100;">
+        <div style="display: flex; gap: 2rem;">
+            <a href="dashboard.php" style="color: #666; text-decoration: none; font-size: 14px; font-weight: 500;">← Dashboard</a>
+            <a href="diet_hub.php" style="color: #666; text-decoration: none; font-size: 14px; font-weight: 500;">DIET Hub</a>
+            <a href="calculatorkcal.php" style="color: #666; text-decoration: none; font-size: 14px; font-weight: 500;">Calculadora</a>
+            <a href="introducir_peso_v0.php" style="color: #666; text-decoration: none; font-size: 14px; font-weight: 500;">Peso</a>
+            <a href="grafica_v0.php" style="color: #1a1a1a; text-decoration: none; font-size: 14px; font-weight: 500;">Gráfica</a>
+            <a href="reverse_diet_v0.php" style="color: #666; text-decoration: none; font-size: 14px; font-weight: 500;">Reverse Diet</a>
         </div>
-    </div>
+        <a href="logout.php" style="color: #999; text-decoration: none; font-size: 14px; font-weight: 500;">Salir</a>
+    </nav>
+
+    <!-- Bottom Nav - Mobile -->
+    <nav style="position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e5e5e5; display: flex; justify-content: space-around; padding: 12px 0; z-index: 100;">
+        <a href="dashboard.php" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #999; text-decoration: none; font-size: 11px; font-weight: 500;">
+            <div>Inicio</div>
+        </a>
+        <a href="diet_hub.php" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #999; text-decoration: none; font-size: 11px; font-weight: 500;">
+            <div>DIET</div>
+        </a>
+        <a href="introducir_peso_v0.php" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #999; text-decoration: none; font-size: 11px; font-weight: 500;">
+            <div>Peso</div>
+        </a>
+        <a href="grafica_v0.php" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #1a1a1a; text-decoration: none; font-size: 11px; font-weight: 500;">
+            <div>Gráfica</div>
+        </a>
+    </nav>
 
     <!-- Contenido -->
-    <div style="max-width: 1400px; margin: 0 auto; padding: 0 1rem 2rem;">
+    <div style="max-width: 1400px; margin: 0 auto; padding: 2rem 1rem 2rem;">
 
         <!-- Card de gráfica -->
         <div class="v0-card">

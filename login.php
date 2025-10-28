@@ -1,9 +1,9 @@
 <?php
 session_start();
 
-// Si ya está logueado, redirigir a index
+// Si ya está logueado, redirigir a dashboard
 if (isset($_SESSION['usuario_nombre']) && isset($_SESSION['usuario_apellidos'])) {
-    header('Location: index.php');
+    header('Location: dashboard.php');
     exit;
 }
 
@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($nombre) && !empty($apellidos)) {
         $_SESSION['usuario_nombre'] = $nombre;
         $_SESSION['usuario_apellidos'] = $apellidos;
-        header('Location: index.php');
+        header('Location: dashboard.php');
         exit;
     } else {
         $error = 'Por favor, introduce nombre y apellidos';

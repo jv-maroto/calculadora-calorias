@@ -27,12 +27,17 @@ $apellidos = $_SESSION['usuario_apellidos'];
     <link rel="stylesheet" href="assets/css/v0-theme.css">
 
     <style>
+        body {
+            background: #fafafa;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding-bottom: 80px;
+        }
+
         .wizard-step { display: none; }
         .wizard-step.active { display: block; }
         .progress-bar-custom {
             height: 30px;
-            background: linear-gradient(to right, #6366f1, #8b5cf6);
-            border-radius: 8px;
+            background: #1a1a1a;
             transition: width 0.3s ease;
             display: flex;
             align-items: center;
@@ -42,42 +47,67 @@ $apellidos = $_SESSION['usuario_apellidos'];
             font-size: 0.875rem;
         }
         .progress-container {
-            background: #e2e8f0;
-            border-radius: 8px;
+            background: #e5e5e5;
             overflow: hidden;
             margin-bottom: 2rem;
+            border: 1px solid #e5e5e5;
         }
         .tooltip-icon {
             cursor: help;
-            color: #6366f1;
+            color: #1a1a1a;
             margin-left: 5px;
             display: inline-block;
         }
         .result-section { display: none; }
+
+        @media (max-width: 768px) {
+            body { padding-bottom: 80px !important; }
+            nav:first-of-type { display: none !important; }
+            nav:nth-of-type(2) { display: flex !important; }
+        }
+        @media (min-width: 768px) {
+            body { padding-bottom: 2rem !important; }
+            nav:first-of-type { display: flex !important; }
+            nav:nth-of-type(2) { display: none !important; }
+        }
     </style>
 </head>
 <body>
-    <!-- Navbar moderna -->
-    <div class="navbar-modern">
-        <a href="index_v0_design.php" class="navbar-brand-modern">💪 Calculadora de Calorías</a>
-        <div class="navbar-links">
-            <span style="color: #64748b; margin-right: 1rem;">👤 <?php echo htmlspecialchars($nombre . ' ' . $apellidos); ?></span>
-            <a href="index_v0_design.php" title="Calculadora">🧮</a>
-            <a href="reverse_diet_v0.php" title="Reverse Diet" style="color: #6366f1;">🔄</a>
-            <a href="rutinas_v0.php" title="Rutinas">🏋️</a>
-            <a href="introducir_peso_v0.php" title="Registrar Peso">⚖️</a>
-            <a href="grafica_v0.php" title="Progreso">📊</a>
-            <a href="seguimiento_v0.php" title="Ajuste de Calorías">📈</a>
-            <a href="logout.php" title="Cerrar Sesión">🚪</a>
+    <!-- Top Nav - Desktop -->
+    <nav style="display: none; background: white; border-bottom: 1px solid #e5e5e5; padding: 0 2rem; height: 60px; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100;">
+        <div style="display: flex; gap: 2rem;">
+            <a href="dashboard.php" style="color: #666; text-decoration: none; font-size: 14px; font-weight: 500;">← Dashboard</a>
+            <a href="diet_hub.php" style="color: #666; text-decoration: none; font-size: 14px; font-weight: 500;">DIET Hub</a>
+            <a href="calculatorkcal.php" style="color: #666; text-decoration: none; font-size: 14px; font-weight: 500;">Calculadora</a>
+            <a href="introducir_peso_v0.php" style="color: #666; text-decoration: none; font-size: 14px; font-weight: 500;">Peso</a>
+            <a href="grafica_v0.php" style="color: #666; text-decoration: none; font-size: 14px; font-weight: 500;">Gráfica</a>
+            <a href="reverse_diet_v0.php" style="color: #1a1a1a; text-decoration: none; font-size: 14px; font-weight: 500;">Reverse Diet</a>
         </div>
-    </div>
+        <a href="logout.php" style="color: #999; text-decoration: none; font-size: 14px; font-weight: 500;">Salir</a>
+    </nav>
+
+    <!-- Bottom Nav - Mobile -->
+    <nav style="position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e5e5e5; display: flex; justify-content: space-around; padding: 12px 0; z-index: 100;">
+        <a href="dashboard.php" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #999; text-decoration: none; font-size: 11px; font-weight: 500;">
+            <div>Inicio</div>
+        </a>
+        <a href="diet_hub.php" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #999; text-decoration: none; font-size: 11px; font-weight: 500;">
+            <div>DIET</div>
+        </a>
+        <a href="calculatorkcal.php" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #999; text-decoration: none; font-size: 11px; font-weight: 500;">
+            <div>Calculadora</div>
+        </a>
+        <a href="reverse_diet_v0.php" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #1a1a1a; text-decoration: none; font-size: 11px; font-weight: 500;">
+            <div>Reverse</div>
+        </a>
+    </nav>
 
     <!-- Contenido -->
-    <div style="max-width: 1200px; margin: 0 auto; padding: 0 1rem 2rem;">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem 2rem;">
 
         <div class="v0-card">
             <div class="v0-card-header">
-                <i data-lucide="repeat" style="color: #6366f1; width: 24px; height: 24px;"></i>
+                <i data-lucide="repeat" style="color: #1a1a1a; width: 24px; height: 24px;"></i>
                 <div>
                     <h3>Reverse Diet: Transición de Déficit a Volumen</h3>
                     <p>Plan personalizado para aumentar calorías sin acumular grasa y prepararte para el bulk</p>
@@ -97,7 +127,7 @@ $apellidos = $_SESSION['usuario_apellidos'];
                     <!-- PASO 1: Datos Personales Básicos -->
                     <div class="wizard-step active" id="step-1">
                         <h4 style="margin-bottom: 1.5rem; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
-                            <i data-lucide="user" style="width: 24px; height: 24px; color: #6366f1;"></i>
+                            <i data-lucide="user" style="width: 24px; height: 24px; color: #1a1a1a;"></i>
                             Paso 1: Datos Personales Básicos
                         </h4>
 
@@ -140,7 +170,7 @@ $apellidos = $_SESSION['usuario_apellidos'];
                     <!-- PASO 2: Actividad Física -->
                     <div class="wizard-step" id="step-2">
                         <h4 style="margin-bottom: 1.5rem; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
-                            <i data-lucide="dumbbell" style="width: 24px; height: 24px; color: #6366f1;"></i>
+                            <i data-lucide="dumbbell" style="width: 24px; height: 24px; color: #1a1a1a;"></i>
                             Paso 2: Actividad Física
                         </h4>
 
@@ -196,7 +226,7 @@ $apellidos = $_SESSION['usuario_apellidos'];
                     <!-- PASO 3: Estilo de Vida -->
                     <div class="wizard-step" id="step-3">
                         <h4 style="margin-bottom: 1.5rem; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
-                            <i data-lucide="briefcase" style="width: 24px; height: 24px; color: #6366f1;"></i>
+                            <i data-lucide="briefcase" style="width: 24px; height: 24px; color: #1a1a1a;"></i>
                             Paso 3: Estilo de Vida
                         </h4>
 
@@ -238,7 +268,7 @@ $apellidos = $_SESSION['usuario_apellidos'];
                     <!-- PASO 4: Historial de Déficit -->
                     <div class="wizard-step" id="step-4">
                         <h4 style="margin-bottom: 1.5rem; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
-                            <i data-lucide="trending-down" style="width: 24px; height: 24px; color: #6366f1;"></i>
+                            <i data-lucide="trending-down" style="width: 24px; height: 24px; color: #1a1a1a;"></i>
                             Paso 4: Historial de Déficit Calórico
                         </h4>
 
@@ -301,7 +331,7 @@ $apellidos = $_SESSION['usuario_apellidos'];
                     <!-- PASO 5: Nivel de Entrenamiento -->
                     <div class="wizard-step" id="step-5">
                         <h4 style="margin-bottom: 1.5rem; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
-                            <i data-lucide="zap" style="width: 24px; height: 24px; color: #6366f1;"></i>
+                            <i data-lucide="zap" style="width: 24px; height: 24px; color: #1a1a1a;"></i>
                             Paso 5: Nivel de Entrenamiento
                         </h4>
 
@@ -333,7 +363,7 @@ $apellidos = $_SESSION['usuario_apellidos'];
                     <!-- PASO 6: Composición Corporal -->
                     <div class="wizard-step" id="step-6">
                         <h4 style="margin-bottom: 1.5rem; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
-                            <i data-lucide="activity" style="width: 24px; height: 24px; color: #6366f1;"></i>
+                            <i data-lucide="activity" style="width: 24px; height: 24px; color: #1a1a1a;"></i>
                             Paso 6: Composición Corporal
                         </h4>
 
@@ -390,7 +420,7 @@ $apellidos = $_SESSION['usuario_apellidos'];
                     <!-- PASO 7: Objetivo del Bulk -->
                     <div class="wizard-step" id="step-7">
                         <h4 style="margin-bottom: 1.5rem; color: #1e293b; display: flex; align-items: center; gap: 0.5rem;">
-                            <i data-lucide="target" style="width: 24px; height: 24px; color: #6366f1;"></i>
+                            <i data-lucide="target" style="width: 24px; height: 24px; color: #1a1a1a;"></i>
                             Paso 7: Objetivo del Bulk
                         </h4>
 

@@ -13,23 +13,58 @@
 
     <!-- V0 Theme -->
     <link rel="stylesheet" href="assets/css/v0-theme.css">
+
+    <style>
+        body {
+            background: #fafafa;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding-bottom: 80px;
+        }
+
+        @media (max-width: 768px) {
+            body { padding-bottom: 80px !important; }
+            nav:first-of-type { display: none !important; }
+            nav:nth-of-type(2) { display: flex !important; }
+        }
+        @media (min-width: 768px) {
+            body { padding-bottom: 2rem !important; }
+            nav:first-of-type { display: flex !important; }
+            nav:nth-of-type(2) { display: none !important; }
+        }
+    </style>
 </head>
 <body>
-    <!-- Navbar moderna -->
-    <div class="navbar-modern">
-        <a href="index_v0_design.php" class="navbar-brand-modern">💪 Calculadora de Calorías</a>
-        <div class="navbar-links">
-            <a href="index_v0_design.php" title="Calculadora">🧮</a>
-            <a href="reverse_diet_v0.php" title="Reverse Diet">🔄</a>
-            <a href="rutinas_v0.php" title="Rutinas">🏋️</a>
-            <a href="introducir_peso_v0.php" title="Registrar Peso" style="color: #6366f1;">⚖️</a>
-            <a href="seguimiento_v0.php" title="Seguimiento">📊</a>
-            <a href="logout.php" title="Cerrar Sesión">🚪</a>
+    <!-- Top Nav - Desktop -->
+    <nav style="display: none; background: white; border-bottom: 1px solid #e5e5e5; padding: 0 2rem; height: 60px; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100;">
+        <div style="display: flex; gap: 2rem;">
+            <a href="dashboard.php" style="color: #666; text-decoration: none; font-size: 14px; font-weight: 500;">← Dashboard</a>
+            <a href="diet_hub.php" style="color: #666; text-decoration: none; font-size: 14px; font-weight: 500;">DIET Hub</a>
+            <a href="calculatorkcal.php" style="color: #666; text-decoration: none; font-size: 14px; font-weight: 500;">Calculadora</a>
+            <a href="introducir_peso_v0.php" style="color: #1a1a1a; text-decoration: none; font-size: 14px; font-weight: 500;">Peso</a>
+            <a href="grafica_v0.php" style="color: #666; text-decoration: none; font-size: 14px; font-weight: 500;">Gráfica</a>
+            <a href="reverse_diet_v0.php" style="color: #666; text-decoration: none; font-size: 14px; font-weight: 500;">Reverse Diet</a>
         </div>
-    </div>
+        <a href="logout.php" style="color: #999; text-decoration: none; font-size: 14px; font-weight: 500;">Salir</a>
+    </nav>
+
+    <!-- Bottom Nav - Mobile -->
+    <nav style="position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e5e5e5; display: flex; justify-content: space-around; padding: 12px 0; z-index: 100;">
+        <a href="dashboard.php" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #999; text-decoration: none; font-size: 11px; font-weight: 500;">
+            <div>Inicio</div>
+        </a>
+        <a href="diet_hub.php" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #999; text-decoration: none; font-size: 11px; font-weight: 500;">
+            <div>DIET</div>
+        </a>
+        <a href="introducir_peso_v0.php" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #1a1a1a; text-decoration: none; font-size: 11px; font-weight: 500;">
+            <div>Peso</div>
+        </a>
+        <a href="grafica_v0.php" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #999; text-decoration: none; font-size: 11px; font-weight: 500;">
+            <div>Gráfica</div>
+        </a>
+    </nav>
 
     <!-- Contenido -->
-    <div style="max-width: 800px; margin: 0 auto; padding: 0 1rem 2rem;">
+    <div style="max-width: 800px; margin: 0 auto; padding: 2rem 1rem 2rem;">
 
         <!-- Mensaje de resultado -->
         <div id="mensaje-resultado" class="v0-alert" style="display: none;"></div>
@@ -37,7 +72,7 @@
         <!-- Card de registro de peso -->
         <div class="v0-card">
             <div class="v0-card-header">
-                <i data-lucide="scale" style="color: #6366f1; width: 24px; height: 24px;"></i>
+                <i data-lucide="scale" style="color: #1a1a1a; width: 24px; height: 24px;"></i>
                 <div>
                     <h3>Registrar Peso Diario</h3>
                     <p>Lleva un seguimiento de tu progreso día a día</p>
@@ -82,7 +117,7 @@
         <!-- Card de historial -->
         <div class="v0-card mt-3">
             <div class="v0-card-header">
-                <i data-lucide="calendar-days" style="color: #6366f1; width: 24px; height: 24px;"></i>
+                <i data-lucide="calendar-days" style="color: #1a1a1a; width: 24px; height: 24px;"></i>
                 <div>
                     <h3>Registros Recientes</h3>
                     <p>Últimos 7 días</p>
@@ -91,8 +126,8 @@
             <div class="v0-card-body">
                 <div id="historial-pesos">
                     <div class="text-center" style="padding: 2rem;">
-                        <i data-lucide="loader-2" style="width: 32px; height: 32px; color: #6366f1; animation: spin 1s linear infinite;"></i>
-                        <p style="color: #64748b; margin-top: 1rem;">Cargando registros...</p>
+                        <i data-lucide="loader-2" style="width: 32px; height: 32px; color: #1a1a1a; animation: spin 1s linear infinite;"></i>
+                        <p style="color: #666; margin-top: 1rem;">Cargando registros...</p>
                     </div>
                 </div>
             </div>
@@ -112,8 +147,8 @@
             justify-content: space-between;
             align-items: center;
             padding: 1rem;
-            border-bottom: 1px solid #e2e8f0;
-            transition: background 0.2s;
+            border-bottom: 1px solid #e5e5e5;
+            transition: background 0.15s;
         }
 
         .registro-item:last-child {
@@ -121,13 +156,13 @@
         }
 
         .registro-item:hover {
-            background: #f8fafc;
+            background: #fafafa;
         }
 
         .peso-grande {
             font-size: 1.5rem;
             font-weight: 700;
-            color: #6366f1;
+            color: #1a1a1a;
         }
 
         .diferencia-peso {

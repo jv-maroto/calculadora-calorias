@@ -11,7 +11,7 @@ $nombre = $_SESSION['usuario_nombre'];
 $apellidos = $_SESSION['usuario_apellidos'];
 
 // Conexión a base de datos
-require_once 'config.php';
+require_once 'connection.php';
 
 // Obtener rutina activa
 $sql_rutina = "SELECT * FROM rutinas WHERE activa = TRUE LIMIT 1";
@@ -42,26 +42,48 @@ $stmt->bind_param("ss", $nombre, $apellidos);
 $stmt->execute();
 $ultimo_entrenamiento = $stmt->get_result()->fetch_assoc();
 
-// Obtener resumen semanal (entrenamientos de esta semana)
+// Obtener días de la semana actual con entrenamientos
 $inicio_semana = date('Y-m-d', strtotime('monday this week'));
 $fin_semana = date('Y-m-d', strtotime('sunday this week'));
 
-$sql_semana = "SELECT d.nombre as dia, COUNT(DISTINCT r.ejercicio_id) as ejercicios_completados,
-               (SELECT COUNT(*) FROM ejercicios WHERE dia_id = d.id) as total_ejercicios
-               FROM dias_entrenamiento d
-               LEFT JOIN ejercicios e ON e.dia_id = d.id
-               LEFT JOIN registros_entrenamiento r ON r.ejercicio_id = e.id
-                   AND r.nombre = ? AND r.apellidos = ?
-                   AND r.fecha BETWEEN ? AND ?
-               WHERE d.rutina_id = ? AND d.es_descanso = FALSE
-               GROUP BY d.id, d.nombre, d.dia_semana
-               ORDER BY d.dia_semana";
-$stmt = $conn->prepare($sql_semana);
-$stmt->bind_param("ssssi", $nombre, $apellidos, $inicio_semana, $fin_semana, $rutina['id']);
+// Obtener fechas en las que entrenó esta semana
+$sql_fechas = "SELECT DISTINCT DATE(r.fecha) as fecha
+               FROM registros_entrenamiento r
+               WHERE r.nombre = ? AND r.apellidos = ?
+               AND r.fecha BETWEEN ? AND ?
+               ORDER BY r.fecha";
+$stmt = $conn->prepare($sql_fechas);
+$stmt->bind_param("ssss", $nombre, $apellidos, $inicio_semana, $fin_semana);
 $stmt->execute();
-$progreso_semana = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$fechas_entrenadas = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
 
-$conn->close();
+// Convertir a array simple de fechas
+$fechas_array = array_column($fechas_entrenadas, 'fecha');
+
+// Crear array de los 7 días de la semana (con abreviaturas personalizadas)
+$dias_semana = [
+    ['nombre' => 'Lunes', 'abrev' => 'LUN'],
+    ['nombre' => 'Martes', 'abrev' => 'MAR'],
+    ['nombre' => 'Miércoles', 'abrev' => 'MIÉ'],
+    ['nombre' => 'Jueves', 'abrev' => 'JUE'],
+    ['nombre' => 'Viernes', 'abrev' => 'VIE'],
+    ['nombre' => 'Sábado', 'abrev' => 'SÁB'],
+    ['nombre' => 'Domingo', 'abrev' => 'DOM']
+];
+$progreso_semana = [];
+
+for ($i = 0; $i < 7; $i++) {
+    $fecha_dia = date('Y-m-d', strtotime($inicio_semana . " +$i days"));
+    $entreno = in_array($fecha_dia, $fechas_array);
+
+    $progreso_semana[] = [
+        'dia' => $dias_semana[$i]['nombre'],
+        'dia_abrev' => $dias_semana[$i]['abrev'],
+        'fecha' => $fecha_dia,
+        'entreno' => $entreno
+    ];
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -143,12 +165,12 @@ $conn->close();
         <a href="index_v0_design.php" class="navbar-brand-modern">💪 Calculadora de Calorías</a>
         <div class="navbar-links">
             <span style="color: #64748b; margin-right: 1rem;">👤 <?php echo htmlspecialchars($nombre . ' ' . $apellidos); ?></span>
-            <a href="index_v0_design.php" title="Calculadora">🧮</a>
+            <a href="index.php" title="Calculadora">🧮</a>
             <a href="reverse_diet_v0.php" title="Reverse Diet">🔄</a>
             <a href="rutinas_v0.php" title="Rutinas" style="color: #6366f1;">🏋️</a>
+            <a href="analisis_progreso.php" title="Análisis de Progreso">📊</a>
             <a href="introducir_peso_v0.php" title="Registrar Peso">⚖️</a>
-            <a href="grafica_v0.php" title="Progreso">📊</a>
-            <a href="seguimiento_v0.php" title="Ajuste de Calorías">📈</a>
+            <a href="grafica_v0.php" title="Progreso Peso">📈</a>
             <a href="logout.php" title="Cerrar Sesión">🚪</a>
         </div>
     </div>
@@ -206,22 +228,23 @@ $conn->close();
                         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                             <?php foreach ($progreso_semana as $dia_progreso): ?>
                                 <?php
-                                $porcentaje = $dia_progreso['total_ejercicios'] > 0
-                                    ? ($dia_progreso['ejercicios_completados'] / $dia_progreso['total_ejercicios']) * 100
-                                    : 0;
-                                $completado = $porcentaje >= 100;
+                                $entreno = $dia_progreso['entreno'];
+                                $es_hoy = $dia_progreso['fecha'] == date('Y-m-d');
+                                $dia_abrev = $dia_progreso['dia_abrev'];
                                 ?>
-                                <div style="text-align: center; flex: 1; min-width: 80px; padding: 0.75rem; background: #f8fafc; border-radius: 12px;">
+                                <div style="text-align: center; flex: 1; min-width: 70px; padding: 0.75rem; background: <?php echo $es_hoy ? '#eef2ff' : '#f8fafc'; ?>; border-radius: 12px; border: <?php echo $es_hoy ? '2px solid #6366f1' : '1px solid #e2e8f0'; ?>;">
                                     <div style="margin-bottom: 0.5rem;">
-                                        <?php if ($completado): ?>
+                                        <?php if ($entreno): ?>
                                             <span class="progress-badge completed">
                                                 <i data-lucide="check" style="width: 14px; height: 14px;"></i>
                                             </span>
                                         <?php else: ?>
-                                            <span class="progress-badge partial"><?php echo round($porcentaje); ?>%</span>
+                                            <span class="progress-badge partial">0%</span>
                                         <?php endif; ?>
                                     </div>
-                                    <small style="color: #64748b; font-weight: 600;"><?php echo explode(' - ', $dia_progreso['dia'])[0]; ?></small>
+                                    <small style="color: <?php echo $es_hoy ? '#6366f1' : '#64748b'; ?>; font-weight: <?php echo $es_hoy ? '700' : '600'; ?>; font-size: 0.7rem;">
+                                        <?php echo $dia_abrev; ?>
+                                    </small>
                                 </div>
                             <?php endforeach; ?>
                         </div>
@@ -266,29 +289,66 @@ $conn->close();
                     <div class="v0-card dia-card" onclick="location.href='dia_entrenamiento_v0.php?dia_id=<?php echo $dia['id']; ?>'" style="overflow: hidden; padding: 0;">
                         <div class="<?php echo $gradientes[$tipo_upper] ?? 'gradient-push'; ?>" style="padding: 1.5rem 1rem; text-align: center;">
                             <div class="dia-icon"><?php echo $icono_dia; ?></div>
-                            <h5 style="color: white; margin-bottom: 0.5rem; font-size: 1rem;"><?php echo htmlspecialchars($dia['nombre']); ?></h5>
-                            <span style="background: rgba(255,255,255,0.25); color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">
-                                <?php echo htmlspecialchars($dia['tipo']); ?>
-                            </span>
+                            <h5 style="color: white; margin-bottom: 0.5rem; font-size: 1.125rem; font-weight: 700;"><?php echo strtoupper($dia['tipo']); ?></h5>
                         </div>
-                        <div style="padding: 1rem; text-align: center;">
-                            <div style="margin-bottom: 0.75rem;">
+                        <div style="padding: 1rem;">
+                            <div style="margin-bottom: 0.75rem; text-align: center;">
                                 <small style="color: #64748b; font-weight: 600;">
                                     <?php
                                     // Contar ejercicios
                                     $sql_count = "SELECT COUNT(*) as total FROM ejercicios WHERE dia_id = ?";
-                                    $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-                                    $stmt = $conn->prepare($sql_count);
-                                    $stmt->bind_param("i", $dia['id']);
-                                    $stmt->execute();
-                                    $count = $stmt->get_result()->fetch_assoc()['total'];
-                                    $conn->close();
-                                    echo $count . " ejercicios";
+                                    $stmt_count = $conn->prepare($sql_count);
+                                    if ($stmt_count) {
+                                        $stmt_count->bind_param("i", $dia['id']);
+                                        $stmt_count->execute();
+                                        $count = $stmt_count->get_result()->fetch_assoc()['total'];
+                                        $stmt_count->close();
+                                        echo $count . " ejercicios";
+                                    } else {
+                                        echo "0 ejercicios";
+                                    }
                                     ?>
                                 </small>
                             </div>
+                            <?php
+                            // Obtener última vez entrenado
+                            $sql_ultimo_dia = "SELECT MAX(fecha) as ultima_fecha
+                                              FROM registros_entrenamiento r
+                                              JOIN ejercicios e ON r.ejercicio_id = e.id
+                                              WHERE e.dia_id = ? AND r.nombre = ? AND r.apellidos = ?";
+                            $stmt_ultimo = $conn->prepare($sql_ultimo_dia);
+                            if ($stmt_ultimo) {
+                                $stmt_ultimo->bind_param("iss", $dia['id'], $nombre, $apellidos);
+                                $stmt_ultimo->execute();
+                                $ultima = $stmt_ultimo->get_result()->fetch_assoc();
+                                $stmt_ultimo->close();
+
+                                if ($ultima && $ultima['ultima_fecha']) {
+                                    $fecha_obj = new DateTime($ultima['ultima_fecha']);
+                                    $hoy = new DateTime();
+                                    $diff = $hoy->diff($fecha_obj);
+
+                                    if ($diff->days == 0) {
+                                        $texto_fecha = "Hoy";
+                                        $color = "#10b981";
+                                    } elseif ($diff->days == 1) {
+                                        $texto_fecha = "Ayer";
+                                        $color = "#3b82f6";
+                                    } elseif ($diff->days < 7) {
+                                        $texto_fecha = "Hace " . $diff->days . " días";
+                                        $color = "#64748b";
+                                    } else {
+                                        $texto_fecha = $fecha_obj->format('d/m/Y');
+                                        $color = "#94a3b8";
+                                    }
+                                    echo "<div style='text-align: center; margin-bottom: 0.75rem;'>";
+                                    echo "<small style='color: $color; font-weight: 500;'>📅 $texto_fecha</small>";
+                                    echo "</div>";
+                                }
+                            }
+                            ?>
                             <button class="v0-btn v0-btn-dark" style="width: 100%;">
-                                Ver
+                                Entrenar
                                 <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
                             </button>
                         </div>
@@ -298,6 +358,8 @@ $conn->close();
         </div>
 
     </div>
+
+    <?php $conn->close(); ?>
 
     <script>
         // Inicializar Lucide icons

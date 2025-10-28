@@ -513,7 +513,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             analisisObjetivo.advertencias.push({
                 tipo: 'advertencia',
-                titulo: '⚠️ Plan ajustado automáticamente por seguridad',
+                titulo: 'Plan ajustado automáticamente por seguridad',
                 mensaje: `Querías: ${kgPerder} kg en ${semanasObjetivo} semanas (déficit de ${deficitDeseado} kcal/día)`,
                 detalle: `Este déficit supera tu límite de ${limiteTexto}. Se ha ajustado automáticamente a ${deficitDiario} kcal/día para proteger tu salud física y mental.`,
                 recomendacion: `Con ${deficitDiario} kcal/día perderás ${kgPorSemana.toFixed(1)} kg/semana. Necesitarás ${semanasEstimadas} semanas (${mesesEstimados} meses) en total. Si quieres más agresivo, selecciona la opción "Agresivo (bajo mi responsabilidad)".`
@@ -525,7 +525,7 @@ document.addEventListener('DOMContentLoaded', function() {
             analisisObjetivo.tipoAdvertencia = 'advertencia';
             analisisObjetivo.advertencias.push({
                 tipo: 'advertencia',
-                titulo: '⚠️ Déficit alto - Requiere disciplina',
+                titulo: 'Déficit alto - Requiere disciplina',
                 mensaje: `Tu déficit es de ${deficitDiario} kcal/día (${kgPorSemana.toFixed(1)} kg/semana)`,
                 detalle: 'Este déficit es manejable pero requiere alta adherencia, buen descanso y entrenamiento adecuado.',
                 recomendacion: 'Asegúrate de: dormir 7-8h, consumir proteína alta (2.2-2.5g/kg), entrenar con pesas para preservar músculo.'
@@ -547,7 +547,7 @@ document.addEventListener('DOMContentLoaded', function() {
             analisisObjetivo.tipoAdvertencia = 'exito';
             analisisObjetivo.advertencias.push({
                 tipo: 'exito',
-                titulo: '✅ Déficit óptimo - Excelente balance',
+                titulo: 'Déficit óptimo - Excelente balance',
                 mensaje: `Tu déficit es de ${deficitDiario} kcal/día (${kgPorSemana.toFixed(1)} kg/semana)`,
                 detalle: 'Este déficit ofrece el mejor balance entre velocidad de pérdida, preservación muscular y adherencia a largo plazo.',
                 recomendacion: 'Mantén este déficit de forma consistente para mejores resultados sostenibles.'
@@ -562,7 +562,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (intensidadDeficit === 'alto' && mesesDeficit > 3) {
                 analisisObjetivo.advertencias.push({
                     tipo: 'advertencia',
-                    titulo: '⚠️ Déficit prolongado - Riesgo de adaptación metabólica',
+                    titulo: 'Déficit prolongado - Riesgo de adaptación metabólica',
                     mensaje: `Estarás ${mesesDeficit} meses en déficit de ${deficitDiario} kcal/día`,
                     detalle: `Déficits altos y prolongados (>3 meses) causan adaptación metabólica significativa: tu cuerpo reduce TMB, baja NEAT (movimiento inconsciente), reduce hormonas tiroideas, aumenta cortisol y resistencia a la leptina.`,
                     recomendacion: `Considera dividir en fases: ${Math.floor(mesesDeficit/2)} meses déficit → 2-4 semanas mantenimiento (reverse diet) → ${Math.ceil(mesesDeficit/2)} meses déficit. Esto minimiza adaptación metabólica y mejora adherencia.`
@@ -801,25 +801,37 @@ document.addEventListener('DOMContentLoaded', function() {
         // Limpiar resultados previos
         resultadosDiv.innerHTML = '';
 
-        // Card de resultados básicos
+        // Card de resultados básicos - Estilo minimalista
         let html = `
-            <div class="card shadow-lg mb-4">
-                <div class="card-header bg-success text-white">
-                    <h4 class="mb-0">📊 Resultados Básicos</h4>
+            <div class="v0-card">
+                <div class="v0-card-header">
+                    <i data-lucide="bar-chart-3" style="color: #1a1a1a;"></i>
+                    <div>
+                        <h3>Resultados Básicos</h3>
+                        <p>Tus métricas calculadas</p>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <div class="alert alert-info">
-                                <strong>TMB (Metabolismo Basal)</strong>
-                                <h3 class="mb-0">${data.tmb} kcal/día</h3>
-                            </div>
+                <div style="padding-top: 1rem;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                        <div style="padding: 1.5rem; border: 1px solid #e5e5e5; background: white;">
+                            <div style="font-size: 0.875rem; font-weight: 600; color: #666; margin-bottom: 0.5rem;">TMB (Metabolismo Basal)</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: #1a1a1a;">${data.tmb} kcal/día</div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="alert alert-warning">
-                                <strong>TDEE (Gasto Total Diario)</strong>
-                                <h3 class="mb-0">${data.tdee} kcal/día</h3>
-                            </div>
+                        <div style="padding: 1.5rem; border: 1px solid #e5e5e5; background: white;">
+                            <div style="font-size: 0.875rem; font-weight: 600; color: #666; margin-bottom: 0.5rem;">TDEE (Gasto Total Diario)</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: #1a1a1a;">${data.tdee} kcal/día</div>
+                        </div>
+                        <div style="padding: 1.5rem; border: 1px solid #e5e5e5; background: white;">
+                            <div style="font-size: 0.875rem; font-weight: 600; color: #666; margin-bottom: 0.5rem;">${
+                                data.plan.tipo === 'deficit' ? 'Calorías Déficit' :
+                                data.plan.tipo === 'volumen' ? 'Calorías Volumen' :
+                                'Calorías Mantenimiento'
+                            }</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: #1a1a1a;">${
+                                data.plan.tipo === 'deficit' ? (data.calorias_deficit || Math.round(data.tdee * 0.85)) :
+                                data.plan.tipo === 'volumen' ? (data.calorias_volumen || Math.round(data.tdee * 1.10)) :
+                                data.tdee
+                            } kcal/día</div>
                         </div>
                     </div>
                 </div>
@@ -833,12 +845,12 @@ document.addEventListener('DOMContentLoaded', function() {
             html += generarHTMLVolumen(data.plan, data.tdee, data.peso, data.incluirMinicuts);
         } else {
             html += `
-                <div class="card shadow-lg mb-4">
-                    <div class="card-header bg-success text-white">
-                        <h4 class="mb-0">⚖️ Plan de Mantenimiento</h4>
+                <div class="v0-card">
+                    <div style="padding: 1rem; border-bottom: 1px solid #e5e5e5; font-weight: 600; color: #1a1a1a;">
+                        <h4>Plan de Mantenimiento</h4>
                     </div>
-                    <div class="card-body">
-                        <h5>Mantén ${data.plan.calorias} kcal/día para mantener tu peso actual</h5>
+                    <div style="padding: 1rem;">
+                        <h5>Mantén ${data.plan.calorias} kcal/día para mantener tu peso actual</div>
                     </div>
                 </div>
             `;
@@ -847,6 +859,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Recomendaciones nutricionales (ELIMINADO - no se usa)
 
         resultadosDiv.innerHTML = html;
+
+        // Inicializar iconos de Lucide en los resultados
+        setTimeout(() => {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }, 100);
     }
 
     function generarHTMLDeficit(plan, tdee, peso) {
@@ -854,17 +873,12 @@ document.addEventListener('DOMContentLoaded', function() {
         let analisisHTML = '';
         if (plan.analisisObjetivo && plan.analisisObjetivo.advertencias.length > 0) {
             plan.analisisObjetivo.advertencias.forEach(adv => {
-                let colorClass = 'alert-info';
-                if (adv.tipo === 'critico') colorClass = 'alert-danger';
-                else if (adv.tipo === 'advertencia') colorClass = 'alert-warning';
-                else if (adv.tipo === 'exito') colorClass = 'alert-success';
-
                 analisisHTML += `
-                    <div class="alert ${colorClass}">
-                        <h5 class="mb-2">${adv.titulo}</h5>
-                        <p class="mb-2"><strong>${adv.mensaje}</strong></p>
-                        <p class="mb-2">${adv.detalle}</p>
-                        <p class="mb-0"><strong>💡 Recomendación:</strong> ${adv.recomendacion}</p>
+                    <div style="padding: 1rem; border: 1px solid #e5e5e5; margin-bottom: 1rem; background: white;">
+                        <div style="font-weight: 600; color: #1a1a1a; margin-bottom: 0.5rem;">${adv.titulo}</div>
+                        <div style="margin-bottom: 0.5rem;"><strong>${adv.mensaje}</strong></div>
+                        <div style="margin-bottom: 0.5rem; color: #666;">${adv.detalle}</div>
+                        <div style="color: #666;"><strong>Recomendación:</strong> ${adv.recomendacion}</div>
                     </div>
                 `;
             });
@@ -872,76 +886,80 @@ document.addEventListener('DOMContentLoaded', function() {
 
         return `
             ${analisisHTML ? `
-                <div class="card shadow-lg mb-4">
-                    <div class="card-header bg-warning text-dark">
-                        <h4 class="mb-0">⚠️ Análisis de tu Objetivo</h4>
+                <div class="v0-card">
+                    <div style="padding: 1rem; border-bottom: 1px solid #e5e5e5; font-weight: 600; color: #1a1a1a;">
+                        <h4>Análisis de tu Objetivo</h4>
                     </div>
-                    <div class="card-body">
+                    <div style="padding: 1rem;">
                         ${analisisHTML}
                     </div>
                 </div>
             ` : ''}
 
-            <div class="card shadow-lg mb-4">
-                <div class="card-header bg-danger text-white">
-                    <h4 class="mb-0">📉 Tu Plan de Déficit Personalizado</h4>
+            <div class="v0-card">
+                <div class="v0-card-header">
+                    <i data-lucide="trending-down" style="color: #1a1a1a;"></i>
+                    <div>
+                        <h3>Plan de Déficit Personalizado</h3>
+                        <p>Estrategia para perder grasa de forma óptima</p>
+                    </div>
                 </div>
-                <div class="card-body">
+                <div style="padding-top: 1rem;">
                     ${plan.vengoDeVolumen && plan.ajusteVolumen > 0 ? `
-                        <div class="alert alert-success">
-                            <h5>✅ Vienes de volumen - Metabolismo acelerado</h5>
-                            <p class="mb-2"><strong>TDEE base calculado:</strong> ${plan.tdee} kcal/día</p>
-                            <p class="mb-2"><strong>Ajuste por volumen:</strong> +${plan.ajusteVolumen} kcal/día</p>
-                            <p class="mb-0"><strong>TDEE ajustado real:</strong> ${plan.tdeeAjustado} kcal/día</p>
-                            <small class="text-muted">Tu metabolismo está acelerado del volumen, puedes comer más y aún así perder grasa. Límites de déficit aumentados en +50 kcal.</small>
+                        <div style="padding: 1rem; border: 1px solid #e5e5e5; margin-bottom: 1rem; background: white;">
+                            <div style="font-weight: 600; color: #1a1a1a; margin-bottom: 0.5rem;">Vienes de volumen - Metabolismo acelerado</div>
+                            <div style="margin-bottom: 0.25rem;"><strong>TDEE base calculado:</strong> ${plan.tdee} kcal/día</div>
+                            <div style="margin-bottom: 0.25rem;"><strong>Ajuste por volumen:</strong> +${plan.ajusteVolumen} kcal/día</div>
+                            <div style="margin-bottom: 0.5rem;"><strong>TDEE ajustado real:</strong> ${plan.tdeeAjustado} kcal/día</div>
+                            <div style="color: #666; font-size: 0.875rem;">Tu metabolismo está acelerado del volumen, puedes comer más y aún así perder grasa.</div>
                         </div>
                     ` : ''}
 
-                    <div class="alert alert-info">
-                        <h5>🎯 Objetivo: Perder ${plan.kgObjetivo} kg</h5>
-                        <h5>⏱️ Duración estimada: ${plan.duracion.semanas} semanas (${plan.duracion.meses} meses)</h5>
-                        <h5>📊 Pérdida esperada: ~${plan.kgPorSemana} kg/semana (aproximado)</h5>
-                        <p class="mb-0">Déficit calórico: ${plan.deficitDiario} kcal/día</p>
-                        <p class="mb-0"><strong>Calorías diarias: ${Math.round(plan.tdeeAjustado - plan.deficitDiario)} kcal</strong></p>
-                        <small class="text-muted">⚠️ Nota: En déficit bajarás más al principio y menos al final. Todo es aproximado.</small>
+                    <div style="padding: 1rem; border: 1px solid #e5e5e5; margin-bottom: 1rem; background: white;">
+                        <div style="font-weight: 600; color: #1a1a1a; margin-bottom: 0.5rem;">Objetivo: Perder ${plan.kgObjetivo} kg</div>
+                        <div style="margin-bottom: 0.25rem;">Duración estimada: ${plan.duracion.semanas} semanas (${plan.duracion.meses} meses)</div>
+                        <h5>📊 Pérdida esperada: ~${plan.kgPorSemana} kg/semana (aproximado)</div>
+                        <p>Déficit calórico: ${plan.deficitDiario} kcal/día</p>
+                        <p><strong>Calorías diarias: ${Math.round(plan.tdeeAjustado - plan.deficitDiario)} kcal</strong></p>
+                        <small style="color: #666; font-size: 0.875rem;">Nota: En déficit bajarás más al principio y menos al final. Todo es aproximado.</small>
                     </div>
 
-                    <h5 class="mt-4">📅 Fases del Plan</h5>
-                    <div class="table-responsive">
+                    <h5>📅 Fases del Plan</div>
+                    <div style="overflow-x: auto;">
                         <table class="table">
                             ${plan.fases.map(fase => `
                                 <tr>
                                     <td><strong>${fase.nombre}</strong></td>
-                                    <td class="text-end"><h5 class="mb-0">${fase.calorias} kcal/día</h5></td>
+                                    <td class="text-end"><h5>${fase.calorias} kcal/día</div></td>
                                 </tr>
                             `).join('')}
                         </table>
                     </div>
 
-                    <h5 class="mt-4">🍽️ Distribución de Macronutrientes</h5>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="card bg-light">
-                                <div class="card-body text-center">
-                                    <h5 class="text-danger">🥩 Proteína</h5>
+                    <h5>🍽️ Distribución de Macronutrientes</div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div >
+                            <div style="padding: 1.5rem; border: 1px solid #e5e5e5; text-align: center;">
+                                <div style="padding: 0;">
+                                    <h5 style="color: #1a1a1a;">🥩 Proteína</div>
                                     <h3>${plan.macros.proteina}g</h3>
                                     <small>${plan.macros.proteina * 4} kcal/día</small>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="card bg-light">
-                                <div class="card-body text-center">
-                                    <h5 class="text-warning">🥑 Grasa</h5>
+                        <div >
+                            <div style="padding: 1.5rem; border: 1px solid #e5e5e5; text-align: center;">
+                                <div style="padding: 0;">
+                                    <h5 style="color: #1a1a1a;">🥑 Grasa</div>
                                     <h3>${plan.macros.grasa}g</h3>
                                     <small>${plan.macros.grasa * 9} kcal/día</small>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="card bg-light">
-                                <div class="card-body text-center">
-                                    <h5 class="text-primary">🍚 Carbohidratos</h5>
+                        <div >
+                            <div style="padding: 1.5rem; border: 1px solid #e5e5e5; text-align: center;">
+                                <div style="padding: 0;">
+                                    <h5 style="color: #1a1a1a;">🍚 Carbohidratos</div>
                                     <h3>${plan.macros.carbohidratos}g</h3>
                                     <small>${plan.macros.carbohidratos * 4} kcal/día</small>
                                 </div>
@@ -949,15 +967,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </div>
 
-                    <h5 class="mt-4">🔄 Refeeds Programados</h5>
-                    <div class="alert alert-warning">
+                    <h5>🔄 Refeeds Programados</div>
+                    <div style="padding: 1rem; border: 1px solid #e5e5e5; margin-bottom: 1rem; background: white;">
                         <strong>${plan.refeedInfo}</strong>
                         <p class="mb-0 mt-2">En estos días come ${plan.tdee} kcal (mantenimiento) para recuperar energía</p>
-                        <small class="text-muted">📊 En refeeds: Mantienes peso (0 kg de cambio esperado)</small>
+                        <small style="color: #666; font-size: 0.875rem;">📊 En refeeds: Mantienes peso (0 kg de cambio esperado)</small>
                     </div>
                     ${plan.refeeds.length > 0 ? `
-                        <div class="table-responsive">
-                            <table class="table table-sm">
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse;">
                                 <thead>
                                     <tr>
                                         <th>Semana</th>
@@ -977,11 +995,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     ` : ''}
 
-                    <h5 class="mt-4">📌 Información Adicional</h5>
-                    <div class="alert alert-info">
+                    <h5>📌 Información Adicional</div>
+                    <div style="padding: 1rem; border: 1px solid #e5e5e5; margin-bottom: 1rem; background: white;">
                         <strong>🏃 Cardio:</strong> ${plan.infoCardio}
                     </div>
-                    <div class="alert alert-secondary">
+                    <div style="padding: 1rem; border: 1px solid #e5e5e5; margin-bottom: 1rem; background: white;">
                         <strong>💪 Entrenamiento:</strong> Mantén intensidad alta y peso en barras para preservar músculo
                     </div>
                 </div>
@@ -996,35 +1014,68 @@ document.addEventListener('DOMContentLoaded', function() {
         const kgGrasaPorMes = kgMusculoPorMes * ((1 - ratioMusculoGrasa) / ratioMusculoGrasa);
 
         return `
-            <div class="card shadow-lg mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">📈 Tu Plan de Volumen Personalizado</h4>
+            <div class="v0-card">
+                <div class="v0-card-header">
+                    <i data-lucide="trending-up" style="color: #1a1a1a;"></i>
+                    <div>
+                        <h3>Tu Plan de Volumen Personalizado</h3>
+                        <p>Estrategia para ganar músculo de forma óptima</p>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="alert alert-info">
-                        <h5>🎯 Tipo: ${plan.tipoVolumen || 'Personalizado'}</h5>
-                        <h5>📅 Duración: ${plan.duracion.meses} meses de volumen</h5>
-                        <h5>📊 Nivel: ${plan.nivelGym.charAt(0).toUpperCase() + plan.nivelGym.slice(1)}</h5>
-                        <h5>💪 Ganancia esperada total:</h5>
-                        <ul class="mb-2">
-                            <li><strong class="text-primary">${plan.kgMusculoEsperado.toFixed(1)} kg de músculo</strong> (${kgMusculoPorMes.toFixed(2)} kg/mes)</li>
-                            <li><strong class="text-warning">${plan.kgGrasaEsperada.toFixed(1)} kg de grasa</strong> (${kgGrasaPorMes.toFixed(2)} kg/mes)</li>
-                            <li><strong>${plan.kgTotalesEsperados.toFixed(1)} kg totales</strong> (${(ratioMusculoGrasa * 100).toFixed(0)}% músculo / ${((1 - ratioMusculoGrasa) * 100).toFixed(0)}% grasa)</li>
-                        </ul>
-                        <p class="mb-2"><strong>Superávit calórico:</strong> ${plan.superavitDiario} kcal/día (${plan.porcentajeSuperavit || 'N/A'} del TDEE)</p>
-                        <small class="text-muted">⚠️ Basado en tasas científicas 2024 para entrenamientos naturales. Los resultados individuales varían según genética, adherencia y calidad del entrenamiento.</small>
+                <div style="padding-top: 1rem;">
+                    <div style="padding: 1.5rem; border: 1px solid #e5e5e5; background: white; margin-bottom: 1.5rem;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                            <div>
+                                <div style="font-size: 0.75rem; color: #666; margin-bottom: 0.25rem;">TIPO</div>
+                                <div style="font-size: 1.125rem; font-weight: 600; color: #1a1a1a;">${plan.tipoVolumen || 'Personalizado'}</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.75rem; color: #666; margin-bottom: 0.25rem;">DURACIÓN</div>
+                                <div style="font-size: 1.125rem; font-weight: 600; color: #1a1a1a;">${plan.duracion.meses} meses</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.75rem; color: #666; margin-bottom: 0.25rem;">NIVEL</div>
+                                <div style="font-size: 1.125rem; font-weight: 600; color: #1a1a1a;">${plan.nivelGym.charAt(0).toUpperCase() + plan.nivelGym.slice(1)}</div>
+                            </div>
+                        </div>
+                        <div style="border-top: 1px solid #e5e5e5; padding-top: 1rem; margin-top: 1rem;">
+                            <div style="font-size: 0.875rem; font-weight: 600; color: #1a1a1a; margin-bottom: 0.75rem;">Ganancia esperada total:</div>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="color: #666;">Músculo</span>
+                                    <span style="font-weight: 700; color: #1a1a1a;">${plan.kgMusculoEsperado.toFixed(1)} kg <span style="font-size: 0.875rem; color: #666;">(${kgMusculoPorMes.toFixed(2)} kg/mes)</span></span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="color: #666;">Grasa</span>
+                                    <span style="font-weight: 700; color: #1a1a1a;">${plan.kgGrasaEsperada.toFixed(1)} kg <span style="font-size: 0.875rem; color: #666;">(${kgGrasaPorMes.toFixed(2)} kg/mes)</span></span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e5e5e5; padding-top: 0.5rem;">
+                                    <span style="font-weight: 600; color: #1a1a1a;">Total</span>
+                                    <span style="font-weight: 700; color: #1a1a1a;">${plan.kgTotalesEsperados.toFixed(1)} kg <span style="font-size: 0.875rem; color: #666;">(${(ratioMusculoGrasa * 100).toFixed(0)}% músculo)</span></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="border-top: 1px solid #e5e5e5; padding-top: 1rem; margin-top: 1rem;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="font-weight: 600; color: #666;">Superávit calórico:</span>
+                                <span style="font-weight: 700; color: #1a1a1a;">${plan.superavitDiario} kcal/día</span>
+                            </div>
+                        </div>
+                        <div style="font-size: 0.75rem; color: #666; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e5e5e5;">
+                            Basado en tasas científicas 2024 para entrenamientos naturales. Los resultados individuales varían según genética, adherencia y calidad del entrenamiento.
+                        </div>
                     </div>
 
-                    <h5 class="mt-4">📅 Fases del Plan (con Mini-cuts Integrados)</h5>
-                    <div class="table-responsive">
-                        <table class="table table-hover" style="border: none;">
+                    <div style="font-size: 0.875rem; font-weight: 600; color: #1a1a1a; margin-bottom: 1rem;">Fases del Plan (con Mini-cuts Integrados)</div>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse;">
                             <thead>
-                                <tr style="border-bottom: 2px solid #dee2e6;">
-                                    <th style="border: none;">Fase</th>
-                                    <th style="border: none;">Calorías</th>
-                                    <th style="border: none;">Músculo</th>
-                                    <th style="border: none;">Grasa</th>
-                                    <th style="border: none;">Tipo</th>
+                                <tr style="border-bottom: 1px solid #e5e5e5;">
+                                    <th style="padding: 0.75rem; text-align: left; font-size: 0.875rem; font-weight: 600; color: #666;">Fase</th>
+                                    <th style="padding: 0.75rem; text-align: left; font-size: 0.875rem; font-weight: 600; color: #666;">Calorías</th>
+                                    <th style="padding: 0.75rem; text-align: left; font-size: 0.875rem; font-weight: 600; color: #666;">Músculo</th>
+                                    <th style="padding: 0.75rem; text-align: left; font-size: 0.875rem; font-weight: 600; color: #666;">Grasa</th>
+                                    <th style="padding: 0.75rem; text-align: left; font-size: 0.875rem; font-weight: 600; color: #666;">Tipo</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1051,18 +1102,18 @@ document.addEventListener('DOMContentLoaded', function() {
                                     grasaAcumulada += grasaFase;
 
                                     html += `
-                                        <tr style="background-color: #d4edda; border: none;">
-                                            <td style="border: none; padding: 12px;"><strong>Fase ${index + 1}</strong><br><small class="text-muted">Mes ${mesInicio}${mesFin > mesInicio ? '-' + mesFin : ''}</small></td>
-                                            <td style="border: none; padding: 12px;"><strong class="text-success">${fase.calorias} kcal</strong></td>
-                                            <td style="border: none; padding: 12px;">
-                                                <strong class="text-primary">+${musculoFase.toFixed(1)} kg</strong><br>
-                                                <small class="text-muted">Total: ${musculoAcumulado.toFixed(1)} kg</small>
+                                        <tr style="border-bottom: 1px solid #e5e5e5;">
+                                            <td style="padding: 0.75rem;"><span style="font-weight: 600; color: #1a1a1a;">Fase ${index + 1}</span><br><span style="font-size: 0.75rem; color: #666;">Mes ${mesInicio}${mesFin > mesInicio ? '-' + mesFin : ''}</span></td>
+                                            <td style="padding: 0.75rem;"><span style="font-weight: 600; color: #1a1a1a;">${fase.calorias} kcal</span></td>
+                                            <td style="padding: 0.75rem;">
+                                                <span style="font-weight: 600; color: #1a1a1a;">+${musculoFase.toFixed(1)} kg</span><br>
+                                                <span style="font-size: 0.75rem; color: #666;">Total: ${musculoAcumulado.toFixed(1)} kg</span>
                                             </td>
-                                            <td style="border: none; padding: 12px;">
-                                                <strong class="text-warning">+${grasaFase.toFixed(1)} kg</strong><br>
-                                                <small class="text-muted">Total: ${grasaAcumulada.toFixed(1)} kg</small>
+                                            <td style="padding: 0.75rem;">
+                                                <span style="font-weight: 600; color: #1a1a1a;">+${grasaFase.toFixed(1)} kg</span><br>
+                                                <span style="font-size: 0.75rem; color: #666;">Total: ${grasaAcumulada.toFixed(1)} kg</span>
                                             </td>
-                                            <td style="border: none; padding: 12px;"><span class="badge bg-success">Superávit</span></td>
+                                            <td style="padding: 0.75rem;"><span style="padding: 0.25rem 0.75rem; background: #1a1a1a; color: white; font-size: 0.75rem; font-weight: 600;">Superávit</span></td>
                                         </tr>
                                     `;
 
@@ -1079,18 +1130,18 @@ document.addEventListener('DOMContentLoaded', function() {
                                             grasaAcumulada -= perdidaGrasa;
 
                                             html += `
-                                                <tr style="background-color: #fff3cd; border: none;">
-                                                    <td style="border: none; padding: 12px;"><strong>🔻 Mini-cut</strong><br><small class="text-muted">Mes ${miniCut.mes} (${miniCut.semanas.split('-')[1] - miniCut.semanas.split('-')[0] + 1} sem)</small></td>
-                                                    <td style="border: none; padding: 12px;"><strong class="text-danger">${miniCut.calorias} kcal</strong></td>
-                                                    <td style="border: none; padding: 12px;">
-                                                        <strong class="text-danger">-${perdidaMusculo.toFixed(1)} kg</strong><br>
-                                                        <small class="text-muted">Total: ${musculoAcumulado.toFixed(1)} kg</small>
+                                                <tr style="border-bottom: 1px solid #e5e5e5; background: #fafafa;">
+                                                    <td style="padding: 0.75rem;"><span style="font-weight: 600; color: #1a1a1a;">Mini-cut</span><br><span style="font-size: 0.75rem; color: #666;">Mes ${miniCut.mes}</span></td>
+                                                    <td style="padding: 0.75rem;"><span style="font-weight: 600; color: #1a1a1a;">${miniCut.calorias} kcal</span></td>
+                                                    <td style="padding: 0.75rem;">
+                                                        <span style="font-weight: 600; color: #1a1a1a;">-${perdidaMusculo.toFixed(1)} kg</span><br>
+                                                        <span style="font-size: 0.75rem; color: #666;">Total: ${musculoAcumulado.toFixed(1)} kg</span>
                                                     </td>
-                                                    <td style="border: none; padding: 12px;">
-                                                        <strong class="text-success">-${perdidaGrasa.toFixed(1)} kg</strong><br>
-                                                        <small class="text-muted">Total: ${grasaAcumulada.toFixed(1)} kg</small>
+                                                    <td style="padding: 0.75rem;">
+                                                        <span style="font-weight: 600; color: #16a34a;">-${perdidaGrasa.toFixed(1)} kg</span><br>
+                                                        <span style="font-size: 0.75rem; color: #666;">Total: ${grasaAcumulada.toFixed(1)} kg</span>
                                                     </td>
-                                                    <td style="border: none; padding: 12px;"><span class="badge bg-warning text-dark">Déficit</span></td>
+                                                    <td style="padding: 0.75rem;"><span style="padding: 0.25rem 0.75rem; background: white; border: 1px solid #e5e5e5; color: #1a1a1a; font-size: 0.75rem; font-weight: 600;">Déficit</span></td>
                                                 </tr>
                                             `;
                                         }
@@ -1100,19 +1151,19 @@ document.addEventListener('DOMContentLoaded', function() {
                                 // Resumen final
                                 const pesoTotal = musculoAcumulado + grasaAcumulada;
                                 html += `
-                                    <tr style="background-color: #d1ecf1; border-top: 2px solid #bee5eb;">
-                                        <td colspan="2" style="border: none; padding: 12px;"><strong>🏁 Resultado Final</strong></td>
-                                        <td style="border: none; padding: 12px;">
-                                            <strong class="text-primary">+${musculoAcumulado.toFixed(1)} kg</strong><br>
-                                            <small>músculo</small>
+                                    <tr style="background: white; border-top: 1px solid #e5e5e5;">
+                                        <td colspan="2" style="padding: 0.75rem;"><strong style="color: #1a1a1a;">Resultado Final</strong></td>
+                                        <td style="padding: 0.75rem;">
+                                            <strong style="color: #1a1a1a;">+${musculoAcumulado.toFixed(1)} kg</strong><br>
+                                            <span style="font-size: 0.75rem; color: #666;">músculo</span>
                                         </td>
-                                        <td style="border: none; padding: 12px;">
-                                            <strong class="text-warning">+${grasaAcumulada.toFixed(1)} kg</strong><br>
-                                            <small>grasa</small>
+                                        <td style="padding: 0.75rem;">
+                                            <strong style="color: #1a1a1a;">+${grasaAcumulada.toFixed(1)} kg</strong><br>
+                                            <span style="font-size: 0.75rem; color: #666;">grasa</span>
                                         </td>
-                                        <td style="border: none; padding: 12px;">
-                                            <strong>+${pesoTotal.toFixed(1)} kg</strong><br>
-                                            <small>total</small>
+                                        <td style="padding: 0.75rem;">
+                                            <strong style="color: #1a1a1a;">+${pesoTotal.toFixed(1)} kg</strong><br>
+                                            <span style="font-size: 0.75rem; color: #666;">total</span>
                                         </td>
                                     </tr>
                                 `;
@@ -1124,46 +1175,46 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
 
                     ${plan.miniCuts.length === 0 ? `
-                        <div class="alert alert-info">
-                            <strong>ℹ️ Sin mini-cuts programados</strong>
+                        <div style="padding: 1rem; border: 1px solid #e5e5e5; margin-bottom: 1rem; background: white;">
+                            <strong>Sin mini-cuts programados</strong>
                             ${(() => {
                                 if (incluirMinicuts) {
                                     // Usuario quería mini-cuts pero no hay porque es muy corto
                                     const frecuenciaMiniCut = plan.nivelGym === 'principiante' ? 16 :
                                                               plan.nivelGym === 'intermedio' ? 12 : 10;
-                                    return `<p class="mb-0">Querías incluir mini-cuts, pero tu plan es de solo ${plan.duracion.semanas} semanas. Los mini-cuts se programan cada ${frecuenciaMiniCut} semanas para ${plan.nivelGym}s. <strong>Necesitas al menos ${frecuenciaMiniCut + 3} semanas</strong> para que tenga sentido hacer un mini-cut. Con duraciones cortas, es mejor hacer volumen continuo.</p>`;
+                                    return `<p>Querías incluir mini-cuts, pero tu plan es de solo ${plan.duracion.semanas} semanas. Los mini-cuts se programan cada ${frecuenciaMiniCut} semanas para ${plan.nivelGym}s. <strong>Necesitas al menos ${frecuenciaMiniCut + 3} semanas</strong> para que tenga sentido hacer un mini-cut. Con duraciones cortas, es mejor hacer volumen continuo.</p>`;
                                 } else {
                                     // Usuario eligió NO incluir mini-cuts
-                                    return `<p class="mb-0">Has elegido un volumen continuo sin mini-cuts. Ten en cuenta que acumularás más grasa, pero el proceso será más simple y directo.</p>`;
+                                    return `<p>Has elegido un volumen continuo sin mini-cuts. Ten en cuenta que acumularás más grasa, pero el proceso será más simple y directo.</p>`;
                                 }
                             })()}
                         </div>
                     ` : ''}
 
-                    <h5 class="mt-4">🍽️ Distribución de Macronutrientes</h5>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="card bg-light">
-                                <div class="card-body text-center">
-                                    <h5 class="text-danger">🥩 Proteína</h5>
+                    <h5>🍽️ Distribución de Macronutrientes</div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div >
+                            <div style="padding: 1.5rem; border: 1px solid #e5e5e5; text-align: center;">
+                                <div style="padding: 0;">
+                                    <h5 style="color: #1a1a1a;">🥩 Proteína</div>
                                     <h3>${plan.macros.proteina}g</h3>
                                     <small>${plan.macros.proteina * 4} kcal/día</small>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="card bg-light">
-                                <div class="card-body text-center">
-                                    <h5 class="text-warning">🥑 Grasa</h5>
+                        <div >
+                            <div style="padding: 1.5rem; border: 1px solid #e5e5e5; text-align: center;">
+                                <div style="padding: 0;">
+                                    <h5 style="color: #1a1a1a;">🥑 Grasa</div>
                                     <h3>${plan.macros.grasa}g</h3>
                                     <small>${plan.macros.grasa * 9} kcal/día</small>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="card bg-light">
-                                <div class="card-body text-center">
-                                    <h5 class="text-primary">🍚 Carbohidratos</h5>
+                        <div >
+                            <div style="padding: 1.5rem; border: 1px solid #e5e5e5; text-align: center;">
+                                <div style="padding: 0;">
+                                    <h5 style="color: #1a1a1a;">🍚 Carbohidratos</div>
                                     <h3>${plan.macros.carbohidratos}g</h3>
                                     <small>${plan.macros.carbohidratos * 4} kcal/día</small>
                                 </div>
@@ -1171,11 +1222,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </div>
 
-                    <h5 class="mt-4">📌 Información Adicional</h5>
-                    <div class="alert alert-info">
+                    <h5>📌 Información Adicional</div>
+                    <div style="padding: 1rem; border: 1px solid #e5e5e5; margin-bottom: 1rem; background: white;">
                         <strong>🏃 Cardio:</strong> ${plan.infoCardio}
                     </div>
-                    <div class="alert alert-success">
+                    <div style="padding: 1rem; border: 1px solid #e5e5e5; margin-bottom: 1rem; background: white;">
                         <strong>💪 Entrenamiento:</strong> Mantén sobrecarga progresiva, incrementa pesos cada semana
                     </div>
                 </div>
@@ -1380,8 +1431,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const data = JSON.parse(text);
                 if (data.success) {
                     planGuardadoId = data.id;
-                    alert('✅ Plan guardado correctamente en la base de datos (ID: ' + data.id + ')');
-                    btnGuardar.innerHTML = '✅ Plan Guardado';
+                    alert('Plan guardado correctamente en la base de datos (ID: ' + data.id + ')');
+                    btnGuardar.innerHTML = 'Plan Guardado';
 
                     // Habilitar y mostrar botón PDF
                     const btnPdf = document.getElementById('btn-pdf');
@@ -1421,9 +1472,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Función para mostrar advertencias de validación
     function mostrarAdvertencias(validacion, tipo) {
-        let html = '<div class="card shadow-lg mb-4" id="advertencias-card">';
-        html += '<div class="card-header bg-warning text-dark"><h4 class="mb-0">⚠️ Análisis de tu Objetivo</h4></div>';
-        html += '<div class="card-body">';
+        let html = '<div class="v0-card" id="advertencias-card">';
+        html += '<div style="padding: 1rem; border-bottom: 1px solid #e5e5e5; font-weight: 600; color: #1a1a1a;"><h4>Análisis de tu Objetivo</h4></div>';
+        html += '<div style="padding: 1rem;">';
 
         // Advertencias
         validacion.advertencias.forEach(adv => {
@@ -1442,14 +1493,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             html += `<div class="alert ${colorClass}">`;
-            html += `<h5>${icon} ${adv.mensaje}</h5>`;
-            html += `<p class="mb-0">${adv.detalle}</p>`;
+            html += `<h5>${icon} ${adv.mensaje}</div>`;
+            html += `<p>${adv.detalle}</p>`;
             html += '</div>';
         });
 
         // Sugerencias
         if (validacion.sugerencias.length > 0) {
-            html += '<h5 class="mt-3">💡 Sugerencias:</h5><ul>';
+            html += '<h5 class="mt-3">💡 Sugerencias:</div><ul>';
             validacion.sugerencias.forEach(sug => {
                 html += `<li>${sug}</li>`;
             });
@@ -1458,22 +1509,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Alternativas
         if (validacion.alternativas.length > 0) {
-            html += '<h5 class="mt-3">🎯 Planes Alternativos:</h5>';
+            html += '<h5 class="mt-3">🎯 Planes Alternativos:</div>';
             validacion.alternativas.forEach(alt => {
-                const badge = alt.recomendado ? '<span class="badge bg-success">RECOMENDADO</span>' : '';
+                const badge = alt.recomendado ? '<span style="padding: 0.25rem 0.75rem; background: #1a1a1a; color: white; font-size: 0.75rem; font-weight: 600;">RECOMENDADO</span>' : '';
                 html += `<div class="card mb-2">`;
-                html += `<div class="card-body">`;
+                html += `<div style="padding: 1rem;">`;
                 html += `<h6>${alt.titulo} ${badge}</h6>`;
-                html += `<p class="mb-0">${alt.descripcion}</p>`;
+                html += `<p>${alt.descripcion}</p>`;
                 html += `</div></div>`;
             });
         }
 
         // Info adicional para volumen
         if (tipo === 'volumen' && validacion.pesoTotalGanado) {
-            html += '<div class="alert alert-info mt-3">';
+            html += '<div style="padding: 1rem; border: 1px solid #e5e5e5; margin-bottom: 1rem; background: white;">';
             html += `<h6>📊 Proyección Real:</h6>`;
-            html += `<p class="mb-0">Músculo puro: <strong>${validacion.kgObjetivo}kg</strong><br>`;
+            html += `<p>Músculo puro: <strong>${validacion.kgObjetivo}kg</strong><br>`;
             html += `Grasa inevitable: ~${validacion.grasaAproximada.toFixed(1)}kg<br>`;
             html += `<strong>Peso total a ganar: ~${validacion.pesoTotalGanado.toFixed(1)}kg</strong></p>`;
             html += '</div>';
@@ -1496,7 +1547,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const apellidos = document.getElementById('usuario_apellidos').value.trim();
 
         if (!nombre || !apellidos) {
-            alert('⚠️ Error: No se pudo obtener el usuario');
+            alert('Error: No se pudo obtener el usuario');
             return;
         }
 
@@ -1506,7 +1557,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.success) {
                     if (data.planes.length === 0) {
-                        alert('ℹ️ No tienes planes guardados anteriormente');
+                        alert('No tienes planes guardados anteriormente');
                         return;
                     }
                     mostrarModalPlanes(data.planes);
@@ -1522,14 +1573,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function mostrarModalPlanes(planes) {
         let html = '<div class="modal fade" id="modalPlanes" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content">';
-        html += '<div class="modal-header"><h5 class="modal-title">📂 Planes Guardados</h5>';
+        html += '<div class="modal-header"><h5 class="modal-title">📂 Planes Guardados</div>';
         html += '<button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>';
-        html += '<div class="modal-body"><div class="table-responsive"><table class="table table-hover">';
+        html += '<div class="modal-body"><div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse;">';
         html += '<thead><tr><th>Fecha</th><th>Objetivo</th><th>Peso</th><th>Calorías</th><th>Duración</th><th>Acción</th></tr></thead><tbody>';
 
         planes.forEach(plan => {
             const fecha = new Date(plan.fecha).toLocaleDateString('es-ES');
-            const objetivo = plan.objetivo === 'deficit' ? '🔽 Déficit' : (plan.objetivo === 'volumen' ? '🔼 Volumen' : '⚖️ Mantenimiento');
+            const objetivo = plan.objetivo === 'deficit' ? '🔽 Déficit' : (plan.objetivo === 'volumen' ? '🔼 Volumen' : 'Mantenimiento');
             const duracion = plan.duracion_semanas ? `${plan.duracion_semanas} semanas` : `${plan.duracion_meses} meses`;
 
             html += `<tr>
@@ -1613,7 +1664,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const modal = bootstrap.Modal.getInstance(document.getElementById('modalPlanes'));
                     if (modal) modal.hide();
 
-                    alert('✅ Plan cargado correctamente');
+                    alert('Plan cargado correctamente');
                 } else {
                     alert('❌ Error: ' + data.error);
                 }

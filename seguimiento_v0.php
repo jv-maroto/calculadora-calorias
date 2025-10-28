@@ -15,19 +15,18 @@
     <link rel="stylesheet" href="assets/css/v0-theme.css">
 </head>
 <body>
-    <!-- Navbar moderna -->
-    <div class="navbar-modern">
-        <a href="index_v0_design.php" class="navbar-brand-modern">💪 Calculadora de Calorías</a>
-        <div class="navbar-links">
-            <a href="index_v0_design.php" title="Calculadora">🧮</a>
-            <a href="reverse_diet_v0.php" title="Reverse Diet">🔄</a>
-            <a href="rutinas_v0.php" title="Rutinas">🏋️</a>
-            <a href="introducir_peso_v0.php" title="Registrar Peso">⚖️</a>
-            <a href="grafica_v0.php" title="Progreso">📊</a>
-            <a href="seguimiento_v0.php" title="Ajuste de Calorías" style="color: #6366f1;">📈</a>
-            <a href="logout.php" title="Cerrar Sesión">🚪</a>
+   
+    <nav style="display: none; background: white; border-bottom: 1px solid #e5e5e5; padding: 0 2rem; height: 60px; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100;">
+        <div style="display: flex; gap: 2rem;">
+            <a href="dashboard.php" style="color: #666; text-decoration: none; font-size: 14px; font-weight: 500;">← Dashboard</a>
+            <a href="diet_hub.php" style="color: #666; text-decoration: none; font-size: 14px; font-weight: 500;">DIET Hub</a>
+            <a href="calculatorkcal.php" style="color: #666; text-decoration: none; font-size: 14px; font-weight: 500;">Calculadora</a>
+            <a href="introducir_peso_v0.php" style="color: #666; text-decoration: none; font-size: 14px; font-weight: 500;">Peso</a>
+            <a href="grafica_v0.php" style="color: #666; text-decoration: none; font-size: 14px; font-weight: 500;">Gráfica</a>
+            <a href="reverse_diet_v0.php" style="color: #1a1a1a; text-decoration: none; font-size: 14px; font-weight: 500;">Reverse Diet</a>
         </div>
-    </div>
+        <a href="logout.php" style="color: #999; text-decoration: none; font-size: 14px; font-weight: 500;">Salir</a>
+    </nav>
 
     <!-- Contenido -->
     <div style="max-width: 1400px; margin: 0 auto; padding: 0 1rem 2rem;">
