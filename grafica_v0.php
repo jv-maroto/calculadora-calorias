@@ -247,7 +247,7 @@
             }
 
             try {
-                const response = await fetch(`api_peso.php?action=obtener_pesos&dias=${dias}`);
+                const response = await fetch(`api_peso.php?action=obtener_historial&dias=${dias}`);
                 const resultado = await response.json();
 
                 if (resultado.success && resultado.data && resultado.data.length > 0) {

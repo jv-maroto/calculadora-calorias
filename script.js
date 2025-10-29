@@ -918,13 +918,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div style="padding: 1rem; border: 1px solid #e5e5e5; margin-bottom: 1rem; background: white;">
                         <div style="font-weight: 600; color: #1a1a1a; margin-bottom: 0.5rem;">Objetivo: Perder ${plan.kgObjetivo} kg</div>
                         <div style="margin-bottom: 0.25rem;">Duración estimada: ${plan.duracion.semanas} semanas (${plan.duracion.meses} meses)</div>
-                        <h5>📊 Pérdida esperada: ~${plan.kgPorSemana} kg/semana (aproximado)</div>
+                        <h5 style="font-size: 1rem; font-weight: 600; color: #1a1a1a; margin: 0.5rem 0;">Pérdida esperada: ~${plan.kgPorSemana} kg/semana (aproximado)</h5>
                         <p>Déficit calórico: ${plan.deficitDiario} kcal/día</p>
                         <p><strong>Calorías diarias: ${Math.round(plan.tdeeAjustado - plan.deficitDiario)} kcal</strong></p>
                         <small style="color: #666; font-size: 0.875rem;">Nota: En déficit bajarás más al principio y menos al final. Todo es aproximado.</small>
                     </div>
 
-                    <h5>📅 Fases del Plan</div>
+                    <h5 style="font-size: 1.125rem; font-weight: 600; color: #1a1a1a; margin: 1.5rem 0 1rem 0;">Fases del Plan</h5>
                     <div style="overflow-x: auto;">
                         <table class="table">
                             ${plan.fases.map(fase => `
@@ -936,42 +936,30 @@ document.addEventListener('DOMContentLoaded', function() {
                         </table>
                     </div>
 
-                    <h5>🍽️ Distribución de Macronutrientes</div>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                        <div >
-                            <div style="padding: 1.5rem; border: 1px solid #e5e5e5; text-align: center;">
-                                <div style="padding: 0;">
-                                    <h5 style="color: #1a1a1a;">🥩 Proteína</div>
-                                    <h3>${plan.macros.proteina}g</h3>
-                                    <small>${plan.macros.proteina * 4} kcal/día</small>
-                                </div>
-                            </div>
+                    <h5 style="font-size: 1.125rem; font-weight: 600; color: #1a1a1a; margin: 1.5rem 0 1rem 0;">Distribución de Macronutrientes</h5>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="padding: 1.5rem; border: 1px solid #e5e5e5; background: white; text-align: center;">
+                            <div style="font-size: 0.875rem; font-weight: 600; color: #666; margin-bottom: 0.5rem;">Proteína</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.25rem;">${plan.macros.proteina}g</div>
+                            <div style="font-size: 0.75rem; color: #999;">${plan.macros.proteina * 4} kcal/día</div>
                         </div>
-                        <div >
-                            <div style="padding: 1.5rem; border: 1px solid #e5e5e5; text-align: center;">
-                                <div style="padding: 0;">
-                                    <h5 style="color: #1a1a1a;">🥑 Grasa</div>
-                                    <h3>${plan.macros.grasa}g</h3>
-                                    <small>${plan.macros.grasa * 9} kcal/día</small>
-                                </div>
-                            </div>
+                        <div style="padding: 1.5rem; border: 1px solid #e5e5e5; background: white; text-align: center;">
+                            <div style="font-size: 0.875rem; font-weight: 600; color: #666; margin-bottom: 0.5rem;">Grasa</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.25rem;">${plan.macros.grasa}g</div>
+                            <div style="font-size: 0.75rem; color: #999;">${plan.macros.grasa * 9} kcal/día</div>
                         </div>
-                        <div >
-                            <div style="padding: 1.5rem; border: 1px solid #e5e5e5; text-align: center;">
-                                <div style="padding: 0;">
-                                    <h5 style="color: #1a1a1a;">🍚 Carbohidratos</div>
-                                    <h3>${plan.macros.carbohidratos}g</h3>
-                                    <small>${plan.macros.carbohidratos * 4} kcal/día</small>
-                                </div>
-                            </div>
+                        <div style="padding: 1.5rem; border: 1px solid #e5e5e5; background: white; text-align: center;">
+                            <div style="font-size: 0.875rem; font-weight: 600; color: #666; margin-bottom: 0.5rem;">Carbohidratos</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.25rem;">${plan.macros.carbohidratos}g</div>
+                            <div style="font-size: 0.75rem; color: #999;">${plan.macros.carbohidratos * 4} kcal/día</div>
                         </div>
                     </div>
 
-                    <h5>🔄 Refeeds Programados</div>
+                    <h5 style="font-size: 1.125rem; font-weight: 600; color: #1a1a1a; margin: 1.5rem 0 1rem 0;">Refeeds Programados</h5>
                     <div style="padding: 1rem; border: 1px solid #e5e5e5; margin-bottom: 1rem; background: white;">
-                        <strong>${plan.refeedInfo}</strong>
-                        <p class="mb-0 mt-2">En estos días come ${plan.tdee} kcal (mantenimiento) para recuperar energía</p>
-                        <small style="color: #666; font-size: 0.875rem;">📊 En refeeds: Mantienes peso (0 kg de cambio esperado)</small>
+                        <strong style="color: #1a1a1a;">${plan.refeedInfo}</strong>
+                        <p style="margin: 0.5rem 0 0 0; color: #666;">En estos días come ${plan.tdee} kcal (mantenimiento) para recuperar energía</p>
+                        <small style="color: #999; font-size: 0.875rem;">En refeeds: Mantienes peso (0 kg de cambio esperado)</small>
                     </div>
                     ${plan.refeeds.length > 0 ? `
                         <div style="overflow-x: auto;">
@@ -995,12 +983,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     ` : ''}
 
-                    <h5>📌 Información Adicional</div>
+                    <h5 style="font-size: 1.125rem; font-weight: 600; color: #1a1a1a; margin: 1.5rem 0 1rem 0;">Información Adicional</h5>
                     <div style="padding: 1rem; border: 1px solid #e5e5e5; margin-bottom: 1rem; background: white;">
-                        <strong>🏃 Cardio:</strong> ${plan.infoCardio}
+                        <strong style="color: #1a1a1a;">Cardio:</strong> <span style="color: #666;">${plan.infoCardio}</span>
                     </div>
                     <div style="padding: 1rem; border: 1px solid #e5e5e5; margin-bottom: 1rem; background: white;">
-                        <strong>💪 Entrenamiento:</strong> Mantén intensidad alta y peso en barras para preservar músculo
+                        <strong style="color: #1a1a1a;">Entrenamiento:</strong> <span style="color: #666;">Mantén intensidad alta y peso en barras para preservar músculo</span>
                     </div>
                 </div>
             </div>
@@ -1191,43 +1179,31 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     ` : ''}
 
-                    <h5>🍽️ Distribución de Macronutrientes</div>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                        <div >
-                            <div style="padding: 1.5rem; border: 1px solid #e5e5e5; text-align: center;">
-                                <div style="padding: 0;">
-                                    <h5 style="color: #1a1a1a;">🥩 Proteína</div>
-                                    <h3>${plan.macros.proteina}g</h3>
-                                    <small>${plan.macros.proteina * 4} kcal/día</small>
-                                </div>
-                            </div>
+                    <h5 style="font-size: 1.125rem; font-weight: 600; color: #1a1a1a; margin: 1.5rem 0 1rem 0;">Distribución de Macronutrientes</h5>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="padding: 1.5rem; border: 1px solid #e5e5e5; background: white; text-align: center;">
+                            <div style="font-size: 0.875rem; font-weight: 600; color: #666; margin-bottom: 0.5rem;">Proteína</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.25rem;">${plan.macros.proteina}g</div>
+                            <div style="font-size: 0.75rem; color: #999;">${plan.macros.proteina * 4} kcal/día</div>
                         </div>
-                        <div >
-                            <div style="padding: 1.5rem; border: 1px solid #e5e5e5; text-align: center;">
-                                <div style="padding: 0;">
-                                    <h5 style="color: #1a1a1a;">🥑 Grasa</div>
-                                    <h3>${plan.macros.grasa}g</h3>
-                                    <small>${plan.macros.grasa * 9} kcal/día</small>
-                                </div>
-                            </div>
+                        <div style="padding: 1.5rem; border: 1px solid #e5e5e5; background: white; text-align: center;">
+                            <div style="font-size: 0.875rem; font-weight: 600; color: #666; margin-bottom: 0.5rem;">Grasa</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.25rem;">${plan.macros.grasa}g</div>
+                            <div style="font-size: 0.75rem; color: #999;">${plan.macros.grasa * 9} kcal/día</div>
                         </div>
-                        <div >
-                            <div style="padding: 1.5rem; border: 1px solid #e5e5e5; text-align: center;">
-                                <div style="padding: 0;">
-                                    <h5 style="color: #1a1a1a;">🍚 Carbohidratos</div>
-                                    <h3>${plan.macros.carbohidratos}g</h3>
-                                    <small>${plan.macros.carbohidratos * 4} kcal/día</small>
-                                </div>
-                            </div>
+                        <div style="padding: 1.5rem; border: 1px solid #e5e5e5; background: white; text-align: center;">
+                            <div style="font-size: 0.875rem; font-weight: 600; color: #666; margin-bottom: 0.5rem;">Carbohidratos</div>
+                            <div style="font-size: 2rem; font-weight: 700; color: #1a1a1a; margin-bottom: 0.25rem;">${plan.macros.carbohidratos}g</div>
+                            <div style="font-size: 0.75rem; color: #999;">${plan.macros.carbohidratos * 4} kcal/día</div>
                         </div>
                     </div>
 
-                    <h5>📌 Información Adicional</div>
+                    <h5 style="font-size: 1.125rem; font-weight: 600; color: #1a1a1a; margin: 1.5rem 0 1rem 0;">Información Adicional</h5>
                     <div style="padding: 1rem; border: 1px solid #e5e5e5; margin-bottom: 1rem; background: white;">
-                        <strong>🏃 Cardio:</strong> ${plan.infoCardio}
+                        <strong style="color: #1a1a1a;">Cardio:</strong> <span style="color: #666;">${plan.infoCardio}</span>
                     </div>
                     <div style="padding: 1rem; border: 1px solid #e5e5e5; margin-bottom: 1rem; background: white;">
-                        <strong>💪 Entrenamiento:</strong> Mantén sobrecarga progresiva, incrementa pesos cada semana
+                        <strong style="color: #1a1a1a;">Entrenamiento:</strong> <span style="color: #666;">Mantén sobrecarga progresiva, incrementa pesos cada semana</span>
                     </div>
                 </div>
             </div>
@@ -1409,7 +1385,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Guardando plan con objetivo:', datosParaGuardar.formulario.objetivo);
         console.log('Datos completos:', datosParaGuardar);
 
-        fetch('guardar.php', {
+        fetch('guardar_plan.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -1439,21 +1415,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     btnPdf.style.display = 'block';
                     btnPdf.disabled = false;
                 } else {
-                    alert('❌ Error al guardar: ' + data.error);
+                    alert('Error al guardar: ' + data.error);
                     btnGuardar.innerHTML = '💾 Guardar Plan';
                     btnGuardar.disabled = false;
                 }
             } catch (e) {
                 console.error('Error parseando JSON:', e);
                 console.error('Respuesta recibida:', text);
-                alert('❌ Error: La respuesta del servidor no es válida. Revisa la consola para más detalles.');
+                alert('Error: La respuesta del servidor no es válida. Revisa la consola para más detalles.');
                 btnGuardar.innerHTML = '💾 Guardar Plan';
                 btnGuardar.disabled = false;
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('❌ Error al guardar: ' + error.message);
+            alert('Error al guardar: ' + error.message);
             btnGuardar.innerHTML = '💾 Guardar Plan';
             btnGuardar.disabled = false;
         });
@@ -1486,10 +1462,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 icon = '🚫';
             } else if (adv.tipo === 'advertencia') {
                 colorClass = 'alert-warning';
-                icon = '⚠️';
+                icon = '⚠';
             } else if (adv.tipo === 'exito') {
                 colorClass = 'alert-success';
-                icon = '✅';
+                icon = '✓';
             }
 
             html += `<div class="alert ${colorClass}">`;
@@ -1509,7 +1485,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Alternativas
         if (validacion.alternativas.length > 0) {
-            html += '<h5 class="mt-3">🎯 Planes Alternativos:</div>';
+            html += '<h5 style="font-size: 1.125rem; font-weight: 600; color: #1a1a1a; margin: 1.5rem 0 1rem 0;">Planes Alternativos:</h5>';
             validacion.alternativas.forEach(alt => {
                 const badge = alt.recomendado ? '<span style="padding: 0.25rem 0.75rem; background: #1a1a1a; color: white; font-size: 0.75rem; font-weight: 600;">RECOMENDADO</span>' : '';
                 html += `<div class="card mb-2">`;
@@ -1523,10 +1499,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Info adicional para volumen
         if (tipo === 'volumen' && validacion.pesoTotalGanado) {
             html += '<div style="padding: 1rem; border: 1px solid #e5e5e5; margin-bottom: 1rem; background: white;">';
-            html += `<h6>📊 Proyección Real:</h6>`;
-            html += `<p>Músculo puro: <strong>${validacion.kgObjetivo}kg</strong><br>`;
+            html += `<h6 style="font-size: 1rem; font-weight: 600; color: #1a1a1a; margin: 0 0 0.5rem 0;">Proyección Real:</h6>`;
+            html += `<p style="color: #666; margin: 0;">Músculo puro: <strong style="color: #1a1a1a;">${validacion.kgObjetivo}kg</strong><br>`;
             html += `Grasa inevitable: ~${validacion.grasaAproximada.toFixed(1)}kg<br>`;
-            html += `<strong>Peso total a ganar: ~${validacion.pesoTotalGanado.toFixed(1)}kg</strong></p>`;
+            html += `<strong style="color: #1a1a1a;">Peso total a ganar: ~${validacion.pesoTotalGanado.toFixed(1)}kg</strong></p>`;
             html += '</div>';
         }
 
@@ -1562,12 +1538,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     mostrarModalPlanes(data.planes);
                 } else {
-                    alert('❌ Error: ' + data.error);
+                    alert('Error: ' + data.error);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('❌ Error al cargar los planes');
+                alert('Error al cargar los planes');
             });
     };
 
@@ -1666,12 +1642,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     alert('Plan cargado correctamente');
                 } else {
-                    alert('❌ Error: ' + data.error);
+                    alert('Error: ' + data.error);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('❌ Error al cargar el plan');
+                alert('Error al cargar el plan');
             });
     };
 });

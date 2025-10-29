@@ -225,7 +225,7 @@
 
                 if (resultado.success) {
                     mensaje.className = 'v0-alert v0-alert-success fade-in';
-                    mensaje.innerHTML = '<strong>✅ Peso guardado correctamente</strong><br>Tu progreso ha sido registrado.';
+                    mensaje.innerHTML = '<strong>Peso guardado correctamente</strong><br>Tu progreso ha sido registrado.';
                     mensaje.style.display = 'block';
 
                     // Limpiar form pero mantener la fecha
@@ -241,14 +241,14 @@
                     }, 4000);
                 } else {
                     mensaje.className = 'v0-alert v0-alert-danger fade-in';
-                    mensaje.innerHTML = '<strong>❌ Error al guardar</strong><br>' + resultado.error;
+                    mensaje.innerHTML = '<strong>Error al guardar</strong><br>' + resultado.error;
                     mensaje.style.display = 'block';
                 }
             } catch (error) {
                 console.error('Error:', error);
                 const mensaje = document.getElementById('mensaje-resultado');
                 mensaje.className = 'v0-alert v0-alert-danger fade-in';
-                mensaje.innerHTML = '<strong>❌ Error de conexión</strong><br>No se pudo guardar el peso. Verifica tu conexión.';
+                mensaje.innerHTML = '<strong>Error de conexión</strong><br>No se pudo guardar el peso. Verifica tu conexión.';
                 mensaje.style.display = 'block';
             }
         });
@@ -256,7 +256,7 @@
         // Función para cargar historial
         async function cargarHistorial() {
             try {
-                const response = await fetch('api_peso.php?action=obtener_pesos&dias=7');
+                const response = await fetch('api_peso.php?action=obtener_historial');
                 const resultado = await response.json();
 
                 const contenedor = document.getElementById('historial-pesos');
