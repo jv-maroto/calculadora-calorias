@@ -27,8 +27,21 @@ function calcular1RM($peso, $reps) {
 }
 
 // Función para determinar nivel según tipo de ejercicio y peso corporal
-function determinarNivel($musculo, $oneRM, $peso_corporal) {
+function determinarNivel($musculo, $oneRM, $peso_corporal, $tipo_equipo) {
     $ratio = $oneRM / $peso_corporal;
+
+    // Ajustar según tipo de equipo
+    // Las máquinas y poleas tienen resistencia mecánica, no peso real
+    $multiplicador = 1.0;
+    if ($tipo_equipo == 'Machine' || $tipo_equipo == 'maquina') {
+        $multiplicador = 0.7; // Máquinas son ~30% más fáciles
+    } else if ($tipo_equipo == 'Cable' || $tipo_equipo == 'polea') {
+        $multiplicador = 0.85; // Poleas son ~15% más fáciles
+    } else if ($tipo_equipo == 'Assisted') {
+        $multiplicador = 0.6; // Asistidos son ~40% más fáciles
+    }
+
+    $ratio = $ratio * $multiplicador;
 
     // Estándares según grupo muscular (ratio de 1RM / peso corporal)
     // Basados en ExRx.net, Symmetric Strength y datos de competición
@@ -86,8 +99,8 @@ function determinarNivel($musculo, $oneRM, $peso_corporal) {
     else return 5;                            // Elite
 }
 
-function calcularNivelMusculo($musculo, $peso, $reps, $peso_corporal) {
-    if ($peso == 0 || $peso < 1) {
+function calcularNivelMusculo($musculo, $peso, $reps, $peso_corporal, $tipo_equipo = 'Barbell') {
+    if ($peso == 0 || $peso < 1 || $tipo_equipo == 'Bodyweight') {
         // Niveles basados solo en repeticiones para ejercicios sin peso (dominadas, fondos, etc.)
         if ($reps < 3) return 1;         // Untrained
         else if ($reps < 8) return 2;    // Novice
@@ -97,36 +110,78 @@ function calcularNivelMusculo($musculo, $peso, $reps, $peso_corporal) {
     } else {
         // Calcular 1RM estimado y determinar nivel
         $oneRM = calcular1RM($peso, $reps);
-        return determinarNivel($musculo, $oneRM, $peso_corporal);
+        return determinarNivel($musculo, $oneRM, $peso_corporal, $tipo_equipo);
     }
 }
 
-// Obtener los mejores registros por grupo muscular
+// Obtener el MEJOR SET de CADA EJERCICIO individual
 $sql_progreso = "SELECT
                     e.musculo_principal as grupo_muscular,
                     e.nombre as ejercicio,
-                    MAX(r.peso) as peso_max,
-                    MAX(r.reps) as reps_max,
-                    MAX(r.peso * r.reps) as one_rm_estimate
+                    e.tipo_equipo,
+                    MAX(r.peso * r.reps) as mejor_volumen,
+                    (SELECT peso FROM registros_entrenamiento r2
+                     WHERE r2.ejercicio_id = e.id AND r2.nombre = r.nombre AND r2.apellidos = r.apellidos
+                     ORDER BY (r2.peso * r2.reps) DESC LIMIT 1) as peso_mejor,
+                    (SELECT reps FROM registros_entrenamiento r3
+                     WHERE r3.ejercicio_id = e.id AND r3.nombre = r.nombre AND r3.apellidos = r.apellidos
+                     ORDER BY (r3.peso * r3.reps) DESC LIMIT 1) as reps_mejor
                 FROM registros_entrenamiento r
                 JOIN ejercicios e ON r.ejercicio_id = e.id
                 WHERE r.nombre = ? AND r.apellidos = ?
-                GROUP BY e.musculo_principal, e.nombre
-                ORDER BY grupo_muscular, one_rm_estimate DESC";
+                GROUP BY e.id, e.musculo_principal, e.nombre, e.tipo_equipo
+                ORDER BY e.musculo_principal, mejor_volumen DESC";
 
 $stmt = $conn->prepare($sql_progreso);
 $stmt->bind_param("ss", $nombre, $apellidos);
 $stmt->execute();
-$progreso_datos = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$resultados = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-// Agrupar por músculo (tomar el mejor ejercicio de cada grupo)
-$niveles_por_musculo = [];
-foreach ($progreso_datos as $dato) {
+// Calcular nivel individual de cada ejercicio y agrupar por músculo
+$ejercicios_por_musculo = [];
+foreach ($resultados as $dato) {
     $musculo = $dato['grupo_muscular'];
-    if (!isset($niveles_por_musculo[$musculo])) {
-        $niveles_por_musculo[$musculo] = $dato;
+    $ejercicio = $dato['ejercicio'];
+    $peso = $dato['peso_mejor'];
+    $reps = $dato['reps_mejor'];
+    $tipo_equipo = $dato['tipo_equipo'];
+
+    // Calcular nivel individual del ejercicio
+    $nivel = calcularNivelMusculo($musculo, $peso, $reps, $peso_usuario, $tipo_equipo);
+
+    // Agregar a la lista de ejercicios por músculo
+    if (!isset($ejercicios_por_musculo[$musculo])) {
+        $ejercicios_por_musculo[$musculo] = [];
     }
+
+    $ejercicios_por_musculo[$musculo][] = [
+        'ejercicio' => $ejercicio,
+        'peso' => $peso,
+        'reps' => $reps,
+        'tipo_equipo' => $tipo_equipo,
+        'nivel' => $nivel,
+        'volumen' => $dato['mejor_volumen']
+    ];
+}
+
+// Calcular nivel PROMEDIO por músculo (nivel global del músculo)
+$niveles_por_musculo = [];
+foreach ($ejercicios_por_musculo as $musculo => $ejercicios) {
+    $suma_niveles = 0;
+    $total_ejercicios = count($ejercicios);
+
+    foreach ($ejercicios as $ej) {
+        $suma_niveles += $ej['nivel'];
+    }
+
+    $nivel_promedio = round($suma_niveles / $total_ejercicios, 1);
+
+    $niveles_por_musculo[$musculo] = [
+        'nivel_promedio' => $nivel_promedio,
+        'ejercicios' => $ejercicios,
+        'total_ejercicios' => $total_ejercicios
+    ];
 }
 
 $conn->close();
@@ -283,6 +338,23 @@ $conn->close();
             border-bottom: none;
         }
 
+        .muscle-group-header {
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .muscle-group-header:hover {
+            background: #fafafa;
+        }
+
+        .muscle-group-container {
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .muscle-group-container:last-child {
+            border-bottom: none;
+        }
+
         .muscle-name {
             font-size: 14px;
             font-weight: 600;
@@ -296,10 +368,53 @@ $conn->close();
 
         .muscle-stats {
             text-align: right;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .muscle-weight {
             font-size: 13px;
+            color: #666;
+        }
+
+        .expand-icon {
+            transition: transform 0.2s;
+            color: #999;
+        }
+
+        .muscle-group-header.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        .exercise-details {
+            background: #fafafa;
+            padding: 0.5rem 0.5rem 0.5rem 1.5rem;
+        }
+
+        .exercise-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: white;
+            border: 1px solid #e5e5e5;
+            margin-bottom: 0.5rem;
+        }
+
+        .exercise-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .exercise-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 0.25rem;
+        }
+
+        .exercise-info {
+            font-size: 11px;
             color: #666;
         }
 
@@ -309,7 +424,6 @@ $conn->close();
             font-size: 11px;
             font-weight: 600;
             border: 1px solid;
-            margin-top: 4px;
         }
 
         .level-1 { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
@@ -451,25 +565,52 @@ $conn->close();
                     </div>
                 <?php else: ?>
                     <?php foreach ($niveles_por_musculo as $musculo => $dato): ?>
-                        <div class="muscle-level-item">
-                            <div>
-                                <div class="muscle-name"><?php echo htmlspecialchars($musculo); ?></div>
-                                <div class="muscle-exercise"><?php echo htmlspecialchars($dato['ejercicio']); ?></div>
-                            </div>
-                            <div class="muscle-stats">
-                                <div class="muscle-weight">
-                                    <?php
-                                    if ($dato['peso_max'] > 0) {
-                                        echo $dato['peso_max'] . ' kg × ' . $dato['reps_max'] . ' reps';
-                                    } else {
-                                        echo $dato['reps_max'] . ' reps (bodyweight)';
-                                    }
-                                    ?>
+                        <div class="muscle-group-container" data-muscle="<?php echo htmlspecialchars($musculo); ?>">
+                            <!-- Nivel global del músculo (expandible) -->
+                            <div class="muscle-level-item muscle-group-header" onclick="toggleMuscleDetails(this)">
+                                <div style="flex: 1;">
+                                    <div class="muscle-name">
+                                        <?php echo htmlspecialchars($musculo); ?>
+                                        <span style="font-size: 11px; color: #999; font-weight: 400;">
+                                            (<?php echo $dato['total_ejercicios']; ?> ejercicio<?php echo $dato['total_ejercicios'] > 1 ? 's' : ''; ?>)
+                                        </span>
+                                    </div>
+                                    <div class="muscle-exercise">Nivel promedio de todos los ejercicios</div>
                                 </div>
-                                <?php
-                                    $nivel_calculado = calcularNivelMusculo($musculo, $dato['peso_max'], $dato['reps_max'], $peso_usuario);
-                                ?>
-                                <div class="level-badge level-<?php echo $nivel_calculado; ?>">Nivel <?php echo $nivel_calculado; ?></div>
+                                <div class="muscle-stats">
+                                    <?php
+                                        $nivel_promedio = $dato['nivel_promedio'];
+                                        $nivel_display = floor($nivel_promedio); // Para color del badge
+                                    ?>
+                                    <div class="level-badge level-<?php echo $nivel_display; ?>">
+                                        Nivel <?php echo number_format($nivel_promedio, 1); ?>
+                                    </div>
+                                    <span class="expand-icon" style="margin-left: 0.5rem; font-size: 18px;">▼</span>
+                                </div>
+                            </div>
+
+                            <!-- Ejercicios individuales (ocultos por defecto) -->
+                            <div class="exercise-details" style="display: none;">
+                                <?php foreach ($dato['ejercicios'] as $ejercicio): ?>
+                                    <div class="exercise-item">
+                                        <div style="flex: 1;">
+                                            <div class="exercise-name"><?php echo htmlspecialchars($ejercicio['ejercicio']); ?></div>
+                                            <div class="exercise-info">
+                                                <?php
+                                                if ($ejercicio['peso'] > 0) {
+                                                    echo $ejercicio['peso'] . ' kg × ' . $ejercicio['reps'] . ' reps';
+                                                } else {
+                                                    echo $ejercicio['reps'] . ' reps (bodyweight)';
+                                                }
+                                                ?>
+                                                <span style="color: #999; margin-left: 0.5rem;">(<?php echo $ejercicio['tipo_equipo']; ?>)</span>
+                                            </div>
+                                        </div>
+                                        <div class="level-badge level-<?php echo $ejercicio['nivel']; ?>">
+                                            Nivel <?php echo $ejercicio['nivel']; ?>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -479,10 +620,26 @@ $conn->close();
     </div>
 
     <script>
+        // Función para expandir/colapsar detalles de ejercicios
+        function toggleMuscleDetails(header) {
+            const container = header.parentElement;
+            const details = container.querySelector('.exercise-details');
+            const isExpanded = header.classList.contains('expanded');
+
+            if (isExpanded) {
+                header.classList.remove('expanded');
+                details.style.display = 'none';
+            } else {
+                header.classList.add('expanded');
+                details.style.display = 'block';
+            }
+        }
+
         const nivelPorMusculo = <?php
             $niveles_js = [];
             foreach ($niveles_por_musculo as $musculo => $dato) {
-                $niveles_js[$musculo] = calcularNivelMusculo($musculo, $dato['peso_max'], $dato['reps_max'], $peso_usuario);
+                // Usar el nivel promedio para colorear el SVG
+                $niveles_js[$musculo] = floor($dato['nivel_promedio']);
             }
             echo json_encode($niveles_js, JSON_UNESCAPED_UNICODE);
         ?>;
