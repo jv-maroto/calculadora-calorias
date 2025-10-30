@@ -114,6 +114,75 @@ $apellidos = $_SESSION['usuario_apellidos'];
             .module-grid {
                 grid-template-columns: 1fr !important;
             }
+
+            .calendario {
+                padding: 1rem;
+            }
+
+            .calendario-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+
+            .calendario-header > div:first-child {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .calendario-header h3 {
+                font-size: 1rem;
+            }
+
+            .ver-recordatorios-btn {
+                padding: 0.6rem 1rem;
+                font-size: 12px;
+                width: 100%;
+            }
+
+            .calendario-nav {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .nav-btn {
+                padding: 0.6rem 0.8rem;
+                font-size: 14px;
+                flex: 0 0 auto;
+            }
+
+            .mes-actual {
+                min-width: 100px;
+                font-size: 14px;
+            }
+
+            .calendario-grid {
+                gap: 0.25rem;
+            }
+
+            .dia-header {
+                font-size: 11px;
+                padding: 0.4rem;
+            }
+
+            .dia-celda {
+                min-height: 60px;
+                padding: 0.4rem;
+            }
+
+            .dia-numero {
+                font-size: 12px;
+            }
+
+            .actividad-badge {
+                font-size: 9px;
+                padding: 2px 6px;
+            }
+
+            .notificacion-item {
+                padding: 0.75rem;
+                font-size: 13px;
+            }
         }
 
         /* Calendario */

@@ -207,9 +207,54 @@ $conn->close();
             .muscle-mini-container {
                 display: none !important;
             }
+
+            .mobile-back-btn {
+                display: inline-block !important;
+                width: 100%;
+                text-align: center;
+            }
+
+            .v0-card {
+                padding: 1rem;
+            }
+
+            .section-title {
+                font-size: 16px;
+            }
+
+            .section-description {
+                font-size: 12px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+
+            .stat-value {
+                font-size: 20px;
+            }
+
+            .stat-label {
+                font-size: 11px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            thead th {
+                padding: 8px;
+                font-size: 11px;
+            }
+
+            tbody td {
+                padding: 8px;
+                font-size: 12px;
+            }
         }
 
-        @media (min-width: 768px) {
+        @media (min-width: 769px) {
             body {
                 padding-bottom: 2rem !important;
             }
@@ -217,6 +262,10 @@ $conn->close();
                 display: flex !important;
             }
             nav:nth-of-type(2) {
+                display: none !important;
+            }
+
+            .mobile-back-btn {
                 display: none !important;
             }
         }
@@ -251,6 +300,11 @@ $conn->close();
     </nav>
 
     <div style="max-width: 1400px; margin: 0 auto; padding: 1rem 1rem 2rem;">
+
+        <!-- Botón volver - Solo móvil -->
+        <a href="dashboard.php" class="mobile-back-btn" style="display: inline-block; padding: 0.75rem 1.5rem; background: white; border: 1px solid #e5e5e5; color: #666; text-decoration: none; font-size: 0.875rem; font-weight: 600; margin-bottom: 1rem;">
+            ← Volver
+        </a>
 
         <!-- Header -->
         <div class="v0-card">

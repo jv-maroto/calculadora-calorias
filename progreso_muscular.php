@@ -508,7 +508,7 @@ $conn->close();
 
         @media (max-width: 768px) {
             body {
-                padding: 1rem;
+                padding: 0.75rem;
             }
 
             .container {
@@ -517,49 +517,74 @@ $conn->close();
 
             .v0-card {
                 padding: 1rem;
+                margin-bottom: 0.75rem;
             }
 
             .section-title {
-                font-size: 18px;
+                font-size: 16px;
             }
 
             .section-description {
-                font-size: 13px;
-            }
-
-            .back-btn {
-                padding: 0.6rem 1rem;
-                font-size: 0.8rem;
-                margin-bottom: 1rem;
-            }
-
-            .body-container {
-                gap: 1rem;
-            }
-
-            .legend-card {
-                position: static;
-                padding: 1rem;
-            }
-
-            .legend-title {
-                font-size: 14px;
-            }
-
-            .level-item {
-                padding: 0.4rem 0;
-            }
-
-            .level-name {
                 font-size: 12px;
             }
 
-            .level-desc {
-                font-size: 10px;
+            .back-btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 13px;
+                margin-bottom: 1rem;
+                width: 100%;
+                text-align: center;
+            }
+
+            .body-container {
+                gap: 0.75rem;
+                grid-template-columns: 1fr;
+            }
+
+            /* Reordenar: Leyenda arriba, luego detalle, SVG abajo */
+            .legend-card {
+                position: static;
+                padding: 1rem;
+                order: 1;
             }
 
             .muscle-levels {
                 padding: 1rem;
+                order: 2;
+            }
+
+            .human-body {
+                order: 3;
+                margin-top: 1rem;
+            }
+
+            /* Ocultar SVG en móvil por defecto, mostrar con botón */
+            #muscle-svg {
+                max-width: 100%;
+                height: auto;
+            }
+
+            .legend-title {
+                font-size: 14px;
+                margin-bottom: 0.75rem;
+            }
+
+            .level-item {
+                padding: 0.5rem 0;
+                gap: 0.5rem;
+            }
+
+            .level-color {
+                width: 20px;
+                height: 20px;
+            }
+
+            .level-name {
+                font-size: 11px;
+            }
+
+            .level-desc {
+                font-size: 9px;
             }
 
             .muscle-name {
@@ -567,7 +592,16 @@ $conn->close();
             }
 
             .muscle-exercise {
-                font-size: 11px;
+                font-size: 10px;
+            }
+
+            .muscle-level-item {
+                padding: 0.65rem;
+            }
+
+            .exercise-item {
+                padding: 0.6rem;
+                margin-bottom: 0.4rem;
             }
 
             .exercise-name {
@@ -578,23 +612,28 @@ $conn->close();
                 font-size: 10px;
             }
 
+            .exercise-details {
+                padding: 0.4rem 0.4rem 0.4rem 1rem;
+            }
+
             .level-badge {
-                font-size: 10px;
+                font-size: 9px;
                 padding: 3px 8px;
             }
 
+            .expand-icon {
+                font-size: 14px;
+            }
+
+            /* Ocultar tooltip en móvil (difícil de usar con touch) */
             .muscle-tooltip {
-                min-width: 150px;
-                padding: 0.5rem 0.75rem;
-                font-size: 11px;
+                display: none !important;
             }
 
-            .tooltip-title {
-                font-size: 12px;
-            }
-
-            .tooltip-level {
-                font-size: 10px;
+            /* Hacer el mapa muscular más pequeño y centrado */
+            .human-body {
+                max-width: 300px;
+                margin: 1rem auto;
             }
         }
     </style>

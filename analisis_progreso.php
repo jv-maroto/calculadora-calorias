@@ -241,6 +241,16 @@ $ejercicios = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                 padding: 0.6rem 1rem;
                 font-size: 13px;
             }
+
+            .mobile-back-btn {
+                display: inline-block !important;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-back-btn {
+                display: none !important;
+            }
         }
     </style>
 </head>
@@ -289,6 +299,11 @@ $ejercicios = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     </style>
 
     <div style="max-width: 1400px; margin: 0 auto; padding: 0 1rem 2rem;">
+
+        <!-- Botón volver - Solo móvil -->
+        <a href="dashboard.php" class="mobile-back-btn" style="display: inline-block; padding: 0.75rem 1.5rem; background: white; border: 1px solid #e5e5e5; color: #666; text-decoration: none; font-size: 0.875rem; font-weight: 600; margin: 1rem 0;">
+            ← Volver
+        </a>
 
         <!-- Selector de ejercicio -->
         <div class="v0-card">

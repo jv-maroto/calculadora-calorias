@@ -276,9 +276,56 @@ $conn->close();
             .form-grid {
                 grid-template-columns: 1fr;
             }
+
+            .mobile-back-btn {
+                display: inline-block !important;
+                width: 100%;
+                text-align: center;
+            }
+
+            .v0-card {
+                padding: 1rem;
+            }
+
+            .section-title {
+                font-size: 16px;
+            }
+
+            .section-description {
+                font-size: 12px;
+            }
+
+            .day-title {
+                font-size: 14px;
+            }
+
+            .btn {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+
+            .exercise-item {
+                padding: 0.75rem;
+            }
+
+            .exercise-name {
+                font-size: 13px;
+            }
+
+            .exercise-details {
+                font-size: 11px;
+            }
+
+            input, select, textarea {
+                font-size: 14px;
+            }
+
+            label {
+                font-size: 12px;
+            }
         }
 
-        @media (min-width: 768px) {
+        @media (min-width: 769px) {
             body {
                 padding-bottom: 2rem !important;
             }
@@ -286,6 +333,10 @@ $conn->close();
                 display: flex !important;
             }
             nav:nth-of-type(2) {
+                display: none !important;
+            }
+
+            .mobile-back-btn {
                 display: none !important;
             }
         }
@@ -321,9 +372,14 @@ $conn->close();
 
     <div style="max-width: 1400px; margin: 0 auto; padding: 1rem 1rem 2rem;">
 
+        <!-- Botón volver - Solo móvil -->
+        <a href="dashboard.php" class="mobile-back-btn" style="display: inline-block; padding: 0.75rem 1.5rem; background: white; border: 1px solid #e5e5e5; color: #666; text-decoration: none; font-size: 0.875rem; font-weight: 600; margin-bottom: 1rem;">
+            ← Volver
+        </a>
+
         <!-- Header -->
         <div class="v0-card">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                 <div>
                     <div class="section-title">Gestionar Ejercicios</div>
                     <div class="section-description">Añade, edita o elimina ejercicios de tu rutina</div>
