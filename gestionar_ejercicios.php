@@ -130,8 +130,15 @@ $conn->close();
             color: white;
         }
 
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
         table {
             width: 100%;
+            min-width: 650px;
             border-collapse: collapse;
         }
 
@@ -142,6 +149,7 @@ $conn->close();
             font-weight: 600;
             color: #999;
             border-bottom: 1px solid #e5e5e5;
+            white-space: nowrap;
         }
 
         tbody td {
@@ -323,6 +331,37 @@ $conn->close();
             label {
                 font-size: 12px;
             }
+
+            .table-container {
+                border: 1px solid #e5e5e5;
+                border-radius: 4px;
+                margin: 0 -0.5rem;
+            }
+
+            table {
+                min-width: 600px;
+                font-size: 12px;
+            }
+
+            thead th {
+                padding: 8px;
+                font-size: 10px;
+            }
+
+            tbody td {
+                padding: 8px;
+                font-size: 12px;
+            }
+
+            .badge {
+                font-size: 9px;
+                padding: 2px 6px;
+            }
+
+            .btn svg {
+                width: 14px;
+                height: 14px;
+            }
         }
 
         @media (min-width: 769px) {
@@ -411,7 +450,7 @@ $conn->close();
                             <div>No hay ejercicios. Añade el primero.</div>
                         </div>
                     <?php else: ?>
-                        <div style="overflow-x: auto;">
+                        <div class="table-container">
                             <table>
                                 <thead>
                                     <tr>

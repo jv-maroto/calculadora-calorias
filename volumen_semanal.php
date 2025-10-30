@@ -191,6 +191,17 @@ $conn->close();
             margin-bottom: 1rem;
         }
 
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .chart-container canvas {
+            max-width: 100%;
+            height: auto !important;
+        }
+
         @media (max-width: 768px) {
             body {
                 padding-bottom: 80px !important;
@@ -251,6 +262,24 @@ $conn->close();
             tbody td {
                 padding: 8px;
                 font-size: 12px;
+            }
+
+            .chart-container {
+                height: 250px !important;
+                max-height: 250px;
+                overflow: hidden;
+            }
+
+            .chart-container canvas {
+                max-height: 250px !important;
+            }
+
+            .chart-muscle-grid {
+                gap: 1rem !important;
+            }
+
+            .v0-card {
+                overflow: hidden;
             }
         }
 
@@ -350,7 +379,7 @@ $conn->close();
             <div class="v0-card">
                 <div class="section-title">Volumen por Grupo Muscular</div>
                 <div class="chart-muscle-grid" style="display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: center;">
-                    <div class="chart-container">
+                    <div class="chart-container" style="height: 400px; position: relative;">
                         <canvas id="chartVolumen"></canvas>
                     </div>
                     <div class="muscle-mini-container" style="width: 250px; display: flex; flex-direction: column; align-items: center;">
