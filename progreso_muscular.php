@@ -445,6 +445,27 @@ $conn->close();
             border: 1px solid;
         }
 
+        .toggle-details-btn {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: white;
+            border: 1px solid #e5e5e5;
+            color: #666;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.15s;
+            margin-bottom: 1rem;
+        }
+
+        .toggle-details-btn:hover {
+            border-color: #1a1a1a;
+            color: #1a1a1a;
+        }
+
         .level-1 { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
         .level-2 { background: #fff7ed; color: #9a3412; border-color: #fed7aa; }
         .level-3 { background: #fefce8; color: #854d0e; border-color: #fde047; }
@@ -541,21 +562,31 @@ $conn->close();
                 grid-template-columns: 1fr;
             }
 
-            /* Reordenar: Leyenda arriba, luego detalle, SVG abajo */
+            /* Reordenar: Leyenda arriba, SVG segundo, Detalle tercero (colapsado) */
             .legend-card {
                 position: static;
                 padding: 1rem;
                 order: 1;
             }
 
-            .muscle-levels {
-                padding: 1rem;
+            .human-body {
                 order: 2;
+                margin: 1rem auto;
             }
 
-            .human-body {
+            .muscle-levels {
+                padding: 1rem;
                 order: 3;
-                margin-top: 1rem;
+            }
+
+            /* Mostrar botón toggle en móvil */
+            .toggle-details-btn {
+                display: flex !important;
+            }
+
+            /* Ocultar contenido por defecto en móvil */
+            .muscle-details-content {
+                display: none;
             }
 
             /* Ocultar SVG en móvil por defecto, mostrar con botón */
@@ -706,8 +737,15 @@ $conn->close();
             </div>
 
             <!-- Detalle por músculo derecha -->
-            <div class="muscle-levels">
-                <div class="legend-title">Detalle por Músculo</div>
+            <div class="muscle-levels" id="muscle-details-section">
+                <!-- Botón toggle para móvil -->
+                <button class="toggle-details-btn" onclick="toggleMuscleDetailsSection()" style="display: none;">
+                    <span id="toggle-text">Ver Detalle por Músculo</span>
+                    <span id="toggle-icon">▼</span>
+                </button>
+
+                <div class="muscle-details-content" id="muscle-details-content">
+                    <div class="legend-title">Detalle por Músculo</div>
                 <?php if (empty($niveles_por_musculo)): ?>
                     <div style="text-align: center; padding: 2rem; color: #999;">
                         <div style="font-size: 48px; margin-bottom: 1rem;">💪</div>
@@ -765,9 +803,29 @@ $conn->close();
                         </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
+                </div><!-- end muscle-details-content -->
             </div>
         </div>
     </div>
+
+    <script>
+        // Función para mostrar/ocultar sección de detalles (solo móvil)
+        function toggleMuscleDetailsSection() {
+            const content = document.getElementById('muscle-details-content');
+            const toggleText = document.getElementById('toggle-text');
+            const toggleIcon = document.getElementById('toggle-icon');
+
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                toggleText.textContent = 'Ocultar Detalle';
+                toggleIcon.textContent = '▲';
+            } else {
+                content.style.display = 'none';
+                toggleText.textContent = 'Ver Detalle por Músculo';
+                toggleIcon.textContent = '▼';
+            }
+        }
+    </script>
 
     <script>
         // Función para expandir/colapsar detalles de ejercicios
