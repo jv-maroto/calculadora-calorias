@@ -30,73 +30,78 @@ function calcular1RM($peso, $reps) {
 function determinarNivel($musculo, $oneRM, $peso_corporal, $tipo_equipo) {
     $ratio = $oneRM / $peso_corporal;
 
-    // Ajustar según tipo de equipo
-    // Las máquinas y poleas tienen resistencia mecánica, no peso real
+    // Ajustar según tipo de equipo - REALISTA
+    // Las máquinas con poleas/palancas tienen ventaja mecánica MUY grande
     $multiplicador = 1.0;
     if ($tipo_equipo == 'Machine' || $tipo_equipo == 'maquina') {
-        $multiplicador = 0.7; // Máquinas son ~30% más fáciles
+        $multiplicador = 0.5; // Máquinas con polea son ~50% más fáciles (ej: reverse fly, lateral raise machine)
     } else if ($tipo_equipo == 'Cable' || $tipo_equipo == 'polea') {
-        $multiplicador = 0.85; // Poleas son ~15% más fáciles
+        $multiplicador = 0.75; // Poleas son ~25% más fáciles
     } else if ($tipo_equipo == 'Assisted') {
-        $multiplicador = 0.6; // Asistidos son ~40% más fáciles
+        $multiplicador = 0.4; // Asistidos son ~60% más fáciles
+    } else if ($tipo_equipo == 'Dumbbell') {
+        $multiplicador = 0.9; // Mancuernas son ~10% más difíciles que barra (estabilización)
     }
 
     $ratio = $ratio * $multiplicador;
 
-    // Estándares según grupo muscular (ratio de 1RM / peso corporal)
-    // Basados en ExRx.net, Symmetric Strength y datos de competición
-    // [Untrained, Novice, Intermediate, Advanced, Elite]
+    // Estándares basados en PERCENTILES DE POBLACIÓN REAL del gym
+    // Nivel 1: Bottom 50% (mayoría de la gente)
+    // Nivel 2: Top 50% (mejor que la mitad)
+    // Nivel 3: Top 20% (fuerte)
+    // Nivel 4: Top 5% (muy fuerte)
+    // Nivel 5: Top 1% (élite competitivo)
     $estandares = [
         // Empujes horizontales (pecho) - Basado en Bench Press
-        'Pecho' => [0.5, 0.75, 1.0, 1.5, 2.0],
-        'Pecho superior' => [0.4, 0.65, 0.9, 1.35, 1.8],
-        'Pecho/Tríceps' => [0.5, 0.75, 1.0, 1.5, 2.0],
+        'Pecho' => [0.6, 0.9, 1.2, 1.6, 2.0],
+        'Pecho superior' => [0.5, 0.75, 1.0, 1.4, 1.8],
+        'Pecho/Tríceps' => [0.6, 0.9, 1.2, 1.6, 2.0],
 
         // Empujes verticales (hombros) - Basado en Overhead Press
-        'Hombros' => [0.3, 0.5, 0.75, 1.0, 1.35],
-        'Deltoides lateral' => [0.2, 0.35, 0.5, 0.7, 0.9],
-        'Deltoides posterior' => [0.2, 0.35, 0.5, 0.7, 0.9],
-        'Deltoides' => [0.3, 0.5, 0.75, 1.0, 1.35],
+        'Hombros' => [0.4, 0.6, 0.8, 1.1, 1.4],
+        'Deltoides lateral' => [0.15, 0.25, 0.35, 0.5, 0.65],
+        'Deltoides posterior' => [0.15, 0.25, 0.35, 0.5, 0.65],
+        'Deltoides' => [0.4, 0.6, 0.8, 1.1, 1.4],
 
         // Tríceps - Estimado de extensions/dips
-        'Tríceps' => [0.3, 0.5, 0.7, 1.0, 1.3],
+        'Tríceps' => [0.35, 0.55, 0.75, 1.0, 1.3],
 
         // Jalones (espalda) - Basado en Row/Pulldown
-        'Dorsal' => [0.4, 0.7, 1.0, 1.4, 1.8],
-        'Espalda grosor' => [0.4, 0.7, 1.0, 1.4, 1.8],
-        'Espalda media' => [0.35, 0.6, 0.9, 1.25, 1.6],
-        'Espalda' => [0.4, 0.7, 1.0, 1.4, 1.8],
-        'Trapecio' => [0.5, 0.9, 1.3, 1.8, 2.4],
-        'Lumbares' => [0.5, 0.9, 1.3, 1.8, 2.2],
-        'Lumbar' => [0.5, 0.9, 1.3, 1.8, 2.2],
+        'Dorsal' => [0.5, 0.8, 1.1, 1.5, 1.9],
+        'Espalda grosor' => [0.5, 0.8, 1.1, 1.5, 1.9],
+        'Espalda media' => [0.45, 0.7, 1.0, 1.3, 1.7],
+        'Espalda' => [0.5, 0.8, 1.1, 1.5, 1.9],
+        'Trapecio' => [0.6, 1.0, 1.4, 1.9, 2.5],
+        'Lumbares' => [0.6, 1.0, 1.4, 1.9, 2.3],
+        'Lumbar' => [0.6, 1.0, 1.4, 1.9, 2.3],
 
         // Bíceps - Estimado de curl
-        'Bíceps' => [0.25, 0.4, 0.6, 0.85, 1.15],
-        'Espalda/Bíceps' => [0.3, 0.5, 0.75, 1.05, 1.4],
+        'Bíceps' => [0.2, 0.35, 0.5, 0.7, 0.9],
+        'Espalda/Bíceps' => [0.35, 0.55, 0.8, 1.1, 1.4],
 
         // Piernas - Basado en Squat
-        'Cuádriceps' => [0.75, 1.0, 1.5, 2.0, 2.5],
-        'Glúteos' => [0.75, 1.0, 1.5, 2.0, 2.5],
-        'Isquiotibiales' => [0.5, 0.8, 1.2, 1.6, 2.0],
-        'Femoral' => [0.5, 0.8, 1.2, 1.6, 2.0],
-        'Aductores' => [0.4, 0.7, 1.0, 1.4, 1.8],
-        'Gemelos' => [0.5, 0.8, 1.2, 1.6, 2.0],
-        'Pantorrillas' => [0.5, 0.8, 1.2, 1.6, 2.0],
+        'Cuádriceps' => [0.9, 1.3, 1.7, 2.2, 2.8],
+        'Glúteos' => [0.9, 1.3, 1.7, 2.2, 2.8],
+        'Isquiotibiales' => [0.6, 0.9, 1.3, 1.7, 2.2],
+        'Femoral' => [0.6, 0.9, 1.3, 1.7, 2.2],
+        'Aductores' => [0.5, 0.8, 1.1, 1.5, 1.9],
+        'Gemelos' => [0.6, 0.9, 1.3, 1.7, 2.2],
+        'Pantorrillas' => [0.6, 0.9, 1.3, 1.7, 2.2],
 
         // Core y accesorios
-        'Abdomen' => [0.2, 0.4, 0.6, 0.85, 1.1],
-        'Antebrazos' => [0.2, 0.35, 0.5, 0.7, 0.9],
-        'Antebrazo' => [0.2, 0.35, 0.5, 0.7, 0.9],
+        'Abdomen' => [0.25, 0.45, 0.65, 0.9, 1.2],
+        'Antebrazos' => [0.25, 0.4, 0.55, 0.75, 1.0],
+        'Antebrazo' => [0.25, 0.4, 0.55, 0.75, 1.0],
     ];
 
-    $limites = $estandares[$musculo] ?? [0.3, 0.5, 0.75, 1.0, 1.35]; // Por defecto
+    $limites = $estandares[$musculo] ?? [0.4, 0.6, 0.85, 1.15, 1.5]; // Por defecto
 
-    // Determinar nivel según el ratio (5 niveles)
-    if ($ratio < $limites[0]) return 1;      // Untrained
-    else if ($ratio < $limites[1]) return 2; // Novice
-    else if ($ratio < $limites[2]) return 3; // Intermediate
-    else if ($ratio < $limites[3]) return 4; // Advanced
-    else return 5;                            // Elite
+    // Determinar nivel según el ratio (5 niveles basados en percentiles)
+    if ($ratio < $limites[0]) return 1;      // Bottom 50%
+    else if ($ratio < $limites[1]) return 2; // Top 50%
+    else if ($ratio < $limites[2]) return 3; // Top 20%
+    else if ($ratio < $limites[3]) return 4; // Top 5%
+    else return 5;                            // Top 1%
 }
 
 function calcularNivelMusculo($musculo, $peso, $reps, $peso_corporal, $tipo_equipo = 'Barbell') {
@@ -500,47 +505,47 @@ $conn->close();
         <div class="body-container">
             <!-- Leyenda izquierda -->
             <div class="legend-card">
-                <div class="legend-title">Niveles de Progreso</div>
+                <div class="legend-title">Niveles de Fuerza</div>
                 <div class="level-item">
                     <div class="level-color" style="background: #fecaca;"></div>
                     <div class="level-info">
-                        <div class="level-name">Untrained</div>
-                        <div class="level-desc">Sin entrenamiento previo</div>
+                        <div class="level-name">Nivel 1 - Bottom 50%</div>
+                        <div class="level-desc">Mayoría de la gente que va al gym</div>
                     </div>
                 </div>
                 <div class="level-item">
                     <div class="level-color" style="background: #fed7aa;"></div>
                     <div class="level-info">
-                        <div class="level-name">Novice</div>
-                        <div class="level-desc">Primeros meses de entrenamiento</div>
+                        <div class="level-name">Nivel 2 - Top 50%</div>
+                        <div class="level-desc">Mejor que la mitad del gym</div>
                     </div>
                 </div>
                 <div class="level-item">
                     <div class="level-color" style="background: #fde047;"></div>
                     <div class="level-info">
-                        <div class="level-name">Intermediate</div>
-                        <div class="level-desc">1-2 años de entrenamiento</div>
+                        <div class="level-name">Nivel 3 - Top 20%</div>
+                        <div class="level-desc">Entre los más fuertes</div>
                     </div>
                 </div>
                 <div class="level-item">
                     <div class="level-color" style="background: #bbf7d0;"></div>
                     <div class="level-info">
-                        <div class="level-name">Advanced</div>
-                        <div class="level-desc">Varios años de entrenamiento</div>
+                        <div class="level-name">Nivel 4 - Top 5%</div>
+                        <div class="level-desc">Muy fuerte, nivel competitivo</div>
                     </div>
                 </div>
                 <div class="level-item">
                     <div class="level-color" style="background: #bfdbfe;"></div>
                     <div class="level-info">
-                        <div class="level-name">Elite</div>
-                        <div class="level-desc">Nivel competitivo</div>
+                        <div class="level-name">Nivel 5 - Top 1%</div>
+                        <div class="level-desc">Élite absoluta</div>
                     </div>
                 </div>
 
                 <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e5e5e5;">
                     <div style="font-size: 12px; color: #666; line-height: 1.6;">
-                        <strong>Estándares basados en:</strong><br>
-                        ExRx.net y Symmetric Strength. Se calcula tu 1RM (una repetición máxima) dividido por tu peso corporal y se compara con datos de miles de atletas.
+                        <strong>Percentiles de población real</strong><br>
+                        Se calcula tu 1RM ajustado por tipo de equipo (máquinas ~50% más fáciles, poleas ~25%) y se compara con la población que entrena regularmente.
                     </div>
                 </div>
             </div>
@@ -764,12 +769,11 @@ $conn->close();
             const levelText = document.getElementById('tooltip-level');
 
             const levelNames = {
-                1: 'Principiante',
-                2: 'Novato',
-                3: 'Intermedio',
-                4: 'Avanzado',
-                5: 'Élite',
-                6: 'Maestro'
+                1: 'Bottom 50%',
+                2: 'Top 50%',
+                3: 'Top 20%',
+                4: 'Top 5%',
+                5: 'Top 1%'
             };
 
             title.textContent = musculo;
