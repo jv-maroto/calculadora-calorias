@@ -199,6 +199,49 @@ $ejercicios = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         tbody tr:last-child td {
             border-bottom: none;
         }
+
+        @media (max-width: 768px) {
+            body {
+                padding-bottom: 100px;
+            }
+
+            .v0-card {
+                padding: 1rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .exercise-selector {
+                margin-bottom: 1rem;
+            }
+
+            select {
+                font-size: 14px;
+                padding: 0.6rem 2rem 0.6rem 0.75rem;
+            }
+
+            canvas {
+                max-height: 250px !important;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            thead th {
+                padding: 8px;
+                font-size: 11px;
+            }
+
+            tbody td {
+                padding: 8px;
+                font-size: 12px;
+            }
+
+            .btn {
+                padding: 0.6rem 1rem;
+                font-size: 13px;
+            }
+        }
     </style>
 </head>
 <body>

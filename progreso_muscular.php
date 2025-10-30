@@ -114,9 +114,12 @@ function determinarNivel($musculo, $oneRM, $peso_corporal, $tipo_equipo, $ejerci
 
 function calcularNivelMusculo($musculo, $peso, $reps, $peso_corporal, $tipo_equipo = 'Barbell', $ejercicio_nombre = '') {
     if ($peso == 0 || $peso < 1 || $tipo_equipo == 'Bodyweight') {
-        // Para bodyweight, usar peso corporal como peso base
-        $oneRM = calcular1RM($peso_corporal, $reps);
-        return determinarNivel($musculo, $oneRM, $peso_corporal, $tipo_equipo, $ejercicio_nombre);
+        // Niveles basados solo en repeticiones para ejercicios sin peso (dominadas, fondos, etc.)
+        if ($reps < 3) return 1;         // Bottom 50%
+        else if ($reps < 8) return 2;    // Top 50%
+        else if ($reps < 15) return 3;   // Top 20%
+        else if ($reps < 25) return 4;   // Top 5%
+        else return 5;                    // Top 1%
     } else {
         // Calcular 1RM estimado y determinar nivel
         $oneRM = calcular1RM($peso, $reps);
@@ -500,6 +503,98 @@ $conn->close();
             }
             .human-body {
                 grid-column: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .container {
+                padding: 0;
+            }
+
+            .v0-card {
+                padding: 1rem;
+            }
+
+            .section-title {
+                font-size: 18px;
+            }
+
+            .section-description {
+                font-size: 13px;
+            }
+
+            .back-btn {
+                padding: 0.6rem 1rem;
+                font-size: 0.8rem;
+                margin-bottom: 1rem;
+            }
+
+            .body-container {
+                gap: 1rem;
+            }
+
+            .legend-card {
+                position: static;
+                padding: 1rem;
+            }
+
+            .legend-title {
+                font-size: 14px;
+            }
+
+            .level-item {
+                padding: 0.4rem 0;
+            }
+
+            .level-name {
+                font-size: 12px;
+            }
+
+            .level-desc {
+                font-size: 10px;
+            }
+
+            .muscle-levels {
+                padding: 1rem;
+            }
+
+            .muscle-name {
+                font-size: 13px;
+            }
+
+            .muscle-exercise {
+                font-size: 11px;
+            }
+
+            .exercise-name {
+                font-size: 12px;
+            }
+
+            .exercise-info {
+                font-size: 10px;
+            }
+
+            .level-badge {
+                font-size: 10px;
+                padding: 3px 8px;
+            }
+
+            .muscle-tooltip {
+                min-width: 150px;
+                padding: 0.5rem 0.75rem;
+                font-size: 11px;
+            }
+
+            .tooltip-title {
+                font-size: 12px;
+            }
+
+            .tooltip-level {
+                font-size: 10px;
             }
         }
     </style>

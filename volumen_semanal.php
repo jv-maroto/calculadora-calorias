@@ -13,18 +13,27 @@ $apellidos = $_SESSION['usuario_apellidos'];
 // Conexión a base de datos
 require_once 'connection.php';
 
+// Obtener peso del usuario (por defecto 70kg si no está configurado)
+$peso_usuario = 70;
+
 // Obtener fecha actual y rango de semana
 $hoy = date('Y-m-d');
 $inicio_semana = date('Y-m-d', strtotime('monday this week'));
 $fin_semana = date('Y-m-d', strtotime('sunday this week'));
 
 // Obtener volumen por grupo muscular en esta semana
+// Para bodyweight (peso=0), usar peso corporal del usuario
 $sql_volumen = "SELECT
                     e.musculo_principal as grupo_muscular,
                     COUNT(DISTINCT DATE(r.fecha)) as sesiones,
                     COUNT(r.id) as total_sets,
                     SUM(r.reps) as total_reps,
-                    SUM(r.peso * r.reps) as volumen_kg
+                    SUM(
+                        CASE
+                            WHEN r.peso = 0 OR r.peso IS NULL THEN ? * r.reps
+                            ELSE r.peso * r.reps
+                        END
+                    ) as volumen_kg
                 FROM registros_entrenamiento r
                 JOIN ejercicios e ON r.ejercicio_id = e.id
                 WHERE r.nombre = ?
@@ -34,7 +43,7 @@ $sql_volumen = "SELECT
                 ORDER BY volumen_kg DESC";
 
 $stmt = $conn->prepare($sql_volumen);
-$stmt->bind_param("ssss", $nombre, $apellidos, $inicio_semana, $fin_semana);
+$stmt->bind_param("dssss", $peso_usuario, $nombre, $apellidos, $inicio_semana, $fin_semana);
 $stmt->execute();
 $volumen_datos = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
