@@ -27,14 +27,22 @@ function calcular1RM($peso, $reps) {
 }
 
 // Función para determinar nivel según tipo de ejercicio y peso corporal
-function determinarNivel($musculo, $oneRM, $peso_corporal, $tipo_equipo) {
+function determinarNivel($musculo, $oneRM, $peso_corporal, $tipo_equipo, $ejercicio_nombre = '') {
     $ratio = $oneRM / $peso_corporal;
 
     // Ajustar según tipo de equipo - REALISTA
     // Las máquinas con poleas/palancas tienen ventaja mecánica MUY grande
     $multiplicador = 1.0;
-    if ($tipo_equipo == 'Machine' || $tipo_equipo == 'maquina') {
-        $multiplicador = 0.5; // Máquinas con polea son ~50% más fáciles (ej: reverse fly, lateral raise machine)
+
+    // Ejercicios específicos que son EXTREMADAMENTE fáciles en máquina
+    $ejercicio_lower = strtolower($ejercicio_nombre);
+    if (stripos($ejercicio_lower, 'reverse fly') !== false ||
+        stripos($ejercicio_lower, 'lateral raise') !== false ||
+        stripos($ejercicio_lower, 'rear delt') !== false ||
+        stripos($ejercicio_lower, 'peck deck') !== false) {
+        $multiplicador = 0.3; // Estas máquinas son ~70% más fáciles (polea + palanca larga)
+    } else if ($tipo_equipo == 'Machine' || $tipo_equipo == 'maquina') {
+        $multiplicador = 0.5; // Otras máquinas son ~50% más fáciles
     } else if ($tipo_equipo == 'Cable' || $tipo_equipo == 'polea') {
         $multiplicador = 0.75; // Poleas son ~25% más fáciles
     } else if ($tipo_equipo == 'Assisted') {
@@ -59,8 +67,8 @@ function determinarNivel($musculo, $oneRM, $peso_corporal, $tipo_equipo) {
 
         // Empujes verticales (hombros) - Basado en Overhead Press
         'Hombros' => [0.4, 0.6, 0.8, 1.1, 1.4],
-        'Deltoides lateral' => [0.15, 0.25, 0.35, 0.5, 0.65],
-        'Deltoides posterior' => [0.15, 0.25, 0.35, 0.5, 0.65],
+        'Deltoides lateral' => [0.1, 0.18, 0.28, 0.4, 0.55],  // MUY bajos porque suelen ser máquina
+        'Deltoides posterior' => [0.1, 0.18, 0.28, 0.4, 0.55], // MUY bajos porque suelen ser máquina
         'Deltoides' => [0.4, 0.6, 0.8, 1.1, 1.4],
 
         // Tríceps - Estimado de extensions/dips
@@ -104,18 +112,15 @@ function determinarNivel($musculo, $oneRM, $peso_corporal, $tipo_equipo) {
     else return 5;                            // Top 1%
 }
 
-function calcularNivelMusculo($musculo, $peso, $reps, $peso_corporal, $tipo_equipo = 'Barbell') {
+function calcularNivelMusculo($musculo, $peso, $reps, $peso_corporal, $tipo_equipo = 'Barbell', $ejercicio_nombre = '') {
     if ($peso == 0 || $peso < 1 || $tipo_equipo == 'Bodyweight') {
-        // Niveles basados solo en repeticiones para ejercicios sin peso (dominadas, fondos, etc.)
-        if ($reps < 3) return 1;         // Untrained
-        else if ($reps < 8) return 2;    // Novice
-        else if ($reps < 15) return 3;   // Intermediate
-        else if ($reps < 25) return 4;   // Advanced
-        else return 5;                    // Elite
+        // Para bodyweight, usar peso corporal como peso base
+        $oneRM = calcular1RM($peso_corporal, $reps);
+        return determinarNivel($musculo, $oneRM, $peso_corporal, $tipo_equipo, $ejercicio_nombre);
     } else {
         // Calcular 1RM estimado y determinar nivel
         $oneRM = calcular1RM($peso, $reps);
-        return determinarNivel($musculo, $oneRM, $peso_corporal, $tipo_equipo);
+        return determinarNivel($musculo, $oneRM, $peso_corporal, $tipo_equipo, $ejercicio_nombre);
     }
 }
 
@@ -152,8 +157,14 @@ foreach ($resultados as $dato) {
     $reps = $dato['reps_mejor'];
     $tipo_equipo = $dato['tipo_equipo'];
 
-    // Calcular nivel individual del ejercicio
-    $nivel = calcularNivelMusculo($musculo, $peso, $reps, $peso_usuario, $tipo_equipo);
+    // Calcular nivel individual del ejercicio (pasando nombre para ajustes específicos)
+    $nivel = calcularNivelMusculo($musculo, $peso, $reps, $peso_usuario, $tipo_equipo, $ejercicio);
+
+    // Calcular volumen real (si es bodyweight, usar peso corporal)
+    $volumen_real = $dato['mejor_volumen'];
+    if ($peso == 0 || $peso < 1 || $tipo_equipo == 'Bodyweight') {
+        $volumen_real = $peso_usuario * $reps; // peso corporal × reps
+    }
 
     // Agregar a la lista de ejercicios por músculo
     if (!isset($ejercicios_por_musculo[$musculo])) {
@@ -166,7 +177,7 @@ foreach ($resultados as $dato) {
         'reps' => $reps,
         'tipo_equipo' => $tipo_equipo,
         'nivel' => $nivel,
-        'volumen' => $dato['mejor_volumen']
+        'volumen' => $volumen_real
     ];
 }
 
