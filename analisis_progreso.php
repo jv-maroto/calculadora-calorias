@@ -249,7 +249,18 @@ $ejercicios = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
         <!-- Selector de ejercicio -->
         <div class="v0-card">
-            <div class="section-title">Selecciona un ejercicio</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <div class="section-title" style="margin-bottom: 0;">Selecciona un ejercicio</div>
+                <a href="progreso_muscular.php" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 8px 16px; border: 1px solid #e5e5e5; background: white; color: #666; font-size: 14px; font-weight: 500; text-decoration: none; transition: all 0.15s;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    Progreso Muscular
+                </a>
+            </div>
             <div class="exercise-selector" id="exercise-selector">
                 <?php
                 $tipo_actual = '';

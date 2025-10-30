@@ -20,7 +20,7 @@ $fin_semana = date('Y-m-d', strtotime('sunday this week'));
 
 // Obtener volumen por grupo muscular en esta semana
 $sql_volumen = "SELECT
-                    e.grupo_muscular,
+                    e.musculo_principal as grupo_muscular,
                     COUNT(DISTINCT DATE(r.fecha)) as sesiones,
                     COUNT(r.id) as total_sets,
                     SUM(r.reps) as total_reps,
@@ -30,7 +30,7 @@ $sql_volumen = "SELECT
                 WHERE r.nombre = ?
                     AND r.apellidos = ?
                     AND DATE(r.fecha) BETWEEN ? AND ?
-                GROUP BY e.grupo_muscular
+                GROUP BY e.musculo_principal
                 ORDER BY volumen_kg DESC";
 
 $stmt = $conn->prepare($sql_volumen);
@@ -192,6 +192,12 @@ $conn->close();
             nav:nth-of-type(2) {
                 display: flex !important;
             }
+            .chart-muscle-grid {
+                grid-template-columns: 1fr !important;
+            }
+            .muscle-mini-container {
+                display: none !important;
+            }
         }
 
         @media (min-width: 768px) {
@@ -277,11 +283,17 @@ $conn->close();
                 </div>
             </div>
         <?php else: ?>
-            <!-- Gráfica de volumen -->
+            <!-- Gráfica de volumen y mapa muscular -->
             <div class="v0-card">
                 <div class="section-title">Volumen por Grupo Muscular</div>
-                <div class="chart-container">
-                    <canvas id="chartVolumen"></canvas>
+                <div class="chart-muscle-grid" style="display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: center;">
+                    <div class="chart-container">
+                        <canvas id="chartVolumen"></canvas>
+                    </div>
+                    <div class="muscle-mini-container" style="width: 250px; display: flex; flex-direction: column; align-items: center;">
+                        <div style="font-size: 12px; color: #999; margin-bottom: 1rem; text-align: center;">Músculos Trabajados</div>
+                        <object data="muscles-body.svg" type="image/svg+xml" id="muscle-svg-mini" style="width: 100%; height: auto; max-height: 400px;"></object>
+                    </div>
                 </div>
             </div>
 
@@ -366,6 +378,75 @@ $conn->close();
                 }
             }
         });
+
+        // Mapeo de grupos musculares DB a SVG IDs
+        const muscleMapping = {
+            'Pecho superior': ['upper_pecs'],
+            'Pecho': ['upper_pecs', 'middle_pecs', 'lower_pecs'],
+            'Pecho/Tríceps': ['middle_pecs', 'lower_pecs', 'triceps'],
+            'Bíceps': ['biceps'],
+            'Espalda/Bíceps': ['biceps', 'lats'],
+            'Tríceps': ['triceps'],
+            'Hombros': ['front_delts', 'side_delts', 'rear_delts'],
+            'Deltoides lateral': ['side_delts'],
+            'Deltoides posterior': ['rear_delts'],
+            'Deltoides': ['front_delts', 'side_delts'],
+            'Abdomen': ['upper_abs', 'lower_abs', 'obliques'],
+            'Cuádriceps': ['quads'],
+            'Isquiotibiales': ['hamstrings'],
+            'Femoral': ['hamstrings'],
+            'Gemelos': ['calves'],
+            'Pantorrillas': ['calves'],
+            'Antebrazos': ['forearms'],
+            'Antebrazo': ['forearms'],
+            'Dorsal': ['lats'],
+            'Espalda grosor': ['lats'],
+            'Espalda media': ['lower_traps', 'rhomboids'],
+            'Espalda': ['upper_traps', 'lats', 'lower_back'],
+            'Trapecio': ['upper_traps', 'lower_traps'],
+            'Lumbares': ['lower_back'],
+            'Lumbar': ['lower_back'],
+            'Glúteos': ['glutes'],
+            'Aductores': ['hip_abductor', 'hip_adductor']
+        };
+
+        // Encontrar qué grupos del SVG se trabajaron esta semana
+        const svgGroupsToHighlight = new Set();
+        grupos.forEach(grupoMuscular => {
+            if (grupoMuscular && muscleMapping[grupoMuscular]) {
+                muscleMapping[grupoMuscular].forEach(svgId => svgGroupsToHighlight.add(svgId));
+            }
+        });
+
+        // Esperar a que el SVG se cargue y aplicar highlights
+        const svgObject = document.getElementById('muscle-svg-mini');
+        if (svgObject) {
+            svgObject.addEventListener('load', function() {
+                const svgDoc = svgObject.contentDocument;
+                if (!svgDoc) return;
+
+                // Primero aplicar gris a todo
+                const allPaths = svgDoc.querySelectorAll('path');
+                allPaths.forEach(path => {
+                    path.style.fill = '#e5e5e5';
+                    path.style.stroke = '#bbb';
+                    path.style.strokeWidth = '3';
+                });
+
+                // Highlight los grupos trabajados
+                svgGroupsToHighlight.forEach(svgGroupId => {
+                    const group = svgDoc.getElementById(svgGroupId);
+                    if (group) {
+                        const paths = group.querySelectorAll('path');
+                        paths.forEach(path => {
+                            path.style.fill = '#1a1a1a';
+                            path.style.stroke = '#000';
+                            path.style.strokeWidth = '8';
+                        });
+                    }
+                });
+            });
+        }
     </script>
     <?php endif; ?>
 </body>

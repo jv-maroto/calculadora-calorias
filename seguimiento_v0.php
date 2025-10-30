@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="assets/css/v0-theme.css">
 </head>
 <body>
-   
+                                                                                                                                                            
     <nav style="display: none; background: white; border-bottom: 1px solid #e5e5e5; padding: 0 2rem; height: 60px; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100;">
         <div style="display: flex; gap: 2rem;">
             <a href="dashboard.php" style="color: #666; text-decoration: none; font-size: 14px; font-weight: 500;">← Dashboard</a>
