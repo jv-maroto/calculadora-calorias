@@ -137,9 +137,15 @@ $apellidos = $_SESSION['usuario_apellidos'];
         /* Radio buttons estilo v0 */
         .v0-radio-group {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.75rem;
             margin-top: 0.75rem;
+        }
+
+        @media (max-width: 768px) {
+            .v0-radio-group {
+                grid-template-columns: 1fr;
+            }
         }
 
         .v0-radio-card {
@@ -255,6 +261,22 @@ $apellidos = $_SESSION['usuario_apellidos'];
             nav:nth-of-type(2) {
                 display: flex !important;
             }
+
+            .v0-card {
+                padding: 1rem;
+            }
+
+            .v0-card-header {
+                margin-bottom: 1rem;
+            }
+
+            .v0-card-header h3 {
+                font-size: 1rem;
+            }
+
+            .v0-card-header p {
+                font-size: 0.75rem;
+            }
         }
 
         @media (min-width: 768px) {
@@ -279,7 +301,7 @@ $apellidos = $_SESSION['usuario_apellidos'];
 
         .tab-btn {
             flex: 1;
-            padding: 0.75rem 1rem;
+            padding: 0.75rem 0.5rem;
             border: none;
             background: transparent;
             color: #666;
@@ -291,11 +313,26 @@ $apellidos = $_SESSION['usuario_apellidos'];
             justify-content: center;
             gap: 0.5rem;
             border-bottom: 2px solid transparent;
+            font-size: 0.875rem;
         }
 
         .tab-btn.active {
             color: #1a1a1a;
             border-bottom-color: #1a1a1a;
+        }
+
+        @media (max-width: 768px) {
+            .tab-btn {
+                flex-direction: column;
+                gap: 0.25rem;
+                padding: 0.75rem 0.25rem;
+                font-size: 0.75rem;
+            }
+
+            .tab-btn svg, .tab-btn i {
+                width: 16px !important;
+                height: 16px !important;
+            }
         }
 
         /* Grid de 2 columnas */
@@ -308,6 +345,114 @@ $apellidos = $_SESSION['usuario_apellidos'];
         @media (max-width: 768px) {
             .grid-2 {
                 grid-template-columns: 1fr;
+            }
+
+            /* Ajustes para resultados en móvil */
+            #resultados .grid-2 > div {
+                padding: 1rem !important;
+            }
+
+            #resultados .grid-2 > div > div:first-child {
+                font-size: 0.75rem !important;
+            }
+
+            #resultados .grid-2 > div > div:nth-child(2) {
+                font-size: 1.5rem !important;
+            }
+
+            /* Ajustar cards de déficit/mantenimiento/volumen */
+            #resultados div[style*="repeat(auto-fit"] {
+                grid-template-columns: 1fr !important;
+            }
+
+            #resultados div[style*="repeat(auto-fit"] > div {
+                padding: 1rem !important;
+            }
+
+            #resultados div[style*="repeat(auto-fit"] > div > div:nth-child(2) {
+                font-size: 1.25rem !important;
+            }
+
+            /* Tablas Bootstrap en móvil */
+            .table {
+                font-size: 0.875rem;
+            }
+
+            .table td {
+                padding: 0.5rem 0.25rem;
+            }
+
+            h5 {
+                font-size: 1rem !important;
+            }
+
+            .alert {
+                padding: 0.5rem !important;
+                font-size: 0.75rem !important;
+                margin-bottom: 0.5rem !important;
+            }
+
+            .row {
+                margin: 0 !important;
+            }
+
+            .col-md-6 {
+                padding: 0 !important;
+                margin-bottom: 1rem;
+            }
+
+            /* Tabla de fases en móvil - hacerla responsive */
+            table {
+                display: block;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                white-space: nowrap;
+            }
+
+            table thead,
+            table tbody,
+            table tr,
+            table th,
+            table td {
+                display: table-cell;
+            }
+
+            table th,
+            table td {
+                font-size: 0.75rem !important;
+                padding: 0.5rem 0.25rem !important;
+            }
+
+            table th:first-child,
+            table td:first-child {
+                position: sticky;
+                left: 0;
+                background: white;
+                z-index: 1;
+            }
+
+            table thead th:first-child {
+                background: #fafafa;
+                z-index: 2;
+            }
+
+            table tbody tr[style*="background: #fafafa"] td:first-child {
+                background: #fafafa;
+            }
+
+            /* Scroll hint */
+            table::after {
+                content: '← Desliza →';
+                position: absolute;
+                right: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 0.75rem;
+                color: #999;
+                padding: 0.25rem 0.5rem;
+                background: white;
+                border-left: 1px solid #e5e5e5;
+                pointer-events: none;
             }
         }
 
@@ -724,12 +869,14 @@ $apellidos = $_SESSION['usuario_apellidos'];
                     <div style="margin-bottom: 1rem;">
                         <label class="v0-label">Tipo de volumen (% de superávit sobre TDEE)</label>
                         <select class="v0-select" id="preferencia_volumen">
+                            <option value="recomendado" selected>🎯 Recomendado según tus datos (automático)</option>
                             <option value="ultra_limpio">Ultra Limpio - 8-10% superávit (200-250 kcal)</option>
-                            <option value="limpio" selected>Lean Bulk Óptimo ⭐ - 10-12% superávit (300-350 kcal)</option>
+                            <option value="limpio">Lean Bulk Óptimo ⭐ - 10-12% superávit (300-350 kcal)</option>
                             <option value="balanceado">Balanceado - 13-17% superávit (400-500 kcal)</option>
                             <option value="agresivo">Agresivo - 20%+ superávit (600+ kcal)</option>
                         </select>
                         <small class="v0-helper">El superávit determina la velocidad de ganancia y ratio músculo/grasa</small>
+                        <div id="recomendacion-volumen" style="display: none; margin-top: 0.75rem; padding: 1rem; background: #eff6ff; border: 1px solid #3b82f6; font-size: 0.875rem; color: #1a1a1a;"></div>
                     </div>
 
                     <div style="margin-bottom: 1rem;">

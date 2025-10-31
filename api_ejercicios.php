@@ -1,4 +1,5 @@
 <?php
+session_start();
 error_reporting(0);
 ini_set('display_errors', 0);
 header('Content-Type: application/json');
@@ -24,6 +25,73 @@ try {
                 'success' => true,
                 'ejercicios' => $ejercicios
             ]);
+
+            $stmt->close();
+            break;
+
+        case 'crear':
+            $data = json_decode(file_get_contents('php://input'), true);
+
+            $stmt = $conn->prepare("INSERT INTO ejercicios (dia_id, nombre, orden, sets_recomendados, reps_recomendadas, tipo_equipo, musculo_principal, notas)
+                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("isiissss",
+                $data['dia_id'],
+                $data['nombre'],
+                $data['orden'],
+                $data['sets_recomendados'],
+                $data['reps_recomendadas'],
+                $data['tipo_equipo'],
+                $data['grupo_muscular'],
+                $data['notas']
+            );
+
+            if ($stmt->execute()) {
+                echo json_encode(['success' => true, 'id' => $conn->insert_id]);
+            } else {
+                throw new Exception('Error al crear el ejercicio');
+            }
+
+            $stmt->close();
+            break;
+
+        case 'editar':
+            $data = json_decode(file_get_contents('php://input'), true);
+
+            $stmt = $conn->prepare("UPDATE ejercicios
+                                    SET nombre = ?, orden = ?, sets_recomendados = ?, reps_recomendadas = ?,
+                                        tipo_equipo = ?, musculo_principal = ?, notas = ?
+                                    WHERE id = ?");
+            $stmt->bind_param("siissssi",
+                $data['nombre'],
+                $data['orden'],
+                $data['sets_recomendados'],
+                $data['reps_recomendadas'],
+                $data['tipo_equipo'],
+                $data['grupo_muscular'],
+                $data['notas'],
+                $data['ejercicio_id']
+            );
+
+            if ($stmt->execute()) {
+                echo json_encode(['success' => true]);
+            } else {
+                throw new Exception('Error al actualizar el ejercicio');
+            }
+
+            $stmt->close();
+            break;
+
+        case 'eliminar':
+            $data = json_decode(file_get_contents('php://input'), true);
+
+            $stmt = $conn->prepare("DELETE FROM ejercicios WHERE id = ?");
+            $stmt->bind_param("i", $data['id']);
+
+            if ($stmt->execute()) {
+                echo json_encode(['success' => true]);
+            } else {
+                throw new Exception('Error al eliminar el ejercicio');
+            }
 
             $stmt->close();
             break;

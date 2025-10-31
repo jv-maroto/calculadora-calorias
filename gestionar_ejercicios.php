@@ -132,39 +132,164 @@ $conn->close();
 
         .table-container {
             width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
         }
 
-        table {
-            width: 100%;
-            min-width: 650px;
-            border-collapse: collapse;
+        /* Desktop: Table view */
+        @media (min-width: 769px) {
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            thead th {
+                text-align: left;
+                padding: 12px;
+                font-size: 12px;
+                font-weight: 600;
+                color: #999;
+                border-bottom: 1px solid #e5e5e5;
+                white-space: nowrap;
+            }
+
+            tbody td {
+                padding: 12px;
+                font-size: 14px;
+                color: #1a1a1a;
+                border-bottom: 1px solid #f5f5f5;
+            }
+
+            tbody tr:last-child td {
+                border-bottom: none;
+            }
+
+            tbody tr:hover {
+                background: #fafafa;
+            }
+
+            .exercise-list-mobile {
+                display: none;
+            }
         }
 
-        thead th {
-            text-align: left;
-            padding: 12px;
-            font-size: 12px;
+        /* Mobile: Card/List view */
+        @media (max-width: 768px) {
+            table {
+                display: none;
+            }
+
+            .exercise-list-mobile {
+                display: block;
+            }
+        }
+
+        .exercise-card {
+            position: relative;
+            background: white;
+            border: 1px solid #e5e5e5;
+            margin-bottom: 0.75rem;
+            overflow: hidden;
+        }
+
+        .exercise-card-inner {
+            position: relative;
+            background: white;
+            transition: transform 0.2s;
+            touch-action: pan-y;
+        }
+
+        .exercise-card-content {
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .exercise-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .exercise-name {
+            font-size: 15px;
             font-weight: 600;
-            color: #999;
-            border-bottom: 1px solid #e5e5e5;
-            white-space: nowrap;
-        }
-
-        tbody td {
-            padding: 12px;
-            font-size: 14px;
             color: #1a1a1a;
-            border-bottom: 1px solid #f5f5f5;
+            margin-bottom: 0.25rem;
         }
 
-        tbody tr:last-child td {
-            border-bottom: none;
+        .exercise-details {
+            font-size: 13px;
+            color: #666;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
         }
 
-        tbody tr:hover {
-            background: #fafafa;
+        .exercise-detail-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .exercise-order {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .exercise-actions {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            transform: translateX(100%);
+        }
+
+        .action-btn {
+            width: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.15s;
+        }
+
+        .action-btn-edit {
+            background: #3b82f6;
+        }
+
+        .action-btn-edit:active {
+            background: #2563eb;
+        }
+
+        .action-btn-delete {
+            background: #ef4444;
+        }
+
+        .action-btn-delete:active {
+            background: #dc2626;
+        }
+
+        .exercise-card.swiped .exercise-card-inner {
+            transform: translateX(-160px);
+        }
+
+        .exercise-badge-mobile {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #f5f5f5;
+            border: 1px solid #e5e5e5;
+            font-size: 11px;
+            color: #666;
+            white-space: nowrap;
         }
 
         .badge {
@@ -303,6 +428,12 @@ $conn->close();
                 font-size: 12px;
             }
 
+            .day-header {
+                flex-direction: column;
+                gap: 0.75rem;
+                align-items: stretch;
+            }
+
             .day-title {
                 font-size: 14px;
             }
@@ -310,18 +441,8 @@ $conn->close();
             .btn {
                 font-size: 12px;
                 padding: 6px 12px;
-            }
-
-            .exercise-item {
-                padding: 0.75rem;
-            }
-
-            .exercise-name {
-                font-size: 13px;
-            }
-
-            .exercise-details {
-                font-size: 11px;
+                width: 100%;
+                justify-content: center;
             }
 
             input, select, textarea {
@@ -330,32 +451,6 @@ $conn->close();
 
             label {
                 font-size: 12px;
-            }
-
-            .table-container {
-                border: 1px solid #e5e5e5;
-                border-radius: 4px;
-                margin: 0 -0.5rem;
-            }
-
-            table {
-                min-width: 600px;
-                font-size: 12px;
-            }
-
-            thead th {
-                padding: 8px;
-                font-size: 10px;
-            }
-
-            tbody td {
-                padding: 8px;
-                font-size: 12px;
-            }
-
-            .badge {
-                font-size: 9px;
-                padding: 2px 6px;
             }
 
             .btn svg {
@@ -450,6 +545,7 @@ $conn->close();
                             <div>No hay ejercicios. Añade el primero.</div>
                         </div>
                     <?php else: ?>
+                        <!-- Desktop: Tabla -->
                         <div class="table-container">
                             <table>
                                 <thead>
@@ -490,6 +586,46 @@ $conn->close();
                                     <?php endforeach; ?>
                                 </tbody>
                             </table>
+                        </div>
+
+                        <!-- Mobile: Lista con swipe -->
+                        <div class="exercise-list-mobile">
+                            <?php foreach ($ejercicios_por_dia[$dia['id']] as $ejercicio): ?>
+                                <div class="exercise-card" data-id="<?php echo $ejercicio['id']; ?>">
+                                    <div class="exercise-card-inner">
+                                        <div class="exercise-card-content">
+                                            <div class="exercise-order"><?php echo $ejercicio['orden']; ?></div>
+                                            <div class="exercise-info">
+                                                <div class="exercise-name"><?php echo htmlspecialchars($ejercicio['nombre']); ?></div>
+                                                <div class="exercise-details">
+                                                    <span class="exercise-detail-item">
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <path d="M6 2v20M18 2v20M2 12h20"></path>
+                                                        </svg>
+                                                        <?php echo ($ejercicio['sets_recomendados'] ?? 3); ?> × <?php echo ($ejercicio['reps_recomendadas'] ?? '8-12'); ?>
+                                                    </span>
+                                                    <span class="exercise-badge-mobile"><?php echo htmlspecialchars($ejercicio['tipo_equipo'] ?? 'N/A'); ?></span>
+                                                    <span class="exercise-detail-item"><?php echo htmlspecialchars($ejercicio['musculo_principal'] ?? 'N/A'); ?></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="exercise-actions">
+                                            <button class="action-btn action-btn-edit" onclick='editarEjercicio(<?php echo json_encode($ejercicio); ?>)'>
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                                </svg>
+                                            </button>
+                                            <button class="action-btn action-btn-delete" onclick="eliminarEjercicio(<?php echo $ejercicio['id']; ?>, '<?php echo htmlspecialchars($ejercicio['nombre']); ?>')">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -594,10 +730,26 @@ $conn->close();
             document.getElementById('modalEjercicio').classList.add('show');
         }
 
-        function eliminarEjercicio(id, nombre) {
+        async function eliminarEjercicio(id, nombre) {
             if (confirm('¿Estás seguro de eliminar "' + nombre + '"?')) {
-                // Aquí iría la lógica de eliminación
-                alert('Funcionalidad de eliminación pendiente de implementar');
+                try {
+                    const response = await fetch('api_ejercicios.php?action=eliminar', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: id })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        location.reload();
+                    } else {
+                        alert('Error al eliminar: ' + result.error);
+                    }
+                } catch (error) {
+                    alert('Error de conexión al eliminar el ejercicio');
+                    console.error(error);
+                }
             }
         }
 
@@ -609,12 +761,104 @@ $conn->close();
         });
 
         // Manejo del formulario
-        document.getElementById('formEjercicio').addEventListener('submit', function(e) {
+        document.getElementById('formEjercicio').addEventListener('submit', async function(e) {
             e.preventDefault();
-            // Aquí iría la lógica de guardar
-            alert('Funcionalidad de guardar pendiente de implementar');
-            cerrarModal();
+
+            const accion = document.getElementById('accion').value;
+            const datos = {
+                ejercicio_id: document.getElementById('ejercicio_id').value,
+                dia_id: document.getElementById('dia_id').value,
+                nombre: document.getElementById('nombre').value,
+                orden: parseInt(document.getElementById('orden').value),
+                sets_recomendados: parseInt(document.getElementById('sets_recomendados').value),
+                reps_recomendadas: document.getElementById('reps_recomendadas').value,
+                tipo_equipo: document.getElementById('tipo_equipo').value,
+                grupo_muscular: document.getElementById('grupo_muscular').value,
+                notas: document.getElementById('notas').value
+            };
+
+            try {
+                const response = await fetch(`api_ejercicios.php?action=${accion}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datos)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    cerrarModal();
+                    location.reload();
+                } else {
+                    alert('Error al guardar: ' + result.error);
+                }
+            } catch (error) {
+                alert('Error de conexión al guardar el ejercicio');
+                console.error(error);
+            }
         });
+
+        // Swipe functionality para móvil
+        let touchStartX = 0;
+        let touchEndX = 0;
+        let currentSwipedCard = null;
+
+        function handleSwipeGesture(card) {
+            const swipeDistance = touchStartX - touchEndX;
+            const threshold = 80;
+
+            if (swipeDistance > threshold) {
+                // Swipe left - mostrar acciones
+                closeAllCards();
+                card.classList.add('swiped');
+                currentSwipedCard = card;
+            } else if (swipeDistance < -threshold && card.classList.contains('swiped')) {
+                // Swipe right - cerrar acciones
+                card.classList.remove('swiped');
+                currentSwipedCard = null;
+            }
+        }
+
+        function closeAllCards() {
+            document.querySelectorAll('.exercise-card.swiped').forEach(card => {
+                card.classList.remove('swiped');
+            });
+            currentSwipedCard = null;
+        }
+
+        // Agregar event listeners a todas las cards
+        document.querySelectorAll('.exercise-card-inner').forEach(inner => {
+            const card = inner.closest('.exercise-card');
+
+            inner.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            inner.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipeGesture(card);
+            }, { passive: true });
+        });
+
+        // Cerrar cards al hacer clic fuera (pero no dentro del modal)
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.exercise-card') &&
+                !e.target.closest('.modal') &&
+                currentSwipedCard) {
+                closeAllCards();
+            }
+        });
+
+        // Cerrar cards al hacer scroll
+        let scrollTimeout;
+        document.addEventListener('scroll', () => {
+            if (currentSwipedCard) {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    closeAllCards();
+                }, 150);
+            }
+        }, { passive: true });
     </script>
 </body>
 </html>

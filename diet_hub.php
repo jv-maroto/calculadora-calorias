@@ -132,7 +132,7 @@ $apellidos = $_SESSION['usuario_apellidos'];
         <div class="hub-description">Control nutricional y seguimiento de peso</div>
 
         <!-- Opciones -->
-        <div class="option-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+        <div class="option-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
 
             <!-- Calculadora de Calorías -->
             <div class="option-card" onclick="location.href='calculatorkcal.php'">
@@ -158,8 +158,14 @@ $apellidos = $_SESSION['usuario_apellidos'];
                 <div class="option-description">Visualiza tu evolución</div>
             </div>
 
+            <!-- Medidas Corporales -->
+            <div class="option-card" onclick="location.href='medidas_corporales.php'">
+                <div class="option-title">Medidas Corporales</div>
+                <div class="option-description">Registro y evolución de medidas</div>
+            </div>
+
             <!-- Ajuste de Calorías -->
-            <div class="option-card" onclick="location.href='seguimiento_v0.php'" style="grid-column: span 2;">
+            <div class="option-card" onclick="location.href='seguimiento_v0.php'" style="grid-column: span 3;">
                 <div style="display: flex; align-items: center; gap: 1rem;">
                     <div style="flex: 1; text-align: left;">
                         <div class="option-title" style="text-align: left;">Ajuste de Calorías</div>

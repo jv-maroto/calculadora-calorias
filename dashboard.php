@@ -120,14 +120,9 @@ $apellidos = $_SESSION['usuario_apellidos'];
             }
 
             .calendario-header {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: stretch;
-            }
-
-            .calendario-header > div:first-child {
-                flex-direction: column;
-                gap: 0.75rem;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
             }
 
             .calendario-header h3 {
@@ -135,9 +130,56 @@ $apellidos = $_SESSION['usuario_apellidos'];
             }
 
             .ver-recordatorios-btn {
-                padding: 0.6rem 1rem;
-                font-size: 12px;
-                width: 100%;
+                padding: 0.5rem 0.75rem;
+                font-size: 11px;
+            }
+
+            .fecha-actual-grande {
+                padding: 1.5rem 0 1rem;
+            }
+
+            .mes-anio {
+                font-size: 0.75rem;
+            }
+
+            .dia-numero-grande {
+                font-size: 3rem;
+            }
+
+            .dia-semana {
+                font-size: 0.875rem;
+            }
+
+            .actividades-hoy {
+                max-height: 300px;
+            }
+
+            .actividad-item {
+                padding: 0.75rem;
+                gap: 0.75rem;
+            }
+
+            .actividad-indicator {
+                width: 3px;
+                height: 30px;
+            }
+
+            .actividad-titulo {
+                font-size: 0.875rem;
+            }
+
+            .actividad-descripcion {
+                font-size: 0.75rem;
+            }
+
+            .actividad-tipo {
+                font-size: 0.625rem;
+                padding: 3px 6px;
+            }
+
+            .expandir-btn {
+                padding: 0.65rem 1.25rem;
+                font-size: 0.8125rem;
             }
 
             .calendario-nav {
@@ -174,7 +216,7 @@ $apellidos = $_SESSION['usuario_apellidos'];
                 font-size: 12px;
             }
 
-            .actividad-badge {
+            .evento-badge {
                 font-size: 9px;
                 padding: 2px 6px;
             }
@@ -185,7 +227,7 @@ $apellidos = $_SESSION['usuario_apellidos'];
             }
         }
 
-        /* Calendario */
+        /* Calendario estilo Apple */
         .calendario {
             background: white;
             border: 1px solid #e5e5e5;
@@ -205,158 +247,137 @@ $apellidos = $_SESSION['usuario_apellidos'];
             color: #1a1a1a;
         }
 
-        .calendario-nav {
+        .header-actions {
             display: flex;
             gap: 0.5rem;
-            align-items: center;
         }
 
-        .nav-btn {
-            padding: 0.5rem;
-            background: white;
+        .fecha-actual-grande {
+            text-align: center;
+            padding: 1.5rem 0 1rem;
+            border-bottom: 1px solid #e5e5e5;
+            margin-bottom: 1rem;
+        }
+
+        .mes-anio {
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .dia-numero-grande {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+
+        .dia-semana {
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .actividades-hoy {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .actividad-item {
+            padding: 0.75rem;
             border: 1px solid #e5e5e5;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .actividad-item:hover {
+            border-color: #1a1a1a;
+            background: #fafafa;
+        }
+
+        .actividad-item.completado {
+            background: #f0fdf4;
+            border-color: #16a34a;
+        }
+
+        .actividad-indicator {
+            width: 3px;
+            height: 30px;
+            flex-shrink: 0;
+        }
+
+        .actividad-indicator.peso {
+            background: #1a1a1a;
+        }
+
+        .actividad-indicator.entrenamiento {
+            background: #666;
+        }
+
+        .actividad-indicator.otro {
+            background: #999;
+        }
+
+        .actividad-content {
+            flex: 1;
+        }
+
+        .actividad-titulo {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 0.25rem;
+        }
+
+        .actividad-item.completado .actividad-titulo {
+            color: #16a34a;
+        }
+
+        .actividad-descripcion {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        .actividad-tipo {
+            font-size: 0.6875rem;
+            padding: 3px 6px;
+            background: #fafafa;
+            border: 1px solid #e5e5e5;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sin-actividades {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: #999;
+            font-size: 0.875rem;
+        }
+
+        .btn-nuevo-recordatorio {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #1a1a1a;
+            border: 1px solid #1a1a1a;
+            color: white;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.15s;
         }
 
-        .nav-btn:hover {
-            border-color: #1a1a1a;
-        }
-
-        .mes-actual {
-            font-weight: 600;
-            color: #1a1a1a;
-            min-width: 120px;
-            text-align: center;
-        }
-
-        .calendario-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 0;
-        }
-
-        .dia-header {
-            padding: 0.75rem;
-            text-align: center;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #666;
-            border: 1px solid #e5e5e5;
-            background: #fafafa;
-        }
-
-        .dia-celda {
-            padding: 0.75rem;
-            min-height: 80px;
-            border: 1px solid #e5e5e5;
-            background: white;
-            position: relative;
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-
-        .dia-celda:hover {
-            background: #fafafa;
-        }
-
-        .dia-celda.otro-mes {
-            background: #fafafa;
-            color: #999;
-        }
-
-        .dia-celda.hoy {
-            background: #1a1a1a;
-            color: white;
-        }
-
-        .dia-numero {
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
-        .evento-badge {
-            font-size: 0.625rem;
-            padding: 2px 6px;
-            margin-top: 2px;
-            border: 1px solid #e5e5e5;
-            background: white;
-            display: block;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .evento-badge.peso {
-            border-color: #1a1a1a;
-            background: #1a1a1a;
-            color: white;
-        }
-
-        .evento-badge.entrenamiento {
-            border-color: #666;
-            background: #666;
-            color: white;
-        }
-
-        .evento-badge.completado {
-            border-color: #16a34a;
-            background: #f0fdf4;
-            color: #16a34a;
-        }
-
-        .checkmark {
-            font-weight: 700;
-            margin-right: 2px;
-        }
-
-        .evento-mas {
-            font-size: 0.625rem;
-            padding: 2px 6px;
-            margin-top: 2px;
-            border: 1px solid #e5e5e5;
-            background: #fafafa;
-            color: #666;
-            display: block;
-            text-align: center;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .evento-mas:hover {
-            background: #e5e5e5;
-        }
-
-        .tooltip-eventos {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border: 1px solid #e5e5e5;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 100;
-            margin-top: 2px;
-            padding: 0.5rem;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .evento-mas:hover .tooltip-eventos {
-            display: block;
-        }
-
-        .tooltip-evento-item {
-            padding: 4px 0;
-            font-size: 0.625rem;
-            color: #1a1a1a;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .tooltip-evento-item:last-child {
-            border-bottom: none;
+        .btn-nuevo-recordatorio:hover {
+            background: #000;
         }
 
         /* Botón ver todos los recordatorios */
@@ -598,17 +619,17 @@ $apellidos = $_SESSION['usuario_apellidos'];
         <!-- Calendario -->
         <div class="calendario" style="margin-bottom: 2rem;">
             <div class="calendario-header">
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <h3>Calendario de Actividades</h3>
-                    <button class="ver-recordatorios-btn" onclick="abrirModalRecordatorios()">Ver Todos los Recordatorios</button>
-                </div>
-                <div class="calendario-nav">
-                    <button class="nav-btn" onclick="cambiarMes(-1)">‹</button>
-                    <span class="mes-actual" id="mes-actual"></span>
-                    <button class="nav-btn" onclick="cambiarMes(1)">›</button>
+                <h3>Hoy</h3>
+                <div class="header-actions">
+                    <button class="btn-nuevo-recordatorio" onclick="abrirModalNuevoRecordatorio()">
+                        + Nuevo
+                    </button>
+                    <button class="ver-recordatorios-btn" onclick="abrirModalRecordatorios()">Ver Todos</button>
                 </div>
             </div>
-            <div id="calendario-contenedor"></div>
+
+            <!-- Vista del día actual -->
+            <div id="vista-hoy"></div>
         </div>
 
         <!-- Botón de cerrar sesión -->
@@ -679,115 +700,72 @@ $apellidos = $_SESSION['usuario_apellidos'];
     <script>
         lucide.createIcons();
 
-        let mesActual = new Date().getMonth();
-        let anioActual = new Date().getFullYear();
         let eventos = [];
 
         const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
                        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-        const dias = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+        const diasCompletos = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
         async function cargarEventos() {
             try {
+                const hoy = new Date();
+                const mesActual = hoy.getMonth();
+                const anioActual = hoy.getFullYear();
                 const response = await fetch(`api_calendario.php?action=obtener_eventos&mes=${mesActual + 1}&anio=${anioActual}`);
                 const data = await response.json();
                 if (data.success) {
                     eventos = data.eventos;
-                    renderizarCalendario();
+                    renderizarVistaHoy();
                 }
             } catch (error) {
                 console.error('Error al cargar eventos:', error);
             }
         }
 
-        function renderizarCalendario() {
-            document.getElementById('mes-actual').textContent = `${meses[mesActual]} ${anioActual}`;
-
-            const primerDia = new Date(anioActual, mesActual, 1);
-            const ultimoDia = new Date(anioActual, mesActual + 1, 0);
-            const diasMes = ultimoDia.getDate();
-            const primerDiaSemana = primerDia.getDay() === 0 ? 6 : primerDia.getDay() - 1;
-
-            let html = '<div class="calendario-grid">';
-
-            // Headers de días
-            dias.forEach(dia => {
-                html += `<div class="dia-header">${dia}</div>`;
-            });
-
-            // Días del mes anterior
-            const ultimoDiaMesAnterior = new Date(anioActual, mesActual, 0).getDate();
-            for (let i = primerDiaSemana - 1; i >= 0; i--) {
-                html += `<div class="dia-celda otro-mes"><div class="dia-numero">${ultimoDiaMesAnterior - i}</div></div>`;
-            }
-
-            // Días del mes actual
-            const hoy = new Date();
-            for (let dia = 1; dia <= diasMes; dia++) {
-                const fecha = `${anioActual}-${String(mesActual + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
-                const esHoy = dia === hoy.getDate() && mesActual === hoy.getMonth() && anioActual === hoy.getFullYear();
-                const eventosDelDia = eventos.filter(e => e.fecha === fecha);
-
-                html += `<div class="dia-celda ${esHoy ? 'hoy' : ''}" onclick="abrirModal('${fecha}')">
-                    <div class="dia-numero">${dia}</div>`;
-
-                // Mostrar solo los primeros 2 eventos
-                const eventosVisibles = eventosDelDia.slice(0, 2);
-                const eventosOcultos = eventosDelDia.slice(2);
-
-                eventosVisibles.forEach(evento => {
-                    const claseCompletado = evento.completado == 1 ? ' completado' : '';
-                    const checkmark = evento.completado == 1 ? '✓ ' : '';
-                    html += `<div class="evento-badge ${evento.tipo}${claseCompletado}">${checkmark}${evento.titulo}</div>`;
-                });
-
-                // Si hay más de 2, mostrar contador +N con tooltip
-                if (eventosOcultos.length > 0) {
-                    html += `<div class="evento-mas">
-                        +${eventosOcultos.length}
-                        <div class="tooltip-eventos">`;
-
-                    eventosOcultos.forEach(evento => {
-                        const checkmark = evento.completado == 1 ? '✓ ' : '';
-                        const estado = evento.completado == 1 ? ' (Completado)' : '';
-                        html += `<div class="tooltip-evento-item">${checkmark}${evento.titulo}${estado}</div>`;
-                    });
-
-                    html += `</div></div>`;
-                }
-
-                html += `</div>`;
-            }
-
-            // Días del mes siguiente
-            const diasRestantes = 42 - (primerDiaSemana + diasMes);
-            for (let dia = 1; dia <= diasRestantes; dia++) {
-                html += `<div class="dia-celda otro-mes"><div class="dia-numero">${dia}</div></div>`;
-            }
-
-            html += '</div>';
-            document.getElementById('calendario-contenedor').innerHTML = html;
-        }
-
-        function cambiarMes(direccion) {
-            mesActual += direccion;
-            if (mesActual < 0) {
-                mesActual = 11;
-                anioActual--;
-            } else if (mesActual > 11) {
-                mesActual = 0;
-                anioActual++;
-            }
-            cargarEventos();
-        }
-
-        let fechaSeleccionada = '';
-
-        function abrirModal(fecha) {
-            fechaSeleccionada = fecha;
-            document.getElementById('evento-fecha').value = fecha;
+        function abrirModalNuevoRecordatorio() {
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('evento-fecha').value = hoy;
+            document.getElementById('evento-recordatorio').checked = true;
             document.getElementById('modal-evento').classList.add('active');
         }
+
+        function renderizarVistaHoy() {
+            const hoy = new Date();
+            const fechaHoy = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+            const actividadesHoy = eventos.filter(e => e.fecha === fechaHoy);
+
+            let html = `
+                <div class="fecha-actual-grande">
+                    <div class="mes-anio">${meses[hoy.getMonth()]} ${hoy.getFullYear()}</div>
+                    <div class="dia-numero-grande">${hoy.getDate()}</div>
+                    <div class="dia-semana">${diasCompletos[hoy.getDay()]}</div>
+                </div>
+            `;
+
+            if (actividadesHoy.length === 0) {
+                html += `<div class="sin-actividades">No hay actividades programadas para hoy</div>`;
+            } else {
+                html += '<div class="actividades-hoy">';
+                actividadesHoy.forEach(actividad => {
+                    const completado = actividad.completado == 1 ? 'completado' : '';
+                    const checkmark = actividad.completado == 1 ? '✓ ' : '';
+                    html += `
+                        <div class="actividad-item ${completado}" onclick="abrirModal('${fechaHoy}')">
+                            <div class="actividad-indicator ${actividad.tipo}"></div>
+                            <div class="actividad-content">
+                                <div class="actividad-titulo">${checkmark}${actividad.titulo}</div>
+                                ${actividad.descripcion ? `<div class="actividad-descripcion">${actividad.descripcion}</div>` : ''}
+                            </div>
+                            <div class="actividad-tipo">${actividad.tipo}</div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+
+            document.getElementById('vista-hoy').innerHTML = html;
+        }
+
 
         function cerrarModal() {
             document.getElementById('modal-evento').classList.remove('active');
@@ -873,6 +851,7 @@ $apellidos = $_SESSION['usuario_apellidos'];
                 if (result.success) {
                     cargarRecordatorios();
                     cargarEventos();
+                    renderizarVistaHoy();
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -891,6 +870,7 @@ $apellidos = $_SESSION['usuario_apellidos'];
                 if (result.success) {
                     cargarRecordatorios();
                     cargarEventos();
+                    renderizarVistaHoy();
                 }
             } catch (error) {
                 console.error('Error:', error);

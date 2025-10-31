@@ -34,18 +34,19 @@ try {
     $velocidad = isset($form['velocidad']) ? $form['velocidad'] : null;
     $nivelGym = isset($form['nivel_gym']) ? $form['nivel_gym'] : null;
 
-    // Obtener datos del resultado
-    $tipo = isset($result['tipo']) ? $result['tipo'] : $form['objetivo'];
+    // Obtener datos del plan (puede estar en $result['plan'] o directo en $result)
+    $plan = isset($result['plan']) ? $result['plan'] : $result;
+    $tipo = isset($plan['tipo']) ? $plan['tipo'] : $form['objetivo'];
 
     // Calcular calorías según el tipo de plan
     if ($tipo === 'deficit') {
         $calorias = isset($result['tdeeAjustado']) && isset($result['deficitDiario']) ?
             ($result['tdeeAjustado'] - $result['deficitDiario']) : $result['tdee'];
     } elseif ($tipo === 'volumen') {
-        if (isset($result['semanas'][0]['calorias'])) {
-            $calorias = $result['semanas'][0]['calorias'];
-        } elseif (isset($result['fases'][0]['calorias'])) {
-            $calorias = $result['fases'][0]['calorias'];
+        if (isset($plan['semanas'][0]['calorias'])) {
+            $calorias = $plan['semanas'][0]['calorias'];
+        } elseif (isset($plan['fases'][0]['calorias'])) {
+            $calorias = $plan['fases'][0]['calorias'];
         } else {
             $calorias = $result['tdee'];
         }
@@ -53,17 +54,19 @@ try {
         $calorias = $result['tdee'];
     }
 
-    $duracionSemanas = isset($result['duracion']['semanas']) ? $result['duracion']['semanas'] : 0;
-    $duracionMeses = isset($result['duracion']['meses']) ? $result['duracion']['meses'] : 0;
+    $duracionSemanas = isset($plan['duracion']['semanas']) ? $plan['duracion']['semanas'] : 0;
+    $duracionMeses = isset($plan['duracion']['meses']) ? $plan['duracion']['meses'] : 0;
 
-    // Validar macros
-    if (!isset($result['macros']) || !isset($result['macros']['proteina'])) {
-        throw new Exception('Datos de macronutrientes incompletos. Resultado: ' . json_encode($result));
+    // Validar macros (pueden estar en plan o en result)
+    $macros = isset($plan['macros']) ? $plan['macros'] : (isset($result['macros']) ? $result['macros'] : null);
+
+    if (!$macros || !isset($macros['proteina'])) {
+        throw new Exception('Datos de macronutrientes incompletos. Plan: ' . json_encode($plan));
     }
 
-    $proteina = intval($result['macros']['proteina']);
-    $grasa = intval($result['macros']['grasa']);
-    $carbohidratos = intval($result['macros']['carbohidratos']);
+    $proteina = intval($macros['proteina']);
+    $grasa = intval($macros['grasa']);
+    $carbohidratos = intval($macros['carbohidratos']);
 
     $stmt->bind_param("ssisdissididsddsdssdddiiiiis",
         $nombre,

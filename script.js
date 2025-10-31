@@ -136,7 +136,59 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (objetivo === 'volumen') {
             mesesObjetivo = parseInt(document.getElementById('meses_volumen').value) || 6;
             preferencia = document.getElementById('preferencia_volumen').value;
-            velocidad = preferencia; // Compatibilidad
+
+            // Si eligió "recomendado", calcular mejor opción basado en datos
+            if (preferencia === 'recomendado' && porcentajeGrasa !== null) {
+                const limites = sexo === 'hombre' ? {bajo: 12, medio: 17, alto: 22} : {bajo: 20, medio: 26, alto: 32};
+
+                if (porcentajeGrasa >= limites.alto) {
+                    // Grasa alta → Ultra limpio obligatorio
+                    velocidad = 'ultra_limpio';
+                    document.getElementById('recomendacion-volumen').innerHTML = `
+                        <strong>🎯 Recomendación: Ultra Limpio</strong><br>
+                        Con ${porcentajeGrasa.toFixed(1)}% de grasa, debes usar el superávit más bajo (8-10%) para minimizar acumulación de grasa.
+                        Considera hacer un mini-cut de 2-3 semanas primero.
+                    `;
+                } else if (porcentajeGrasa >= limites.medio) {
+                    // Grasa media-alta → Lean bulk
+                    velocidad = 'limpio';
+                    document.getElementById('recomendacion-volumen').innerHTML = `
+                        <strong>🎯 Recomendación: Lean Bulk</strong><br>
+                        Con ${porcentajeGrasa.toFixed(1)}% de grasa, el Lean Bulk (10-12%) es óptimo.
+                        Ganancia sostenible sin acumular demasiada grasa.
+                    `;
+                } else if (porcentajeGrasa >= limites.bajo) {
+                    // Grasa baja-media → Lean bulk o balanceado según experiencia
+                    velocidad = nivelGym === 'principiante' ? 'limpio' : 'balanceado';
+                    document.getElementById('recomendacion-volumen').innerHTML = `
+                        <strong>🎯 Recomendación: ${nivelGym === 'principiante' ? 'Lean Bulk' : 'Balanceado'}</strong><br>
+                        Con ${porcentajeGrasa.toFixed(1)}% de grasa estás en un buen rango.
+                        ${nivelGym === 'principiante' ? 'Como principiante, Lean Bulk es óptimo.' : 'Puedes permitirte un superávit moderado.'}
+                    `;
+                } else {
+                    // Grasa muy baja → Balanceado o agresivo
+                    velocidad = nivelGym === 'avanzado' ? 'limpio' : 'balanceado';
+                    document.getElementById('recomendacion-volumen').innerHTML = `
+                        <strong>🎯 Recomendación: ${velocidad === 'limpio' ? 'Lean Bulk' : 'Balanceado'}</strong><br>
+                        Con ${porcentajeGrasa.toFixed(1)}% de grasa estás muy definido. Excelente partición nutricional.
+                        Puedes hacer un volumen más largo sin mini-cuts.
+                    `;
+                }
+
+                document.getElementById('recomendacion-volumen').style.display = 'block';
+            } else if (preferencia === 'recomendado') {
+                // Sin datos de grasa, usar nivel gym
+                velocidad = nivelGym === 'principiante' ? 'limpio' : 'balanceado';
+                document.getElementById('recomendacion-volumen').innerHTML = `
+                    <strong>🎯 Recomendación: ${velocidad === 'limpio' ? 'Lean Bulk' : 'Balanceado'}</strong><br>
+                    Como ${nivelGym}, esta es la mejor opción. Para una recomendación más precisa, introduce tus medidas de cintura y cuello en datos avanzados.
+                `;
+                document.getElementById('recomendacion-volumen').style.display = 'block';
+            } else {
+                velocidad = preferencia; // Usuario eligió manualmente
+                document.getElementById('recomendacion-volumen').style.display = 'none';
+            }
+
             nivelGym = document.getElementById('nivel_gym').value;
             incluirMinicuts = document.getElementById('incluir_minicuts').value === 'si';
             kgObjetivo = 0; // Se calculará después según meses y nivel
@@ -319,7 +371,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 else nivelAjustado = 'avanzado';
             }
 
-            planData = calcularPlanVolumen(tdee, peso, mesesObjetivo, velocidad, nivelAjustado, diasEntreno, horasGym, diasCardio, incluirMinicuts);
+            planData = calcularPlanVolumen(tdee, peso, mesesObjetivo, velocidad, nivelAjustado, diasEntreno, horasGym, diasCardio, incluirMinicuts, porcentajeGrasa, sexo);
         }
 
         else if (objetivo === 'deficit') {
@@ -653,45 +705,71 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
-    function calcularPlanVolumen(tdee, peso, mesesVolumen, velocidad, nivelGym, diasEntreno, horasGym, diasCardio, incluirMinicuts) {
-        // TASAS DE GANANCIA MUSCULAR BASADAS EN CIENCIA 2024
-        // Fuente: Men's Health, BodySpec, Healthline (estudios actualizados)
+    function calcularPlanVolumen(tdee, peso, mesesVolumen, velocidad, nivelGym, diasEntreno, horasGym, diasCardio, incluirMinicuts, porcentajeGrasa, sexo) {
+        // TASAS DE GANANCIA MUSCULAR 2024 (Schoenfeld, Helms, Nippard)
         let kgMusculoPorMesBase;
         if (nivelGym === 'principiante') {
-            kgMusculoPorMesBase = 0.9; // ~2 lbs/mes = 0.9 kg/mes
+            kgMusculoPorMesBase = 1.0; // ~2.2 lbs/mes (1-1.5% peso/mes primeros 6 meses)
         } else if (nivelGym === 'intermedio') {
-            kgMusculoPorMesBase = 0.45; // ~1 lb/mes = 0.45 kg/mes
+            kgMusculoPorMesBase = 0.5; // ~1.1 lbs/mes (0.5-1% peso/mes)
         } else { // avanzado
-            kgMusculoPorMesBase = 0.23; // ~0.5 lb/mes = 0.23 kg/mes
+            kgMusculoPorMesBase = 0.25; // ~0.55 lbs/mes (0.25-0.5% peso/mes)
         }
 
-        // AJUSTAR GANANCIA MUSCULAR según tipo de bulk
-        // Más calorías = más potencial muscular (dentro de límites genéticos)
+        // AJUSTAR según tipo de bulk
+        // Principiantes: peor partición nutricional → menos beneficio de superávits altos
         let multiplicadorMusculo = 1.0;
         let ratioMusculoGrasa;
         let porcentajeSuperavit;
 
         if (velocidad === 'ultra_limpio') {
-            multiplicadorMusculo = 0.75; // Ultra limpio: -25% músculo pero grasa mínima
-            ratioMusculoGrasa = 0.80; // 80% músculo, 20% grasa
-            porcentajeSuperavit = 0.09; // 9% (promedio de 8-10%)
+            if (nivelGym === 'principiante') {
+                multiplicadorMusculo = 0.95;
+                ratioMusculoGrasa = 0.75; // Peor partición que avanzados
+                porcentajeSuperavit = 0.08; // 8%
+            } else {
+                multiplicadorMusculo = 0.85;
+                ratioMusculoGrasa = 0.80; // Mejor partición
+                porcentajeSuperavit = 0.09;
+            }
         } else if (velocidad === 'limpio') {
-            multiplicadorMusculo = 0.90; // Lean bulk óptimo: -10% músculo, grasa baja
-            ratioMusculoGrasa = 0.75; // 75% músculo, 25% grasa
-            porcentajeSuperavit = 0.11; // 11% (promedio de 10-12%)
+            if (nivelGym === 'principiante') {
+                multiplicadorMusculo = 1.0; // ÓPTIMO para principiantes
+                ratioMusculoGrasa = 0.70; // 70% músculo, 30% grasa
+                porcentajeSuperavit = 0.10; // 10% (~250 kcal)
+            } else if (nivelGym === 'intermedio') {
+                multiplicadorMusculo = 0.95;
+                ratioMusculoGrasa = 0.75;
+                porcentajeSuperavit = 0.11;
+            } else {
+                multiplicadorMusculo = 0.90;
+                ratioMusculoGrasa = 0.78;
+                porcentajeSuperavit = 0.12;
+            }
         } else if (velocidad === 'balanceado') {
-            multiplicadorMusculo = 1.0; // Balanceado: ganancia base
-            ratioMusculoGrasa = 0.70; // 70% músculo, 30% grasa
-            porcentajeSuperavit = 0.15; // 15% (promedio de 13-17%)
+            if (nivelGym === 'principiante') {
+                multiplicadorMusculo = 1.05;
+                ratioMusculoGrasa = 0.65; // 65% músculo, 35% grasa
+                porcentajeSuperavit = 0.15;
+            } else {
+                multiplicadorMusculo = 1.0;
+                ratioMusculoGrasa = 0.70;
+                porcentajeSuperavit = 0.15;
+            }
         } else if (velocidad === 'agresivo') {
-            multiplicadorMusculo = 1.15; // Agresivo: +15% músculo pero grasa alta
-            ratioMusculoGrasa = 0.60; // 60% músculo, 40% grasa
-            porcentajeSuperavit = 0.20; // 20%+
+            if (nivelGym === 'principiante') {
+                multiplicadorMusculo = 1.10; // Poco beneficio extra
+                ratioMusculoGrasa = 0.55; // 55% músculo, 45% grasa
+                porcentajeSuperavit = 0.20;
+            } else {
+                multiplicadorMusculo = 1.15;
+                ratioMusculoGrasa = 0.60;
+                porcentajeSuperavit = 0.20;
+            }
         } else {
-            // Fallback para valores antiguos
-            multiplicadorMusculo = 0.90;
-            ratioMusculoGrasa = 0.75;
-            porcentajeSuperavit = 0.11;
+            multiplicadorMusculo = 1.0;
+            ratioMusculoGrasa = 0.70;
+            porcentajeSuperavit = 0.10;
         }
 
         // Aplicar multiplicador
@@ -730,17 +808,69 @@ document.addEventListener('DOMContentLoaded', function() {
         const grasa = Math.round((caloriasBase * 0.23) / 9); // 23% grasa
         const carbohidratos = Math.round((caloriasBase - (proteina * 4) - (grasa * 9)) / 4);
 
-        // Calcular mini-cuts programados (solo si el usuario quiere)
+        // ANÁLISIS DE % GRASA Y RECOMENDACIONES
+        let recomendacionGrasa = null;
+        let advertenciaGrasa = null;
+
+        if (porcentajeGrasa !== null) {
+            const limiteHombre = { bajo: 10, ideal: 15, alto: 20, muyAlto: 25 };
+            const limiteMujer = { bajo: 18, ideal: 22, alto: 28, muyAlto: 32 };
+            const limites = sexo === 'hombre' ? limiteHombre : limiteMujer;
+
+            if (porcentajeGrasa >= limites.muyAlto) {
+                advertenciaGrasa = {
+                    nivel: 'critico',
+                    mensaje: `⛔ ATENCIÓN: Tu % de grasa actual es ${porcentajeGrasa.toFixed(1)}%. NO es recomendable hacer volumen desde aquí.`,
+                    detalle: `Con ${porcentajeGrasa.toFixed(1)}% de grasa corporal, ganarás principalmente grasa y muy poco músculo (partición nutricional muy pobre). Además, niveles altos de grasa corporal reducen sensibilidad a insulina y testosterona.`,
+                    accion: `RECOMENDACIÓN FUERTE: Haz primero una fase de déficit hasta ${limites.ideal}% de grasa, LUEGO empieza tu volumen. Ganarás mucho más músculo y menos grasa.`
+                };
+            } else if (porcentajeGrasa >= limites.alto) {
+                advertenciaGrasa = {
+                    nivel: 'advertencia',
+                    mensaje: `⚠️ Tu % de grasa actual es ${porcentajeGrasa.toFixed(1)}%. Puedes hacer volumen, pero con precauciones.`,
+                    detalle: `Estás en el límite superior. La partición nutricional será subóptima y acumularás grasa más rápido.`,
+                    accion: `RECOMENDACIÓN: Usa "Lean Bulk" (10-12% superávit) e incluye mini-cuts cada ${nivelGym === 'principiante' ? '12' : '10'} semanas para controlar la grasa.`
+                };
+            } else if (porcentajeGrasa <= limites.bajo) {
+                recomendacionGrasa = {
+                    nivel: 'excelente',
+                    mensaje: `✅ ¡Excelente! Con ${porcentajeGrasa.toFixed(1)}% de grasa estás en el punto ÓPTIMO para volumen.`,
+                    detalle: `Niveles bajos de grasa = mejor partición nutricional, más sensibilidad a insulina, mejor respuesta hormonal.`,
+                    accion: `Puedes hacer un volumen más largo (${mesesVolumen > 6 ? mesesVolumen : 6}+ meses) sin preocuparte tanto por mini-cuts.`
+                };
+            } else if (porcentajeGrasa <= limites.ideal) {
+                recomendacionGrasa = {
+                    nivel: 'bueno',
+                    mensaje: `✓ Con ${porcentajeGrasa.toFixed(1)}% de grasa estás en un buen rango para volumen.`,
+                    detalle: `Partición nutricional óptima. Ganarás bien con cualquier tipo de superávit.`,
+                    accion: `Mini-cuts opcionales cada ${nivelGym === 'principiante' ? '16' : '12'} semanas si quieres mantenerte definido.`
+                };
+            }
+        }
+
+        // Calcular mini-cuts programados
         const miniCuts = [];
+        let frecuenciaMiniCutAjustada = nivelGym === 'principiante' ? 16 :
+                                        nivelGym === 'intermedio' ? 12 : 10;
+
+        // AJUSTAR FRECUENCIA según % grasa
+        if (porcentajeGrasa !== null) {
+            const limites = sexo === 'hombre' ?
+                { alto: 20, muyAlto: 25 } :
+                { alto: 28, muyAlto: 32 };
+
+            if (porcentajeGrasa >= limites.alto) {
+                // Si ya tienes grasa alta, hacer mini-cuts más frecuentes
+                frecuenciaMiniCutAjustada = Math.max(8, frecuenciaMiniCutAjustada - 4);
+            }
+        }
 
         if (incluirMinicuts) {
-            const frecuenciaMiniCut = nivelGym === 'principiante' ? 16 :
-                                      nivelGym === 'intermedio' ? 12 : 10;
             const caloriasMinicut = Math.round(tdee - 300);
 
             let semanasAcumuladas = 0;
-            while (semanasAcumuladas + frecuenciaMiniCut < semanasEstimadas) {
-                semanasAcumuladas += frecuenciaMiniCut;
+            while (semanasAcumuladas + frecuenciaMiniCutAjustada < semanasEstimadas) {
+                semanasAcumuladas += frecuenciaMiniCutAjustada;
                 const mesInicio = Math.ceil(semanasAcumuladas / 4);
                 const semanaInicio = semanasAcumuladas + 1;
                 const semanaFin = Math.min(semanasAcumuladas + 3, semanasEstimadas);
@@ -775,6 +905,50 @@ document.addEventListener('DOMContentLoaded', function() {
             nombreTipoVolumen = 'Personalizado';
         }
 
+        // CALCULAR % GRASA FINAL ESPERADO
+        let porcentajeGrasaFinal = null;
+        let esGrasaFinalSaludable = null;
+        let advertenciaGrasaFinal = null;
+        let mensajeSinDatosGrasa = null;
+
+        if (porcentajeGrasa !== null && peso) {
+            // Calcular masa grasa actual
+            const masaGrasaActual = peso * (porcentajeGrasa / 100);
+            const masaMagraActual = peso - masaGrasaActual;
+
+            // Calcular masa grasa final (actual + esperada)
+            const masaGrasaFinal = masaGrasaActual + kgGrasaEsperada;
+            const masaMagraFinal = masaMagraActual + kgMusculoEsperado; // Solo músculo, no agua/glucógeno
+            const pesoFinal = peso + kgTotalesEsperados;
+
+            porcentajeGrasaFinal = (masaGrasaFinal / pesoFinal) * 100;
+
+            // Evaluar si es saludable
+            const limites = sexo === 'hombre' ?
+                { saludable: 18, alto: 22, muyAlto: 25 } :
+                { saludable: 25, alto: 30, muyAlto: 35 };
+
+            if (porcentajeGrasaFinal <= limites.saludable) {
+                esGrasaFinalSaludable = 'excelente';
+            } else if (porcentajeGrasaFinal <= limites.alto) {
+                esGrasaFinalSaludable = 'bueno';
+                advertenciaGrasaFinal = `Terminarás en el límite superior recomendado. Considera hacer un mini-cut en el mes ${Math.ceil(mesesEstimados / 2)}.`;
+            } else if (porcentajeGrasaFinal <= limites.muyAlto) {
+                esGrasaFinalSaludable = 'advertencia';
+                advertenciaGrasaFinal = `⚠️ Terminarás con grasa alta (${porcentajeGrasaFinal.toFixed(1)}%). Recomendación: Haz un volumen más corto (${Math.ceil(mesesEstimados * 0.6)} meses) o incluye mini-cuts cada ${frecuenciaMiniCutAjustada < 12 ? frecuenciaMiniCutAjustada : 10} semanas.`;
+            } else {
+                esGrasaFinalSaludable = 'critico';
+                advertenciaGrasaFinal = `⛔ PROBLEMA: Terminarás con ${porcentajeGrasaFinal.toFixed(1)}% de grasa, nivel no saludable. ACCIÓN: Reduce duración a ${Math.ceil(mesesEstimados * 0.5)} meses o usa "Ultra Limpio" con mini-cuts frecuentes.`;
+            }
+        } else {
+            // Sin datos de grasa corporal
+            mensajeSinDatosGrasa = `
+                Para obtener una predicción precisa de tu % de grasa final, introduce tus medidas de
+                <strong>circunferencia de cintura</strong> y <strong>circunferencia de cuello</strong>
+                en la sección de Datos Avanzados. Esto te permitirá ver si terminarás en un rango saludable.
+            `;
+        }
+
         return {
             tipo: 'volumen',
             tipoVolumen: nombreTipoVolumen,
@@ -793,7 +967,15 @@ document.addEventListener('DOMContentLoaded', function() {
             infoCardio,
             miniCuts,
             superavitDiario,
-            tdee: Math.round(tdee)
+            tdee: Math.round(tdee),
+            porcentajeGrasa: porcentajeGrasa,
+            porcentajeGrasaFinal: porcentajeGrasaFinal,
+            esGrasaFinalSaludable: esGrasaFinalSaludable,
+            advertenciaGrasaFinal: advertenciaGrasaFinal,
+            mensajeSinDatosGrasa: mensajeSinDatosGrasa,
+            recomendacionGrasa: recomendacionGrasa,
+            advertenciaGrasa: advertenciaGrasa,
+            frecuenciaMiniCutAjustada: frecuenciaMiniCutAjustada
         };
     }
 
@@ -829,9 +1011,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             }</div>
                             <div style="font-size: 2rem; font-weight: 700; color: #1a1a1a;">${
                                 data.plan.tipo === 'deficit' ? (data.calorias_deficit || Math.round(data.tdee * 0.85)) :
-                                data.plan.tipo === 'volumen' ? (data.calorias_volumen || Math.round(data.tdee * 1.10)) :
+                                data.plan.tipo === 'volumen' ? (data.plan.fases && data.plan.fases[0] ? data.plan.fases[0].calorias : Math.round(data.tdee * 1.10)) :
                                 data.tdee
                             } kcal/día</div>
+                            ${data.plan.tipo === 'volumen' && data.plan.superavitDiario ? `
+                                <div style="font-size: 0.75rem; color: #666; margin-top: 0.25rem;">+${data.plan.superavitDiario} kcal superávit (${data.plan.porcentajeSuperavit})</div>
+                            ` : ''}
                         </div>
                     </div>
                 </div>
@@ -1011,6 +1196,87 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
                 <div style="padding-top: 1rem;">
+
+                    ${plan.advertenciaGrasa ? `
+                        <div style="padding: 1.25rem; border: 2px solid ${plan.advertenciaGrasa.nivel === 'critico' ? '#ef4444' : '#f59e0b'}; background: ${plan.advertenciaGrasa.nivel === 'critico' ? '#fef2f2' : '#fffbeb'}; margin-bottom: 1.5rem;">
+                            <div style="font-size: 1rem; font-weight: 700; color: ${plan.advertenciaGrasa.nivel === 'critico' ? '#dc2626' : '#d97706'}; margin-bottom: 0.75rem;">
+                                ${plan.advertenciaGrasa.mensaje}
+                            </div>
+                            <div style="font-size: 0.875rem; color: #666; margin-bottom: 0.75rem;">
+                                ${plan.advertenciaGrasa.detalle}
+                            </div>
+                            <div style="font-size: 0.875rem; font-weight: 600; color: #1a1a1a; padding: 0.75rem; background: white; border-left: 3px solid ${plan.advertenciaGrasa.nivel === 'critico' ? '#dc2626' : '#d97706'};">
+                                ${plan.advertenciaGrasa.accion}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${plan.recomendacionGrasa ? `
+                        <div style="padding: 1.25rem; border: 2px solid ${plan.recomendacionGrasa.nivel === 'excelente' ? '#16a34a' : '#3b82f6'}; background: ${plan.recomendacionGrasa.nivel === 'excelente' ? '#f0fdf4' : '#eff6ff'}; margin-bottom: 1.5rem;">
+                            <div style="font-size: 1rem; font-weight: 700; color: ${plan.recomendacionGrasa.nivel === 'excelente' ? '#16a34a' : '#2563eb'}; margin-bottom: 0.75rem;">
+                                ${plan.recomendacionGrasa.mensaje}
+                            </div>
+                            <div style="font-size: 0.875rem; color: #666; margin-bottom: 0.75rem;">
+                                ${plan.recomendacionGrasa.detalle}
+                            </div>
+                            <div style="font-size: 0.875rem; font-weight: 600; color: #1a1a1a; padding: 0.75rem; background: white; border-left: 3px solid ${plan.recomendacionGrasa.nivel === 'excelente' ? '#16a34a' : '#2563eb'};">
+                                ${plan.recomendacionGrasa.accion}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${plan.porcentajeGrasaFinal !== null ? `
+                        <div style="padding: 1.25rem; border: 2px solid ${
+                            plan.esGrasaFinalSaludable === 'excelente' ? '#16a34a' :
+                            plan.esGrasaFinalSaludable === 'bueno' ? '#3b82f6' :
+                            plan.esGrasaFinalSaludable === 'advertencia' ? '#f59e0b' : '#ef4444'
+                        }; background: ${
+                            plan.esGrasaFinalSaludable === 'excelente' ? '#f0fdf4' :
+                            plan.esGrasaFinalSaludable === 'bueno' ? '#eff6ff' :
+                            plan.esGrasaFinalSaludable === 'advertencia' ? '#fffbeb' : '#fef2f2'
+                        }; margin-bottom: 1.5rem;">
+                            <div style="font-size: 1rem; font-weight: 700; color: ${
+                                plan.esGrasaFinalSaludable === 'excelente' ? '#16a34a' :
+                                plan.esGrasaFinalSaludable === 'bueno' ? '#2563eb' :
+                                plan.esGrasaFinalSaludable === 'advertencia' ? '#d97706' : '#dc2626'
+                            }; margin-bottom: 0.75rem;">
+                                📊 Predicción: Terminarás con ${plan.porcentajeGrasaFinal.toFixed(1)}% de grasa corporal
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: white; margin-bottom: 0.5rem;">
+                                <span style="color: #666;">Grasa actual:</span>
+                                <span style="font-weight: 600; color: #1a1a1a;">${plan.porcentajeGrasa.toFixed(1)}%</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: white; margin-bottom: 0.5rem;">
+                                <span style="color: #666;">Grasa acumulada:</span>
+                                <span style="font-weight: 600; color: #1a1a1a;">+${plan.kgGrasaEsperada.toFixed(1)} kg</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: white;">
+                                <span style="color: #666;">Grasa final predicha:</span>
+                                <span style="font-weight: 700; font-size: 1.125rem; color: ${
+                                    plan.esGrasaFinalSaludable === 'excelente' ? '#16a34a' :
+                                    plan.esGrasaFinalSaludable === 'bueno' ? '#2563eb' :
+                                    plan.esGrasaFinalSaludable === 'advertencia' ? '#d97706' : '#dc2626'
+                                };">${plan.porcentajeGrasaFinal.toFixed(1)}%</span>
+                            </div>
+                            ${plan.advertenciaGrasaFinal ? `
+                                <div style="font-size: 0.875rem; color: #666; margin-top: 0.75rem; padding: 0.75rem; background: white; border-left: 3px solid ${
+                                    plan.esGrasaFinalSaludable === 'advertencia' ? '#d97706' : '#dc2626'
+                                };">
+                                    ${plan.advertenciaGrasaFinal}
+                                </div>
+                            ` : ''}
+                        </div>
+                    ` : plan.mensajeSinDatosGrasa ? `
+                        <div style="padding: 1.25rem; border: 2px solid #3b82f6; background: #eff6ff; margin-bottom: 1.5rem;">
+                            <div style="font-size: 1rem; font-weight: 700; color: #2563eb; margin-bottom: 0.75rem;">
+                                📊 Predicción de % Grasa Final
+                            </div>
+                            <div style="font-size: 0.875rem; color: #666; line-height: 1.5;">
+                                ${plan.mensajeSinDatosGrasa}
+                            </div>
+                        </div>
+                    ` : ''}
+
                     <div style="padding: 1.5rem; border: 1px solid #e5e5e5; background: white; margin-bottom: 1.5rem;">
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
                             <div>

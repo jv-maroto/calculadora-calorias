@@ -19,7 +19,9 @@
       "Bash(composer:*)",
       "Bash(del test_tables.php test_estructura.php)",
       "Bash(curl -s \"https://cienciasnaturales.didactalia.net/recurso/musculos-del-cuerpo-vista-de-frente/b275978d-f235-4f84-80e4-c0670e6b8117\")",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(ipconfig)",
+      "Read(//c/xampp/apache/conf/**)"
     ],
     "deny": [],
     "ask": []
