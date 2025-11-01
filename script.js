@@ -124,6 +124,32 @@ document.addEventListener('DOMContentLoaded', function() {
         let vengoDeVolumen = false;
         let caloriasVolumen = null;
 
+        // Obtener datos avanzados para cálculos tempranos (antes de usarlos)
+        const circunferenciaCintura = parseFloat(document.getElementById('circunferencia_cintura').value) || null;
+        const circunferenciaCuello = parseFloat(document.getElementById('circunferencia_cuello').value) || null;
+        const circunferenciaCadera = parseFloat(document.getElementById('circunferencia_cadera').value) || null;
+
+        // CALCULAR % GRASA CORPORAL CON MÉTODO NAVY (si hay datos) - MOVER AQUÍ
+        let porcentajeGrasa = null;
+        if (circunferenciaCintura && circunferenciaCuello && altura) {
+            if (sexo === 'hombre') {
+                // Fórmula Navy para hombres
+                const log10Abdomen = Math.log10(circunferenciaCintura - circunferenciaCuello);
+                const log10Altura = Math.log10(altura);
+                porcentajeGrasa = 86.010 * log10Abdomen - 70.041 * log10Altura + 36.76;
+            } else if (circunferenciaCadera) {
+                // Fórmula Navy para mujeres
+                const log10Circunferencias = Math.log10(circunferenciaCintura + circunferenciaCadera - circunferenciaCuello);
+                const log10Altura = Math.log10(altura);
+                porcentajeGrasa = 163.205 * log10Circunferencias - 97.684 * log10Altura - 78.387;
+            }
+
+            // Limitar valores razonables (5% - 50%)
+            if (porcentajeGrasa !== null) {
+                porcentajeGrasa = Math.max(5, Math.min(50, porcentajeGrasa));
+            }
+        }
+
         if (objetivo === 'deficit') {
             kgObjetivo = parseFloat(document.getElementById('kg_perder').value) || 5;
             semanasObjetivo = parseInt(document.getElementById('semanas_objetivo_deficit').value) || null;
@@ -197,13 +223,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Guardar valores
         guardarValores();
 
-        // Obtener datos avanzados opcionales
+        // Obtener datos avanzados opcionales (ya no necesitamos declarar circunferencias aquí)
         const anosEntrenando = document.getElementById('anos_entrenando').value;
         const historialDietas = document.getElementById('historial_dietas').value;
         const cicloRegular = document.getElementById('ciclo_regular').value;
-        const circunferenciaCintura = parseFloat(document.getElementById('circunferencia_cintura').value) || null;
-        const circunferenciaCuello = parseFloat(document.getElementById('circunferencia_cuello').value) || null;
-        const circunferenciaCadera = parseFloat(document.getElementById('circunferencia_cadera').value) || null;
 
         // CALCULAR TMB usando Mifflin-St Jeor (Fórmula más precisa)
         let tmb;
@@ -212,32 +235,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             tmb = (10 * peso) + (6.25 * altura) - (5 * edad) - 161;
         }
-        
+
         // Redondear TMB para evitar decimales excesivos
         tmb = Math.round(tmb);
 
-        // CALCULAR % GRASA CORPORAL CON MÉTODO NAVY (si hay datos)
-        let porcentajeGrasa = null;
-        if (circunferenciaCintura && circunferenciaCuello && altura) {
-            if (sexo === 'hombre') {
-                // Fórmula Navy para hombres
-                // % Grasa = 86.010 × log10(abdomen - cuello) - 70.041 × log10(altura) + 36.76
-                const log10Abdomen = Math.log10(circunferenciaCintura - circunferenciaCuello);
-                const log10Altura = Math.log10(altura);
-                porcentajeGrasa = 86.010 * log10Abdomen - 70.041 * log10Altura + 36.76;
-            } else if (circunferenciaCadera) {
-                // Fórmula Navy para mujeres
-                // % Grasa = 163.205 × log10(cintura + cadera - cuello) - 97.684 × log10(altura) - 78.387
-                const log10Circunferencias = Math.log10(circunferenciaCintura + circunferenciaCadera - circunferenciaCuello);
-                const log10Altura = Math.log10(altura);
-                porcentajeGrasa = 163.205 * log10Circunferencias - 97.684 * log10Altura - 78.387;
-            }
-
-            // Limitar valores razonables (5% - 50%)
-            if (porcentajeGrasa !== null) {
-                porcentajeGrasa = Math.max(5, Math.min(50, porcentajeGrasa));
-            }
-        }
+        // porcentajeGrasa ya fue calculado arriba antes de su uso
 
         // AJUSTES METABÓLICOS BASADOS EN DATOS AVANZADOS
         let ajusteMetabolico = 1.0;
