@@ -119,6 +119,74 @@ $apellidos = $_SESSION['usuario_apellidos'];
                     </div>
                 </div>
 
+                <!-- Card: Porcentaje de Grasa Corporal -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i data-lucide="percent" style="width: 20px; height: 20px;"></i>
+                            Porcentaje de Grasa Corporal
+                        </h2>
+                        <p class="card-description">Opcional - Mejora la precisión de tu plan</p>
+                    </div>
+                    <div class="card-content space-y-6">
+                        <!-- Input manual -->
+                        <div class="form-group">
+                            <label for="porcentaje_grasa_input" class="form-label">¿Ya conoces tu % de grasa?</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="number" class="form-input" id="porcentaje_grasa_input" min="5" max="50" step="0.1" placeholder="Ej: 15.5" style="flex: 1;">
+                                <span style="padding: 0.5rem 1rem; background: var(--accent); color: white; border-radius: 8px; display: flex; align-items: center; font-weight: 600;">%</span>
+                            </div>
+                            <p style="font-size: 0.875rem; color: var(--muted-foreground); margin-top: 0.5rem;">
+                                Si lo conoces, introdúcelo aquí. Si no, usa el botón de abajo.
+                            </p>
+                        </div>
+
+                        <!-- Botón calculadora -->
+                        <div style="text-align: center;">
+                            <button type="button" class="button-secondary" onclick="abrirCalculadoraGrasa()" style="width: 100%; max-width: 400px;">
+                                <i data-lucide="calculator" style="width: 18px; height: 18px;"></i>
+                                Calcular con Método Jackson-Pollock
+                            </button>
+                            <p style="font-size: 0.75rem; color: var(--muted-foreground); margin-top: 0.5rem;">
+                                Método científico con pliegues cutáneos (±3.5% precisión)
+                            </p>
+                        </div>
+
+                        <!-- Separador -->
+                        <div style="display: flex; align-items: center; gap: 1rem; margin: 1.5rem 0;">
+                            <div style="flex: 1; height: 1px; background: var(--border);"></div>
+                            <span style="font-size: 0.875rem; color: var(--muted-foreground);">O usa circunferencias (menos preciso)</span>
+                            <div style="flex: 1; height: 1px; background: var(--border);"></div>
+                        </div>
+
+                        <!-- Circunferencias -->
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label for="circunferencia_cintura" class="form-label">Cintura (cm)</label>
+                                <input type="number" class="form-input" id="circunferencia_cintura" min="50" max="200" step="0.1" placeholder="A nivel del ombligo">
+                                <p style="font-size: 0.75rem; color: var(--muted-foreground); margin-top: 0.25rem;">Método Navy</p>
+                            </div>
+                            <div class="form-group">
+                                <label for="circunferencia_cuello" class="form-label">Cuello (cm)</label>
+                                <input type="number" class="form-input" id="circunferencia_cuello" min="20" max="60" step="0.1" placeholder="Debajo de la nuez">
+                                <p style="font-size: 0.75rem; color: var(--muted-foreground); margin-top: 0.25rem;">Método Navy</p>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="campo-circunferencia-cadera" style="display: none;">
+                            <label for="circunferencia_cadera" class="form-label">Cadera (cm)</label>
+                            <input type="number" class="form-input" id="circunferencia_cadera" min="60" max="200" step="0.1" placeholder="En la parte más ancha">
+                            <p style="font-size: 0.75rem; color: var(--muted-foreground); margin-top: 0.25rem;">Solo para mujeres - Método Navy</p>
+                        </div>
+
+                        <!-- Resultado Navy -->
+                        <div id="resultado-grasa-navy" class="alert-info" style="display: none; padding: 1rem; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-radius: 12px; border-left: 4px solid #3b82f6;">
+                            <strong style="color: #1e40af;">📊 % Grasa (Método Navy):</strong>
+                            <span id="valor-grasa-navy" style="color: #1e3a8a; font-weight: 600;"></span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Card: Nivel de Actividad -->
                 <div class="card">
                     <div class="card-header">
@@ -649,5 +717,186 @@ $apellidos = $_SESSION['usuario_apellidos'];
             lucide.createIcons();
         });
     </script>
+
+    <!-- MODAL: Calculadora Jackson-Pollock -->
+    <div class="modal fade" id="modalCalculadoraGrasa" tabindex="-1" aria-labelledby="modalCalculadoraGrasaLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 24px; border: none; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                <!-- Header con gradiente -->
+                <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 24px 24px 0 0; padding: 1.5rem;">
+                    <div>
+                        <h5 class="modal-title" id="modalCalculadoraGrasaLabel" style="font-weight: 700; font-size: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                            </svg>
+                            Calculadora de Grasa Corporal
+                        </h5>
+                        <p style="margin: 0.5rem 0 0 0; font-size: 0.875rem; opacity: 0.9;">Método Jackson-Pollock (Pliegues Cutáneos)</p>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- Body -->
+                <div class="modal-body" style="padding: 2rem;">
+                    <!-- Selector de método -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Selecciona el método:</label>
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="metodo-jp" id="metodo-jp-3" value="3" checked>
+                            <label class="btn btn-outline-primary" for="metodo-jp-3">
+                                <strong>3 Pliegues</strong><br>
+                                <small>Rápido y preciso</small>
+                            </label>
+
+                            <input type="radio" class="btn-check" name="metodo-jp" id="metodo-jp-7" value="7">
+                            <label class="btn btn-outline-primary" for="metodo-jp-7">
+                                <strong>7 Pliegues</strong><br>
+                                <small>Máxima precisión</small>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Formulario 3 Pliegues -->
+                    <div id="form-jp-3" class="pliegues-form">
+                        <div class="alert alert-info">
+                            <strong>📍 Pliegues para 3 sitios:</strong><br>
+                            <span id="sitios-3-texto"></span>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="pliegue_1" class="form-label fw-bold" id="label-pliegue-1"></label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="pliegue_1" min="1" max="50" step="0.1" placeholder="mm">
+                                    <span class="input-group-text">mm</span>
+                                </div>
+                                <small class="text-muted" id="desc-pliegue-1"></small>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="pliegue_2" class="form-label fw-bold" id="label-pliegue-2"></label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="pliegue_2" min="1" max="50" step="0.1" placeholder="mm">
+                                    <span class="input-group-text">mm</span>
+                                </div>
+                                <small class="text-muted" id="desc-pliegue-2"></small>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="pliegue_3" class="form-label fw-bold" id="label-pliegue-3"></label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="pliegue_3" min="1" max="50" step="0.1" placeholder="mm">
+                                    <span class="input-group-text">mm</span>
+                                </div>
+                                <small class="text-muted" id="desc-pliegue-3"></small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formulario 7 Pliegues -->
+                    <div id="form-jp-7" class="pliegues-form" style="display: none;">
+                        <div class="alert alert-info">
+                            <strong>📍 Pliegues para 7 sitios:</strong> Pecho, Abdomen, Muslo, Tríceps, Subescapular, Suprailiaco, Axilar Media
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="pliegue_pecho" class="form-label fw-bold">Pecho</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="pliegue_pecho" min="1" max="50" step="0.1" placeholder="mm">
+                                    <span class="input-group-text">mm</span>
+                                </div>
+                                <small class="text-muted">Diagonal entre axila y pezón</small>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="pliegue_abdomen" class="form-label fw-bold">Abdomen</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="pliegue_abdomen" min="1" max="50" step="0.1" placeholder="mm">
+                                    <span class="input-group-text">mm</span>
+                                </div>
+                                <small class="text-muted">Vertical, 2cm al lado del ombligo</small>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="pliegue_muslo" class="form-label fw-bold">Muslo</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="pliegue_muslo" min="1" max="50" step="0.1" placeholder="mm">
+                                    <span class="input-group-text">mm</span>
+                                </div>
+                                <small class="text-muted">Vertical, parte frontal del muslo</small>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-4">
+                                <label for="pliegue_triceps" class="form-label fw-bold">Tríceps</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="pliegue_triceps" min="1" max="50" step="0.1" placeholder="mm">
+                                    <span class="input-group-text">mm</span>
+                                </div>
+                                <small class="text-muted">Vertical, parte trasera del brazo</small>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="pliegue_subescapular" class="form-label fw-bold">Subescapular</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="pliegue_subescapular" min="1" max="50" step="0.1" placeholder="mm">
+                                    <span class="input-group-text">mm</span>
+                                </div>
+                                <small class="text-muted">Diagonal, bajo el omóplato</small>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="pliegue_suprailiaco" class="form-label fw-bold">Suprailiaco</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="pliegue_suprailiaco" min="1" max="50" step="0.1" placeholder="mm">
+                                    <span class="input-group-text">mm</span>
+                                </div>
+                                <small class="text-muted">Diagonal, sobre cresta ilíaca</small>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-4">
+                                <label for="pliegue_axilar" class="form-label fw-bold">Axilar Media</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="pliegue_axilar" min="1" max="50" step="0.1" placeholder="mm">
+                                    <span class="input-group-text">mm</span>
+                                </div>
+                                <small class="text-muted">Horizontal, línea axilar media</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resultado -->
+                    <div id="resultado-jp" class="mt-4" style="display: none;">
+                        <div class="card" style="border: 3px solid #16a34a; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-radius: 16px;">
+                            <div class="card-body text-center">
+                                <h3 style="color: #16a34a; font-weight: 700; font-size: 2.5rem; margin: 0;">
+                                    <span id="resultado-jp-valor"></span>%
+                                </h3>
+                                <p style="color: #166534; font-size: 1.125rem; margin: 0.5rem 0 0 0;">Porcentaje de Grasa Corporal</p>
+                                <small style="color: #15803d; display: block; margin-top: 0.5rem;">
+                                    Método: <strong id="resultado-jp-metodo"></strong>
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning mt-3">
+                            <strong>⚠️ Importante:</strong> Este resultado tiene un margen de error de ±3.5%. Para mayor precisión, realiza las mediciones 3 veces y promedia los valores.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer" style="padding: 1.5rem; background: #f8f9fa; border-radius: 0 0 24px 24px;">
+                    <button type="button" class="btn btn-lg btn-primary" onclick="calcularJacksonPollock()" style="padding: 0.75rem 2rem; border-radius: 12px; font-weight: 600;">
+                        🧮 Calcular % Grasa
+                    </button>
+                    <button type="button" class="btn btn-lg btn-success" id="btn-usar-resultado-jp" onclick="usarResultadoJP()" style="display: none; padding: 0.75rem 2rem; border-radius: 12px; font-weight: 600;">
+                        ✓ Usar este resultado
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script de calculadora de grasa -->
+    <script src="calculadora_grasa.js"></script>
 </body>
 </html>
