@@ -164,9 +164,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // Redondear TMB para evitar decimales excesivos
         tmb = Math.round(tmb);
 
-        // CALCULAR % GRASA CORPORAL CON MÉTODO NAVY (si hay datos)
+        // OBTENER % GRASA CORPORAL
         let porcentajeGrasa = null;
-        if (circunferenciaCintura && circunferenciaCuello && altura) {
+
+        // PRIORIDAD 1: Si el usuario introdujo manualmente el % de grasa (más preciso - Jackson-Pollock)
+        const porcentajeGrasaManual = parseFloat(document.getElementById('porcentaje_grasa_input').value) || null;
+        if (porcentajeGrasaManual) {
+            porcentajeGrasa = Math.max(5, Math.min(50, porcentajeGrasaManual));
+        }
+        // PRIORIDAD 2: Si no, calcular con MÉTODO NAVY (menos preciso - circunferencias)
+        else if (circunferenciaCintura && circunferenciaCuello && altura) {
             if (sexo === 'hombre') {
                 // Fórmula Navy para hombres
                 // % Grasa = 86.010 × log10(abdomen - cuello) - 70.041 × log10(altura) + 36.76
