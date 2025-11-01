@@ -6,12 +6,13 @@ header('Content-Type: application/json');
 include 'connection.php';
 
 // Verificar sesión
-if (!isset($_SESSION['usuario_id'])) {
+if (!isset($_SESSION['usuario_nombre']) || !isset($_SESSION['usuario_apellidos'])) {
     echo json_encode(['success' => false, 'error' => 'No autenticado']);
     exit;
 }
 
-$usuario_id = $_SESSION['usuario_id'];
+$nombre = $_SESSION['usuario_nombre'];
+$apellidos = $_SESSION['usuario_apellidos'];
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
 try {
@@ -20,10 +21,10 @@ try {
             $data = json_decode(file_get_contents('php://input'), true);
 
             // Preparar columnas y valores
-            $columns = ['usuario_id', 'fecha'];
-            $values = [$usuario_id, $data['fecha']];
-            $placeholders = ['?', '?'];
-            $types = 'is';
+            $columns = ['nombre', 'apellidos', 'fecha'];
+            $values = [$nombre, $apellidos, $data['fecha']];
+            $placeholders = ['?', '?', '?'];
+            $types = 'sss';
 
             // Campos opcionales
             $campos = [
@@ -75,10 +76,10 @@ try {
 
         case 'obtener_historial':
             $stmt = $conn->prepare("SELECT * FROM medidas_corporales
-                                    WHERE usuario_id = ?
+                                    WHERE nombre = ? AND apellidos = ?
                                     ORDER BY fecha DESC
                                     LIMIT 50");
-            $stmt->bind_param("i", $usuario_id);
+            $stmt->bind_param("ss", $nombre, $apellidos);
             $stmt->execute();
             $result = $stmt->get_result();
 
@@ -94,8 +95,8 @@ try {
         case 'obtener_por_fecha':
             $fecha = $_GET['fecha'];
             $stmt = $conn->prepare("SELECT * FROM medidas_corporales
-                                    WHERE usuario_id = ? AND fecha = ?");
-            $stmt->bind_param("is", $usuario_id, $fecha);
+                                    WHERE nombre = ? AND apellidos = ? AND fecha = ?");
+            $stmt->bind_param("sss", $nombre, $apellidos, $fecha);
             $stmt->execute();
             $result = $stmt->get_result();
             $medida = $result->fetch_assoc();
@@ -107,8 +108,8 @@ try {
         case 'eliminar':
             $data = json_decode(file_get_contents('php://input'), true);
             $stmt = $conn->prepare("DELETE FROM medidas_corporales
-                                    WHERE id = ? AND usuario_id = ?");
-            $stmt->bind_param("ii", $data['id'], $usuario_id);
+                                    WHERE id = ? AND nombre = ? AND apellidos = ?");
+            $stmt->bind_param("iss", $data['id'], $nombre, $apellidos);
 
             if ($stmt->execute()) {
                 echo json_encode(['success' => true]);
@@ -121,18 +122,18 @@ try {
         case 'estadisticas':
             // Obtener última medición
             $stmt = $conn->prepare("SELECT * FROM medidas_corporales
-                                    WHERE usuario_id = ?
+                                    WHERE nombre = ? AND apellidos = ?
                                     ORDER BY fecha DESC LIMIT 1");
-            $stmt->bind_param("i", $usuario_id);
+            $stmt->bind_param("ss", $nombre, $apellidos);
             $stmt->execute();
             $ultima = $stmt->get_result()->fetch_assoc();
             $stmt->close();
 
             // Obtener primera medición
             $stmt = $conn->prepare("SELECT * FROM medidas_corporales
-                                    WHERE usuario_id = ?
+                                    WHERE nombre = ? AND apellidos = ?
                                     ORDER BY fecha ASC LIMIT 1");
-            $stmt->bind_param("i", $usuario_id);
+            $stmt->bind_param("ss", $nombre, $apellidos);
             $stmt->execute();
             $primera = $stmt->get_result()->fetch_assoc();
             $stmt->close();
