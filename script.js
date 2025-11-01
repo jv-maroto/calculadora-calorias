@@ -1816,28 +1816,148 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     function mostrarModalPlanes(planes) {
-        let html = '<div class="modal fade" id="modalPlanes" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content">';
-        html += '<div class="modal-header"><h5 class="modal-title">📂 Planes Guardados</div>';
-        html += '<button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>';
-        html += '<div class="modal-body"><div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse;">';
-        html += '<thead><tr><th>Fecha</th><th>Objetivo</th><th>Peso</th><th>Calorías</th><th>Duración</th><th>Acción</th></tr></thead><tbody>';
+        let html = `
+        <div class="modal fade" id="modalPlanes" tabindex="-1">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content" style="border-radius: 24px; border: none; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                    <!-- Header moderno -->
+                    <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 24px 24px 0 0; padding: 1.5rem;">
+                        <div>
+                            <h5 class="modal-title" style="margin: 0; font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                                    <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/>
+                                </svg>
+                                Planes Guardados
+                            </h5>
+                            <p style="margin: 0.25rem 0 0 0; font-size: 0.875rem; opacity: 0.95;">Selecciona un plan para cargarlo</p>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" style="opacity: 1;"></button>
+                    </div>
 
-        planes.forEach(plan => {
-            const fecha = new Date(plan.fecha).toLocaleDateString('es-ES');
-            const objetivo = plan.objetivo === 'deficit' ? '🔽 Déficit' : (plan.objetivo === 'volumen' ? '🔼 Volumen' : 'Mantenimiento');
-            const duracion = plan.duracion_semanas ? `${plan.duracion_semanas} semanas` : `${plan.duracion_meses} meses`;
+                    <!-- Body con tabla moderna -->
+                    <div class="modal-body" style="padding: 1.5rem;">`;
 
-            html += `<tr>
-                <td>${fecha}</td>
-                <td>${objetivo}</td>
-                <td>${plan.peso} kg</td>
-                <td>${Math.round(plan.calorias)} kcal</td>
-                <td>${duracion}</td>
-                <td><button class="btn btn-sm btn-primary" onclick="cargarPlan(${plan.id})">Cargar</button></td>
-            </tr>`;
-        });
+        if (planes.length === 0) {
+            html += `
+                <div style="text-align: center; padding: 3rem 1rem; color: #64748b;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 1rem; opacity: 0.5;">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    <h5 style="color: #334155; margin-bottom: 0.5rem;">No hay planes guardados</h5>
+                    <p style="margin: 0; font-size: 0.875rem;">Crea tu primer plan y guárdalo para cargarlo después</p>
+                </div>`;
+        } else {
+            html += `
+                <div style="overflow-x: auto; border-radius: 12px; border: 1px solid #e2e8f0;">
+                    <table class="v0-table" style="margin: 0; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th style="text-align: left; padding: 1rem; background: #f8fafc; color: #334155; font-weight: 600; font-size: 0.875rem;">Fecha</th>
+                                <th style="text-align: left; padding: 1rem; background: #f8fafc; color: #334155; font-weight: 600; font-size: 0.875rem;">Objetivo</th>
+                                <th style="text-align: left; padding: 1rem; background: #f8fafc; color: #334155; font-weight: 600; font-size: 0.875rem;">Peso</th>
+                                <th style="text-align: left; padding: 1rem; background: #f8fafc; color: #334155; font-weight: 600; font-size: 0.875rem;">Calorías</th>
+                                <th style="text-align: left; padding: 1rem; background: #f8fafc; color: #334155; font-weight: 600; font-size: 0.875rem;">Duración</th>
+                                <th style="text-align: center; padding: 1rem; background: #f8fafc; color: #334155; font-weight: 600; font-size: 0.875rem;">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
 
-        html += '</tbody></table></div></div></div></div></div>';
+            planes.forEach((plan, index) => {
+                const fecha = new Date(plan.fecha).toLocaleDateString('es-ES', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                });
+
+                let objetivoIcon = '';
+                let objetivoText = '';
+                let objetivoColor = '';
+
+                if (plan.objetivo === 'deficit') {
+                    objetivoIcon = '🔽';
+                    objetivoText = 'Déficit';
+                    objetivoColor = '#ef4444';
+                } else if (plan.objetivo === 'volumen') {
+                    objetivoIcon = '🔼';
+                    objetivoText = 'Volumen';
+                    objetivoColor = '#10b981';
+                } else {
+                    objetivoIcon = '➡️';
+                    objetivoText = 'Mantenimiento';
+                    objetivoColor = '#6366f1';
+                }
+
+                const duracion = plan.duracion_semanas ? `${plan.duracion_semanas} semanas` : `${plan.duracion_meses} meses`;
+                const bgColor = index % 2 === 0 ? '#ffffff' : '#f8fafc';
+
+                html += `
+                    <tr style="background: ${bgColor}; transition: background-color 0.2s;">
+                        <td style="padding: 1rem; border-top: 1px solid #e2e8f0; color: #334155; font-size: 0.875rem;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                    <line x1="16" y1="2" x2="16" y2="6"/>
+                                    <line x1="8" y1="2" x2="8" y2="6"/>
+                                    <line x1="3" y1="10" x2="21" y2="10"/>
+                                </svg>
+                                ${fecha}
+                            </div>
+                        </td>
+                        <td style="padding: 1rem; border-top: 1px solid #e2e8f0;">
+                            <span style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.375rem 0.75rem; background: ${objetivoColor}15; color: ${objetivoColor}; border-radius: 12px; font-weight: 600; font-size: 0.875rem;">
+                                ${objetivoIcon} ${objetivoText}
+                            </span>
+                        </td>
+                        <td style="padding: 1rem; border-top: 1px solid #e2e8f0; color: #334155; font-weight: 600; font-size: 0.875rem;">
+                            ${plan.peso} kg
+                        </td>
+                        <td style="padding: 1rem; border-top: 1px solid #e2e8f0; color: #334155; font-weight: 600; font-size: 0.875rem;">
+                            ${Math.round(plan.calorias)} kcal
+                        </td>
+                        <td style="padding: 1rem; border-top: 1px solid #e2e8f0; color: #64748b; font-size: 0.875rem;">
+                            ${duracion}
+                        </td>
+                        <td style="padding: 1rem; border-top: 1px solid #e2e8f0; text-align: center;">
+                            <button class="v0-btn v0-btn-primary" onclick="cargarPlan(${plan.id})" style="padding: 0.5rem 1rem; font-size: 0.875rem; display: inline-flex; align-items: center; gap: 0.5rem;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                Cargar
+                            </button>
+                        </td>
+                    </tr>`;
+            });
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>`;
+        }
+
+        html += `
+                    </div>
+
+                    <!-- Footer con info -->
+                    <div class="modal-footer" style="background: #f8fafc; border: none; border-radius: 0 0 24px 24px; padding: 1rem 1.5rem;">
+                        <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+                            <small style="color: #64748b; font-size: 0.875rem;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 0.25rem;">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="12" y1="16" x2="12" y2="12"/>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"/>
+                                </svg>
+                                Total de planes: ${planes.length}
+                            </small>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="padding: 0.5rem 1.25rem; border-radius: 12px; font-size: 0.875rem;">
+                                Cerrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>`;
 
         // Eliminar modal anterior si existe
         const modalAnterior = document.getElementById('modalPlanes');
