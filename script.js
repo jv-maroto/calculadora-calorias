@@ -129,9 +129,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const circunferenciaCuello = parseFloat(document.getElementById('circunferencia_cuello').value) || null;
         const circunferenciaCadera = parseFloat(document.getElementById('circunferencia_cadera').value) || null;
 
-        // CALCULAR % GRASA CORPORAL CON MÉTODO NAVY (si hay datos) - MOVER AQUÍ
+        // OBTENER % GRASA CORPORAL
         let porcentajeGrasa = null;
-        if (circunferenciaCintura && circunferenciaCuello && altura) {
+
+        // PRIORIDAD 1: Si el usuario introdujo manualmente el % de grasa (más preciso - Jackson-Pollock)
+        const porcentajeGrasaManual = parseFloat(document.getElementById('porcentaje_grasa_input')?.value) || null;
+        if (porcentajeGrasaManual) {
+            porcentajeGrasa = Math.max(5, Math.min(50, porcentajeGrasaManual));
+        }
+        // PRIORIDAD 2: Si no, calcular con MÉTODO NAVY (menos preciso - circunferencias)
+        else if (circunferenciaCintura && circunferenciaCuello && altura) {
             if (sexo === 'hombre') {
                 // Fórmula Navy para hombres
                 const log10Abdomen = Math.log10(circunferenciaCintura - circunferenciaCuello);
